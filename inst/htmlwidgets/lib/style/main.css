@@ -1,6 +1,3 @@
-.cropped-image-container {
-  line-height: 150px;
-}
 .cropped-image-container .base-image {
   position: absolute;
   z-index: 1;
@@ -9,10 +6,10 @@
   position: absolute;
   z-index: 2;
 }
-.cropped-image-container .text-overlay {
+.cropped-image-container .text-container {
+  position: absolute;
+}
+.cropped-image-container .text-container .text-overlay {
   z-index: 3;
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-  line-height: normal;
+  position: absolute;
 }

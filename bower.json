@@ -1,0 +1,8 @@
+{
+  "name": "gymsym",
+  "private": true,
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "jquery": "~2.2.1"
+  }
+}

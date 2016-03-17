@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="../bower_components/lodash/dist/lodash.compat.js"></script>
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <script>
+      console.log("index script");
+      myWidgetDefinition = null;
+      // This is a stub that will capture the widget definition, 
+      // so that we can use it once the page finishes loading
+      HTMLWidgets = {
+        widget: function(widgetDefinition) {
+          console.log("widget create called!");
+          myWidgetDefinition = widgetDefinition;
+        }
+      };
+
+      $(document).ready( function() {
+        console.log("Document ready call. Instantiating captured widget");
+        console.log(myWidgetDefinition.factory);
+
+        widgetInstance = myWidgetDefinition.factory($('.content-window'),200,200);
+        widgetInstance.renderValue("mittens");
+      });
+    </script>
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/CroppedImage.js"></script>
+    <!-- endbuild -->
+
+    <div class="content-window"></div>
+
+  </body>
+</html>

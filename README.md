@@ -18,7 +18,7 @@ Prerequisites: Chrome installed (tested on OSX only, should work in Windows/Linu
 
 `gulp serve`
 
-Now make changes to the javascript/css. On file save, the browser will automatically reload with your changes
+This should load a browser window, where a list of links to examples will be displayed. Choose an example or add another example to [R file](src/R/index.html). When changes to the [widget definition](src/scripts/CroppedImage.coffee) or any other file are saved, the browser will automatically reload.
 
 # To test locally in r context
 

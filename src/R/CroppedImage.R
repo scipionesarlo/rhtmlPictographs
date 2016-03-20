@@ -1,52 +1,50 @@
-#' <Add Title>
+#' Cropped Image HTML Widget
 #'
-#' <Add Description>
+#' A HTML Widget that displays an image cropped based on a provided percentage
+#'
+#' @description Generate a single cropped image infographic with optional text overlay.
+#' Two images are provided, a base and a variable image.
+#' The variable image is cropped vertically or horizontally to create a partially filled base image.
+#' A text overlay contianing the "percentage fill" can be optionally displayed as well.
+#'
+#' @param percentage: numeric between 0 and 1
+#' @param width: positive numeric representing desired width of widget
+#' @param height: positive numeric representing desired height of widget
+#' @param settingsJsonString: valid JSON string containing the following params
+#'   - direction: ("horizontal"|"vertical") - default horizontal. Indicates direction of cropping
+#'   - baseImageUrl: URL - required. The URL (including http://) of baseImage
+#'   - variableImageUrl: URL - required. The URL (including http://) of variableImageUrl
+#'   - text-overlay: (true|false) - default true. true to show text, false to hide text
+#'   - font-family: css - optional. Controls font. See : https://developer.mozilla.org/en/docs/Web/CSS/font-family
+#'   - font-weight: css - optional. Controls font thickness. See : https://developer.mozilla.org/en/docs/Web/CSS/font-weight
+#'   - font-size: css - optional. Controls font size. See : https://developer.mozilla.org/en/docs/Web/CSS/font-size
+#'   - font-color: css - optional. Controls font color. Note this maps to the css 'color' property. See : https://developer.mozilla.org/en/docs/Web/CSS/color
+#'
+#' @examples
+#' CroppedImage(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": true, "font-family": "Verdana,sans-serif", "font-weight": "900", "font-size": "20px", "font-color": "white"}')
+#'
+#' @author Kyle Zeeuwen <kyle.zeeuwen@gmail.com>
+#'
+#' @source https://github.com/NumbersInternational/htmlwidgets-croppedimage
 #'
 #' @import htmlwidgets
 #'
 #' @export
-CroppedImage <- function(message, width = NULL, height = NULL) {
+#'
 
-  # forward options using x
-  x = list(
-    message = message
+CroppedImage <- function(percentage, width = NULL, height = NULL, settingsJsonString = '{}') {
+
+  input = list(
+    percentage = percentage,
+    settingsJsonString = settingsJsonString
   )
 
   # create widget
   htmlwidgets::createWidget(
     name = 'CroppedImage',
-    x,
+    input,
     width = width,
     height = height,
     package = 'CroppedImage'
   )
 }
-
-# #' Shiny bindings for CroppedImage
-# #'
-# #' Output and render functions for using CroppedImage within Shiny
-# #' applications and interactive Rmd documents.
-# #'
-# #' @param outputId output variable to read from
-# #' @param width,height Must be a valid CSS unit (like \code{'100\%'},
-# #'   \code{'400px'}, \code{'auto'}) or a number, which will be coerced to a
-# #'   string and have \code{'px'} appended.
-# #' @param expr An expression that generates a CroppedImage
-# #' @param env The environment in which to evaluate \code{expr}.
-# #' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
-# #'   is useful if you want to save an expression in a variable.
-# #'
-# #' @name CroppedImage-shiny
-# #'
-# #' @export
-# CroppedImageOutput <- function(outputId, width = '100%', height = '400px'){
-#   htmlwidgets::shinyWidgetOutput(outputId, 'CroppedImage', width, height, package = 'CroppedImage')
-# }
-
-# #' @rdname CroppedImage-shiny
-# #' @export
-# renderCroppedImage <- function(expr, env = parent.frame(), quoted = FALSE) {
-#   if (!quoted) { expr <- substitute(expr) } # force quoted
-#   htmlwidgets::shinyRenderWidget(expr, CroppedImageOutput, env, quoted = TRUE)
-# }
-

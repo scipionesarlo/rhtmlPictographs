@@ -1,12 +1,5 @@
 'use strict'
 
-#TODO:
-#-local image support
-#-local image assets - who generates them ?
-#-"correct" horizontal text scaling
-#-use an actual class
-#-continue using coffeescript ?
-
 HTMLWidgets.widget
   name: 'CroppedImage'
   type: 'output'
@@ -32,6 +25,10 @@ HTMLWidgets.widget
         console.err msg
         throw new Error err
 
+      throw new Error "Must specify 'baseImageUrl'" unless input.baseImageUrl?
+      throw new Error "Must specify 'variableImageUrl'" unless input.variableImageUrl?
+
+      throw new Error "Must specify 'percent'" unless input.percentage?
       input.percentage = parseFloat input.percentage
       throw new Error "percentage must be a number" if _.isNaN input.percentage
       throw new Error "percentage must be >= 0" unless input.percentage >= 0
@@ -44,9 +41,6 @@ HTMLWidgets.widget
       input['font-size'] = '20px' unless input['font-size']?
       input['font-color'] = 'white' unless input['font-color']?
 
-      throw new Error "Must specify 'baseImageUrl'" unless input.baseImageUrl?
-      throw new Error "Must specify 'variableImageUrl'" unless input.variableImageUrl?
-
       return input
 
     generateClip = (input) ->
@@ -57,18 +51,16 @@ HTMLWidgets.widget
         x = instance.height - input.percentage * instance.height
         return "rect(#{x}px, auto, auto, auto)"
       else
-        throw new Error "Boom !"
+        throw new Error "Invalid direction: '#{input.direction}'"
 
     input = normalizeInput(params)
 
-    baseImage = $('<img>')
-      .addClass('base-image')
+    baseImage = $('<img class="base-image">')
       .attr('src', input.baseImageUrl)
       .css('width', instance.width)
       .css('height', instance.height)
 
-    variableImage = $('<img>')
-      .addClass('variable-image')
+    variableImage = $('<img class="variable-image">')
       .attr('src', input.variableImageUrl)
       .css('width', instance.width)
       .css('height', instance.height)
@@ -76,35 +68,29 @@ HTMLWidgets.widget
       #clip-path is not well supported : https://developer.mozilla.org/en/docs/Web/CSS/clip
       .css('clip', generateClip(input))
 
-    divContainer = $('<div>')
-      .addClass('cropped-image-container')
+    divContainer = $('<div class="cropped-image-container">')
       .css('width', instance.width)
       .css('height', instance.height)
 
     divContainer.append(baseImage).append(variableImage)
 
     if input['text-overlay']
-      console.log "in the text overlay section"
       textContainer = $('<div>').addClass('text-container')
         .css('width', instance.width)
         .css('height', instance.height)
         .css('line-height', "#{instance.height}px") #@TODO must have px ...
 
-      text = $('<span>').addClass('text-overlay')
+      formattedPercentage = (100 * input.percentage).toFixed(0)
+      text = $('<span class="text-overlay">')
         .css('transform', "translate(#{instance.height / 2}px") #@TODO not a good solution
-        .css('margin-left', '-16px') #@TODO even worse
+        .css('margin-left', '-16px') #@TODO not a good solution
+        .html("#{formattedPercentage}%")
 
-      textContainer.append(text)
-
+      text.css('color', input['font-color']) if _.has input, 'font-color'
       for cssAttribute in ['font-family', 'font-size', 'font-weight']
         text.css(cssAttribute, input[cssAttribute]) if _.has input, cssAttribute
 
-      text.css('color', input['font-color']) if _.has input, 'font-color'
-
-      formattedPercentage = (100 * input.percentage).toFixed(0)
-      text.html("#{formattedPercentage}%")
-
+      textContainer.append(text)
       divContainer.append(textContainer)
 
     $(el).append(divContainer)
-

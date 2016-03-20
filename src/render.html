@@ -7,6 +7,10 @@
     <script src="../bower_components/lodash/dist/lodash.compat.js"></script>
     <script src="../bower_components/jquery/dist/jquery.js"></script>
 
+    <a href="/">Back to Examples</a>
+    <div class="content-window"></div>
+
+    <!-- NB This script should be defined before croppedimage.js-->
     <script>
       function getQueryVariable(variable) {
           var query = window.location.search.substring(1);
@@ -20,8 +24,8 @@
           console.log('Query variable %s not found', variable);
       }
 
-      console.log("index script");
       myWidgetDefinition = null;
+
       // This is a stub that will capture the widget definition,
       // so that we can use it once the page finishes loading
       HTMLWidgets = {
@@ -32,7 +36,6 @@
       };
 
       $(document).ready( function() {
-        console.log(window.location.search);
         var percentage = getQueryVariable('percentage');
         var settings = getQueryVariable('settings');
         var width = getQueryVariable('width');
@@ -50,8 +53,5 @@
     </script>
 
     <script src="scripts/CroppedImage.js"></script>
-
-    <div class="content-window"></div>
-
   </body>
 </html>

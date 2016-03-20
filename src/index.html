@@ -71,7 +71,7 @@
       }
     ];
 
-    $(document).ready( function() {
+    generateExampleLinks = function() {
       var exampleList = $('.example-list');
 
       _.forEach( examples, function (example) {
@@ -87,6 +87,8 @@
         exampleList.append(listItem.append(anchor));
 
       });
-    });
+    }
+
+    $(document).ready(generateExampleLinks);
   </script>
 </html>

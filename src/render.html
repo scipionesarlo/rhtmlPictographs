@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <script src="../bower_components/lodash/dist/lodash.compat.js"></script>
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+
+    <script>
+      function getQueryVariable(variable) {
+          var query = window.location.search.substring(1);
+          var vars = query.split('&');
+          for (var i = 0; i < vars.length; i++) {
+              var pair = vars[i].split('=');
+              if (decodeURIComponent(pair[0]) == variable) {
+                  return decodeURIComponent(pair[1]);
+              }
+          }
+          console.log('Query variable %s not found', variable);
+      }
+
+      console.log("index script");
+      myWidgetDefinition = null;
+      // This is a stub that will capture the widget definition,
+      // so that we can use it once the page finishes loading
+      HTMLWidgets = {
+        widget: function(widgetDefinition) {
+          console.log("widget create called!");
+          myWidgetDefinition = widgetDefinition;
+        }
+      };
+
+      $(document).ready( function() {
+        console.log(window.location.search);
+        var percentage = getQueryVariable('percentage');
+        var settings = getQueryVariable('settings');
+        var width = getQueryVariable('width');
+        var height = getQueryVariable('height');
+
+        console.log("Document ready call. Instantiating captured widget");
+
+        widgetInstance = myWidgetDefinition.initialize($('.content-window'),width,height);
+        params = {
+          percentage: percentage,
+          settingsJsonString: settings
+        };
+        myWidgetDefinition.renderValue($('.content-window'), params, widgetInstance);
+      });
+    </script>
+
+    <script src="scripts/CroppedImage.js"></script>
+
+    <div class="content-window"></div>
+
+  </body>
+</html>

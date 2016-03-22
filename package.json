@@ -40,5 +40,10 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "wiredep": "^3.0.0"
+  },
+  "dependencies": {
+    "d3": "^3.5.16",
+    "d3-grid": "git+https://github.com/interactivethings/d3-grid.git",
+    "lodash": "^4.6.1"
   }
 }

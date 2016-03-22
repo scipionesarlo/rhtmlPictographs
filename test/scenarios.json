@@ -1,0 +1,90 @@
+{
+  "scenarios": [
+    {
+      "name": "Minimum settings: Example (all defaults)",
+      "description" : [
+        "This demonstrates a minimal invocation of the widget and relies on all of the default settings:",
+        "As such it may change as the defaults change."
+      ],
+      "percentage": 0.4,
+      "settings": {
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 400,
+      "height": 400
+    },
+    {
+      "name": "Vertical cropping",
+      "description" : [
+        "This demonstrates the use of the vertical cropping feature. The percentage is set to 66%.",
+        "The bottom 2/3 of the widget should be image should be blue, and the top 1/2 should be black."
+      ],
+      "percentage": 0.66,
+      "settings": {
+        "direction": "vertical",
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 400,
+      "height": 400
+    },
+    {
+      "name": "fully customized",
+      "description" : [
+        "This demonstrates all of the available customizations."
+      ],
+      "percentage": 0.66,
+      "settings": {
+        "direction": "vertical",
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+        "text-overlay": true,
+        "text-override": "Heaps customizable!",
+        "font-family": "verdana",
+        "font-weight": "900",
+        "font-size": "32px",
+        "font-color": "magenta"
+      },
+      "width": 400,
+      "height": 400
+    },
+    {
+      "name": "No text overlay",
+      "percentage": 0.4,
+      "settings": {
+        "text-overlay": false,
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 400,
+      "height": 400
+    },
+    {
+      "name": "Really small",
+      "percentage": 0.23,
+      "settings": {
+        "font-size": "10px",
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 50,
+      "height": 50
+    },
+    {
+      "name": "Multiple Image Minimal Example",
+      "description" : [
+        "This demonstrates a minimal invocation of the widget with multiple images"
+      ],
+      "percentage": 0.8,
+      "settings": {
+        "numImages": 3,
+        "text-overlay": false,
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 400,
+      "height": 400
+    }
+  ]
+}

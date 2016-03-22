@@ -11,9 +11,20 @@ dependencies:
    script:
      lodash.min.js
 
+ - name: d3
+   version: 3.5.16
+   src: htmlwidgets/lib/d3-3.5.16
+   script:
+     d3.min.js
+
+ - name: d3-grid
+   version: 0.1.1
+   src: htmlwidgets/lib/d3-grid-0.1.1
+   script:
+     d3-grid.js
+
  - name: style
    version: 1.0.0
    src: htmlwidgets/lib/style
    stylesheet:
      main.css
-

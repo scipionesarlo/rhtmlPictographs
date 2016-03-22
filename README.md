@@ -44,11 +44,17 @@ The signature definition is documented in the main [R file](src/R/CroppedImage.R
 1. local image support
 2. Go full JS class
 3. Resize support
+4. Pie chart (radians) support
+5. Multiple image substitute support
+7. table of infographic support
+1. Lower and Upper Text Banners
+2. Customisable multi image gutters (inner padding)
+3. Customisable multi image h/v alignmnent
+8. Full port from bower to node_modules
 
 # Issues
 
-1. Horizontal alignment of text overlay is not working correctly
-2. Use of to be deprecated CSS property 'clip'
-3. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
+1. Vertical alignment of text overlay is slightly off (likely just a missing svg style setting).
+2. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
 
 

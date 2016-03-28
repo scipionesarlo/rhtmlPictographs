@@ -56,6 +56,13 @@ gulp.task('copy', function () {
   }).pipe(gulp.dest('dist/browser/bower_components'));
 
   gulp.src([
+    'test/**/*.json'
+  ], {
+    dot: true
+  }).pipe(gulp.dest('dist/browser/test'));
+
+
+  gulp.src([
     'src/R/**/*.R'
   ], {
     dot: true
@@ -67,7 +74,6 @@ gulp.task('copy', function () {
 
   gulp.src(['DESCRIPTION', 'NAMESPACE'])
     .pipe(gulp.dest('dist/package/'));
-
 
   gulp.src([
     'man/**/*'
@@ -83,6 +89,22 @@ gulp.task('copy', function () {
     {
       src: 'bower_components/jquery/dist/jquery.min.js',
       dest: 'dist/package/inst/htmlwidgets/lib/jquery-2.2.1/'
+    },
+    {
+      src: 'node_modules/d3/d3.min.js',
+      dest: 'dist/package/inst/htmlwidgets/lib/d3-3.5.16/'
+    },
+    {
+      src: 'node_modules/d3/d3.min.js',
+      dest: 'dist/browser/external/'
+    },
+    {
+      src: 'node_modules/d3-grid/d3-grid.js',
+      dest: 'dist/package/inst/htmlwidgets/lib/d3-grid-0.1.1/'
+    },
+    {
+      src: 'node_modules/d3-grid/d3-grid.js',
+      dest: 'dist/browser/external/'
     }
   ]
 
@@ -130,8 +152,10 @@ gulp.task('watch', ['connect'], function () {
   // watch for changes
   gulp.watch([
     'dist/browser/**/*',
+    '!dist/browser/bower_components'
   ]).on('change', $.livereload.changed);
 
+  gulp.watch('test/**/*.json', ['copy']);
   gulp.watch('src/**/*.html', ['copy']);
   gulp.watch('src/images/**/*', ['images']);
   gulp.watch('src/styles/**/*.less', ['less']);

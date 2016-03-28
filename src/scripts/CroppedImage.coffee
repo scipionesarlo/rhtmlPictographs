@@ -22,7 +22,7 @@ HTMLWidgets.widget
         input.percentage = params.percentage
       catch err
         msg =  "CroppedImage HTMLWidget error : Cannot parse 'settingsJsonString'"
-        console.err msg
+        console.error msg
         throw new Error err
 
       throw new Error "Must specify 'baseImageUrl'" unless input.baseImageUrl?
@@ -34,6 +34,8 @@ HTMLWidgets.widget
       throw new Error "percentage must be >= 0" unless input.percentage >= 0
       throw new Error "percentage must be <= 1" unless input.percentage <= 1
 
+      input['numImages'] = 1 unless input['numImages']?
+      input['numRows'] = 1 unless input['numRows']?
       input['direction'] = 'horizontal' unless input['direction']?
       input['text-overlay'] = true unless input['text-overlay']?
       input['font-family'] = 'Verdana,sans-serif' unless input['font-family']?
@@ -53,44 +55,75 @@ HTMLWidgets.widget
       else
         throw new Error "Invalid direction: '#{input.direction}'"
 
-    input = normalizeInput(params)
+    generateDataArray = (percentage, numImages) ->
+      d3Data = []
+      totalArea = percentage * numImages
+      for num in [1..numImages]
+        percentage = Math.min(1, Math.max(0, 1 + totalArea - num))
+        d3Data.push { percentage: percentage }
+      return d3Data
 
-    baseImage = $('<img class="base-image">')
-      .attr('src', input.baseImageUrl)
-      .css('width', instance.width)
-      .css('height', instance.height)
+    input = normalizeInput params
+    d3Data = generateDataArray input.percentage, input.numImages
 
-    variableImage = $('<img class="variable-image">')
-      .attr('src', input.variableImageUrl)
-      .css('width', instance.width)
-      .css('height', instance.height)
-      #NB 'clip' will eventually be deprecated in favour of 'clip-path', but at present
-      #clip-path is not well supported : https://developer.mozilla.org/en/docs/Web/CSS/clip
-      .css('clip', generateClip(input))
+    #d3.grid is provided by github.com/interactivethings/d3-grid
+    gridLayout = d3.layout.grid()
+      .bands()
+      .size [instance.width, instance.height]
+      .padding([0.1, 0.1]); #@TODO control padding ?
 
-    divContainer = $('<div class="cropped-image-container">')
-      .css('width', instance.width)
-      .css('height', instance.height)
+    svg = d3.select(el[0]).append("svg")
+      .attr 'width': instance.width
+      .attr 'height': instance.height
 
-    divContainer.append(baseImage).append(variableImage)
+    enteringLeafNodes = svg.selectAll(".node")
+      .data gridLayout(d3Data)
+      .enter()
+      .append "g"
+        .attr "class", "node"
+        .attr "transform", (d) ->
+          return "translate(" + d.x + "," + d.y + ")"
+
+    enteringLeafNodes.append("svg:image")
+      .attr 'width', gridLayout.nodeSize()[0]
+      .attr 'height', gridLayout.nodeSize()[1]
+      .attr 'xlink:href', input.baseImageUrl
+      .attr 'class', 'base-image'
+
+    enteringLeafNodes.append("clipPath")
+      .attr "id", "my-clip"
+      .append "rect"
+        .attr "x", 0
+
+        .attr "y", (d) ->
+          return 0 if input.direction == 'horizontal'
+          return gridLayout.nodeSize()[1] * (1 -d.percentage)
+
+        .attr "width", (d) ->
+          return gridLayout.nodeSize()[0] * d.percentage if input.direction == 'horizontal'
+          return gridLayout.nodeSize()[0]
+
+        .attr "height", (d) ->
+          return gridLayout.nodeSize()[1] * d.percentage if input.direction == 'vertical'
+          return gridLayout.nodeSize()[1]
+
+    enteringLeafNodes.append("svg:image")
+      .attr 'width', gridLayout.nodeSize()[0]
+      .attr 'height', gridLayout.nodeSize()[1]
+      .attr 'clip-path', 'url(#my-clip)'
+      .attr 'xlink:href', input.variableImageUrl
+      .attr 'class', 'variable-image'
 
     if input['text-overlay']
-      textContainer = $('<div>').addClass('text-container')
-        .css('width', instance.width)
-        .css('height', instance.height)
-        .css('line-height', "#{instance.height}px") #@TODO must have px ...
+      displayText = if input['text-override'] then input['text-override'] else "#{(100 * input.percentage).toFixed(0)}%"
 
-      formattedPercentage = (100 * input.percentage).toFixed(0)
-      text = $('<span class="text-overlay">')
-        .css('transform', "translate(#{instance.height / 2}px") #@TODO not a good solution
-        .css('margin-left', '-16px') #@TODO not a good solution
-        .html("#{formattedPercentage}%")
+      textOverlay = enteringLeafNodes.append("svg:text")
+        .attr 'x', (d) -> gridLayout.nodeSize()[0] / 2
+        .attr 'y', (d) -> gridLayout.nodeSize()[1] / 2
+        .style 'text-anchor', 'middle'
+        .attr 'class', 'text-overlay'
+        .text displayText
 
-      text.css('color', input['font-color']) if _.has input, 'font-color'
+      textOverlay.attr('fill', input['font-color']) if _.has input, 'font-color'
       for cssAttribute in ['font-family', 'font-size', 'font-weight']
-        text.css(cssAttribute, input[cssAttribute]) if _.has input, cssAttribute
-
-      textContainer.append(text)
-      divContainer.append(textContainer)
-
-    $(el).append(divContainer)
+        textOverlay.attr(cssAttribute, input[cssAttribute]) if _.has input, cssAttribute

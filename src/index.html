@@ -9,83 +9,25 @@
 
   </body>
   <script>
-    var examples = [
-      {
-        name: 'Minimum Settings Example (all defaults)',
-        percentage: 0.4,
-        settings: {
-          baseImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-          variableImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-        },
-        width: 400,
-        height: 400
-      },
-      {
-        name: 'Vertical cropping',
-        percentage: 0.66,
-        settings: {
-          direction: 'vertical',
-          baseImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-          variableImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-        },
-        width: 400,
-        height: 400
-      },
-      {
-        name: 'fully customized',
-        percentage: 0.4,
-        settings: {
-          "direction": "vertical",
-          "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-          "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-          "text-overlay": true,
-          "font-family": "serif",
-          "font-weight": "900",
-          "font-size": "52px",
-          "font-color": "green"
-        },
-        width: 400,
-        height: 400
-      },
-      {
-        name: 'No text overlay',
-        percentage: 0.4,
-        settings: {
-          'text-overlay': false,
-          baseImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-          variableImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-        },
-        width: 400,
-        height: 400
-      },
-      {
-        name: 'Really small',
-        percentage: 0.23,
-        settings: {
-          'font-size': '10px',
-          baseImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-          variableImageUrl: "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-        },
-        width: 50,
-        height: 50
-      }
-    ];
 
     generateExampleLinks = function() {
       var exampleList = $('.example-list');
 
-      _.forEach( examples, function (example) {
-        var listItem = $('<li>');
-        var link = "render.html?percentage=" + example.percentage +
-          "&width=" + example.width +
-          "&height=" + example.height +
-          "&settings=" + JSON.stringify(example.settings);
+      $.ajax('./test/scenarios.json').done(function (response) {
+        _.forEach(response.scenarios, function (example, index) {
+          var listItem = $('<li>');
+          var link = "render.html?index=" + index;
 
-        var anchor = $('<a>').html(example.name)
-          .attr('href', link)
+          var anchor = $('<a>').html(example.name)
+            .attr('href', link)
 
-        exampleList.append(listItem.append(anchor));
+          exampleList.append(listItem.append(anchor));
 
+        });
+      }).fail( function(error) {
+        console.error("Download of ./test/scenarios.json failed. Probably invalid JSON.");
+        console.error(error);
+        $('body').append($('<div>').text("Failure to download/parse ./test/scenarios.json (probably invalid JSON). See dev tools console for error logging."));
       });
     }
 

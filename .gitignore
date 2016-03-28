@@ -2,7 +2,6 @@
 .Rbuildignore
 .Rhistory
 .Rproj.user
-bower_components
 node_modules
 dist/browser
 dist/package

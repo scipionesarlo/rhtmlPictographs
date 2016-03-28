@@ -9,7 +9,6 @@ Prerequisites:
 Steps:
 
 1. `npm install`
-2. `bower install`
 3. `gulp build`
 
 # To develop and test in test browser context:

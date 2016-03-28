@@ -72,7 +72,9 @@ HTMLWidgets.widget
       .size [instance.width, instance.height]
       .padding([0.1, 0.1]); #@TODO control padding ?
 
-    svg = d3.select(el[0]).append("svg")
+    rootElement = if _.has(el, 'length') then el[0] else el
+
+    svg = d3.select(rootElement).append("svg")
       .attr 'width': instance.width
       .attr 'height': instance.height
 

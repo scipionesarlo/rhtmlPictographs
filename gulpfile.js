@@ -50,17 +50,10 @@ gulp.task('copy', function () {
   }).pipe(gulp.dest('dist/browser'));
 
   gulp.src([
-    'bower_components/**/*'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist/browser/bower_components'));
-
-  gulp.src([
     'test/**/*.json'
   ], {
     dot: true
   }).pipe(gulp.dest('dist/browser/test'));
-
 
   gulp.src([
     'src/R/**/*.R'
@@ -83,37 +76,45 @@ gulp.task('copy', function () {
 
   var extLibs = [
     {
-      src: 'bower_components/lodash/dist/lodash.min.js',
-      dest: 'dist/package/inst/htmlwidgets/lib/lodash-2.4.2/'
+      src: 'node_modules/lodash/lodash.min.js',
+      dest: [
+        'dist/package/inst/htmlwidgets/lib/lodash-4.6.1/',
+        'dist/browser/external/'
+      ]
     },
     {
-      src: 'bower_components/jquery/dist/jquery.min.js',
-      dest: 'dist/package/inst/htmlwidgets/lib/jquery-2.2.1/'
+      src: 'node_modules/jquery/dist/jquery.min.js',
+      dest: [
+        'dist/package/inst/htmlwidgets/lib/jquery-2.2.2/',
+        'dist/browser/external/'
+      ]
     },
     {
       src: 'node_modules/d3/d3.min.js',
-      dest: 'dist/package/inst/htmlwidgets/lib/d3-3.5.16/'
-    },
-    {
-      src: 'node_modules/d3/d3.min.js',
-      dest: 'dist/browser/external/'
-    },
-    {
-      src: 'node_modules/d3-grid/d3-grid.js',
-      dest: 'dist/package/inst/htmlwidgets/lib/d3-grid-0.1.1/'
+      dest: [
+        'dist/package/inst/htmlwidgets/lib/d3-3.5.16/',
+        'dist/browser/external/'
+      ]
     },
     {
       src: 'node_modules/d3-grid/d3-grid.js',
-      dest: 'dist/browser/external/'
+      dest: [
+        'dist/package/inst/htmlwidgets/lib/d3-grid-0.1.1/',
+        'dist/browser/external/'
+      ]
     }
   ]
 
   _.forEach(extLibs, function(extLib) {
-    gulp.src([
+    var gulpSrc = gulp.src([
       extLib.src
     ], {
       dot: true
-    }).pipe(gulp.dest(extLib.dest));
+    })
+
+    _.forEach(extLib.dest, function(dest) {
+      gulpSrc.pipe(gulp.dest(dest));
+    });
   });
 
 });
@@ -137,22 +138,12 @@ gulp.task('serve', ['connect', 'watch'], function () {
   require('opn')('http://localhost:9000');
 });
 
-// inject bower components
-gulp.task('wiredep', function () {
-  var wiredep = require('wiredep').stream;
-
-  gulp.src('src/index.html')
-    .pipe(wiredep({exclude: ['bootstrap-sass-official']}))
-    .pipe(gulp.dest('src'));
-});
-
 gulp.task('watch', ['connect'], function () {
   $.livereload.listen();
 
   // watch for changes
   gulp.watch([
     'dist/browser/**/*',
-    '!dist/browser/bower_components'
   ]).on('change', $.livereload.changed);
 
   gulp.watch('test/**/*.json', ['copy']);

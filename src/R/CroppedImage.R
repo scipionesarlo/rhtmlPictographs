@@ -25,8 +25,14 @@
 #'
 #' @examples
 #'
-#' single horizontally cropped image
-#' CroppedImage(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": true, "font-family": "Verdana,sans-serif", "font-weight": "900", "font-size": "20px", "font-color": "white"}')
+#' single horizontally cropped image - minimal settings
+#' CroppedImage(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
+#'
+#' single horizontally cropped image - fully customized
+#' CroppedImage(0.66, 400, 400, '{"direction": "vertical", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": true, "text-override": "customizable!", "font-family": "verdana", "font-weight": "900", "font-size": "32px", "font-color": "magenta"}')
+#'
+#' single horizontally cropped image - minimal settings
+#' CroppedImage(0.66, 400, 400, '{"numImages": 3, "text-overlay": false, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 #'
 #' @author Kyle Zeeuwen <kyle.zeeuwen@gmail.com>
 #'

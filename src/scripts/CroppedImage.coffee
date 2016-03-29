@@ -63,6 +63,18 @@ HTMLWidgets.widget
         d3Data.push { percentage: percentage }
       return d3Data
 
+    addTextBanner = (el, className, text, args) ->
+      bannerContainer = $("<div class=\"#{className}\">")
+        .css 'width', instance.width
+        .css 'text-align', 'center'
+        .html text
+
+      bannerContainer.css('color', args['font-color']) if _.has args, 'font-color'
+      for cssAttribute in ['font-family', 'font-size', 'font-weight']
+        bannerContainer.css(cssAttribute, args[cssAttribute]) if _.has args, cssAttribute
+
+      $(el).append bannerContainer
+
     input = normalizeInput params
     d3Data = generateDataArray input.percentage, input.numImages
 
@@ -74,9 +86,13 @@ HTMLWidgets.widget
 
     rootElement = if _.has(el, 'length') then el[0] else el
 
+    addTextBanner(rootElement, 'header-container', input['text-header'], input) if input['text-header']?
+
     svg = d3.select(rootElement).append("svg")
       .attr 'width': instance.width
       .attr 'height': instance.height
+
+    addTextBanner(rootElement, 'footer-container', input['text-footer'], input) if input['text-footer']?
 
     enteringLeafNodes = svg.selectAll(".node")
       .data gridLayout(d3Data)

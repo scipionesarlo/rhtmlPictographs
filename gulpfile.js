@@ -1,22 +1,18 @@
-/* jshint node:true */
 'use strict';
-// generated on 2015-01-10 using generator-gulp-webapp 0.2.0
 
 var widgetName = 'CroppedImage';
 
 var _ = require('lodash');
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
-var fs = require('fs-extra');
-var runSequence = require('run-sequence');
-var less = require('gulp-less');
-var rename = require('gulp-rename');
 
 gulp.task('clean', function(cb) {
+  var fs = require('fs-extra');
   fs.remove('dist', cb);
 });
 
 gulp.task('less', function () {
+  var less = require('gulp-less');
   return gulp.src('src/styles/**/*.less')
     .pipe(less({}))
     .pipe(gulp.dest('dist/browser/styles'))
@@ -45,22 +41,17 @@ gulp.task('images', function () {
 gulp.task('copy', function () {
   gulp.src([
     'src/**/*.html'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist/browser'));
+  ], {}).pipe(gulp.dest('dist/browser'));
 
   gulp.src([
     'test/**/*.json'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist/browser/test'));
+  ], {}).pipe(gulp.dest('dist/browser/test'));
 
   gulp.src([
     'src/R/**/*.R'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist/package/R'));
+  ], {}).pipe(gulp.dest('dist/package/R'));
 
+  var rename = require('gulp-rename');
   gulp.src('htmlwidget.yaml')
     .pipe(rename(widgetName + '.yaml'))
     .pipe(gulp.dest('dist/package/inst/htmlwidgets/'));
@@ -154,8 +145,8 @@ gulp.task('watch', ['connect'], function () {
 
 });
 
-//clean doesn't finish before next task ..
-//gulp.task('build', ['clean', 'wiredep', 'images', 'fonts', 'styles', 'copy'], function () {
+//@TODO clean doesn't finish before next task ..
+//gulp.task('build', ['clean', 'compile-coffee', 'images', 'less', 'copy'], function () {
 gulp.task('build', ['compile-coffee', 'images', 'less', 'copy'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });

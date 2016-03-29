@@ -72,7 +72,7 @@
       "height": 50
     },
     {
-      "name": "Multiple Image Minimal Example",
+      "name": "Multiple Image Example - Minimal Config",
       "description" : [
         "This demonstrates a minimal invocation of the widget with multiple images"
       ],
@@ -82,6 +82,27 @@
         "text-overlay": false,
         "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
         "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+      },
+      "width": 400,
+      "height": 400
+    },
+    {
+      "name": "Multiple Image Example - Text Header and Footer",
+      "description" : [
+        "This demonstrates the use of header and footer text"
+      ],
+      "percentage": 0.8,
+      "settings": {
+        "numImages": 3,
+        "text-overlay": false,
+        "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+        "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+        "text-header": "Big header",
+        "text-footer": "Big footer",
+        "font-family": "verdana",
+        "font-weight": "900",
+        "font-size": "24px",
+        "font-color": "blue"
       },
       "width": 400,
       "height": 400

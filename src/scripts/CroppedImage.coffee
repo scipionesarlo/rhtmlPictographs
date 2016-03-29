@@ -35,7 +35,6 @@ HTMLWidgets.widget
       throw new Error "percentage must be <= 1" unless input.percentage <= 1
 
       input['numImages'] = 1 unless input['numImages']?
-      input['numRows'] = 1 unless input['numRows']?
       input['direction'] = 'horizontal' unless input['direction']?
       input['text-overlay'] = true unless input['text-overlay']?
       input['font-family'] = 'Verdana,sans-serif' unless input['font-family']?
@@ -83,6 +82,9 @@ HTMLWidgets.widget
       .bands()
       .size [instance.width, instance.height]
       .padding([0.1, 0.1]); #@TODO control padding ?
+
+    gridLayout.rows(input['numRows']) if input['numRows']?
+    gridLayout.cols(input['numCols']) if input['numCols']?
 
     rootElement = if _.has(el, 'length') then el[0] else el
 

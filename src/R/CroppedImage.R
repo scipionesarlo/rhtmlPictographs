@@ -13,7 +13,8 @@
 #' @param settingsJsonString: valid JSON string containing the following params
 #'   - direction: ("horizontal"|"vertical") - default horizontal. Indicates direction of cropping
 #'   - numImages: integer - default 1. The number of images to display
-#'   - (todo) numRows: integer - default 1. The number of rows in the grid. Must be <= numImages
+#'   - numRows: integer - default unset. The number of rows in the grid. Must be <= numImages
+#'   - numCols: integer - default unset. The number of cols in the grid. Must be <= numImages
 #'   - baseImageUrl: URL - required. The URL (including http://) of baseImage
 #'   - variableImageUrl: URL - required. The URL (including http://) of variableImageUrl
 #'   - text-overlay: (true|false) - default true. true to show text, false to hide text. By default text is <percentage>%

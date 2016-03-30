@@ -46,10 +46,8 @@ The signature definition is documented in the main [R file](src/R/CroppedImage.R
 4. Pie chart (radians) support
 5. Multiple image substitute support
 7. table of infographic support
-1. Lower and Upper Text Banners
 2. Customisable multi image gutters (inner padding)
 3. Customisable multi image h/v alignmnent
-8. Full port from bower to node_modules
 
 # Issues
 

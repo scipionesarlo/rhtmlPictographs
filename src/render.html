@@ -9,7 +9,9 @@
     <script src="external/d3.min.js"></script>
     <script src="external/d3-grid.js"></script>
 
+    <a href="/" class="prev-link" style="display:none">Prev</a>
     <a href="/">Back to Examples</a>
+    <a href="/" class="next-link" style="display:none">Next</a>
     <h2 class="name" style="font-family:verdana"></h2>
 
     <div class="scenario" style="font-weight:600;font-family:verdana;padding-left:20px;"></div>
@@ -52,10 +54,20 @@
       $(document).ready( function() {
         console.log("Document ready. Fetching scenarios");
 
+
         $.ajax('./test/scenarios.json').done(function (response) {
           console.log("Scenario retrieved. Instantiating captured widget");
 
           scenarioIndex = getQueryVariable('index');
+          if (scenarioIndex > 0) {
+            $('.prev-link').attr('href', 'render.html?index=' + (parseInt(scenarioIndex) - 1))
+              .css('display', 'inline-block');
+          }
+          if (scenarioIndex < response.scenarios.length - 1) {
+            $('.next-link').attr('href', 'render.html?index=' + (parseInt(scenarioIndex) + 1))
+              .css('display', 'inline-block');
+          }
+
           scenario = response.scenarios[scenarioIndex];
 
           $('.name').text(scenario.name);
@@ -72,8 +84,7 @@
           widgetInstance = myWidgetDefinition.initialize($('.content-window'),scenario.width,scenario.height);
           params = {
             percentage: scenario.percentage,
-            //@TODO this demonstrates how silly it is to require a JSON string ...
-            settingsJsonString: JSON.stringify(scenario.settings)
+            settingsJsonString: scenario.settings
           };
           myWidgetDefinition.renderValue($('.content-window'), params, widgetInstance);
 

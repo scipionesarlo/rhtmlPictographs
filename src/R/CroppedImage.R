@@ -8,8 +8,8 @@
 #' A text overlay contianing the "percentage fill" can be optionally displayed as well.
 #'
 #' @param percentage: numeric between 0 and 1
-#' @param width: positive numeric representing desired width of widget
-#' @param height: positive numeric representing desired height of widget
+#' @param width: positive numeric representing desired width of graphic
+#' @param height: positive numeric representing desired height of graphic
 #' @param settingsJsonString: valid JSON string containing the following params
 #'   - direction: ("horizontal"|"vertical") - default horizontal. Indicates direction of cropping
 #'   - numImages: integer - default 1. The number of images to display
@@ -17,12 +17,15 @@
 #'   - numCols: integer - default unset. The number of cols in the grid. Must be <= numImages
 #'   - baseImageUrl: URL - required. The URL (including http://) of baseImage
 #'   - variableImageUrl: URL - required. The URL (including http://) of variableImageUrl
-#'   - text-overlay: (true|false) - default true. true to show text, false to hide text. By default text is <percentage>%
-#'   - text-override: string - optional. override the <percentage>% default text
+#'   - background-color: string - default unset. Set a background color under both images
+#'   - text-overlay: - string - default unset. A string to display overlaid over the center of the graphic. If string set to 'percentage' then the numeric percentage will be displayed
+#'   - text-header: string - default unset. Text to display above graphic
+#'   - text-override: string - optional. Text to display below graphic
 #'   - font-family: css - optional. Controls font. See : https://developer.mozilla.org/en/docs/Web/CSS/font-family
 #'   - font-weight: css - optional. Controls font thickness. See : https://developer.mozilla.org/en/docs/Web/CSS/font-weight
 #'   - font-size: css - optional. Controls font size. See : https://developer.mozilla.org/en/docs/Web/CSS/font-size
 #'   - font-color: css - optional. Controls font color. Note this maps to the css 'color' property. See : https://developer.mozilla.org/en/docs/Web/CSS/color
+#'   - tooltip: string - optional. A string to display on mouse hover over the graphic
 #'
 #' @examples
 #'
@@ -30,11 +33,13 @@
 #' CroppedImage(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 #'
 #' single horizontally cropped image - fully customized
-#' CroppedImage(0.66, 400, 400, '{"direction": "vertical", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": true, "text-override": "customizable!", "font-family": "verdana", "font-weight": "900", "font-size": "32px", "font-color": "magenta"}')
+#' CroppedImage(0.66, 400, 400, '{"direction": "vertical", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": "Heaps customizable!", "background-color": "green", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "32px", "font-color": "magenta", "tooltip": "hover text!"}')
 #'
 #' single horizontally cropped image - minimal settings
 #' CroppedImage(0.66, 400, 400, '{"numImages": 3, "text-overlay": false, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 #'
+#' multiple cropped image graphic
+#' CroppedImage(0.8, 400, 400, '{"numImages": 3, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
 #' @author Kyle Zeeuwen <kyle.zeeuwen@gmail.com>
 #'
 #' @source https://github.com/NumbersInternational/htmlwidgets-croppedimage

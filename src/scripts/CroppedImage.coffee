@@ -18,7 +18,11 @@ HTMLWidgets.widget
       input = null
 
       try
-        input = JSON.parse params.settingsJsonString
+        if _.isString params.settingsJsonString
+          input = JSON.parse params.settingsJsonString
+        else
+          input = params.settingsJsonString
+
         input.percentage = params.percentage
       catch err
         msg =  "CroppedImage HTMLWidget error : Cannot parse 'settingsJsonString'"
@@ -36,7 +40,6 @@ HTMLWidgets.widget
 
       input['numImages'] = 1 unless input['numImages']?
       input['direction'] = 'horizontal' unless input['direction']?
-      input['text-overlay'] = true unless input['text-overlay']?
       input['font-family'] = 'Verdana,sans-serif' unless input['font-family']?
       input['font-weight'] = '900' unless input['font-weight']?
       input['font-size'] = '20px' unless input['font-size']?
@@ -104,6 +107,13 @@ HTMLWidgets.widget
         .attr "transform", (d) ->
           return "translate(" + d.x + "," + d.y + ")"
 
+    enteringLeafNodes.append("svg:rect")
+      .attr 'width', gridLayout.nodeSize()[0]
+      .attr 'height', gridLayout.nodeSize()[1]
+      .attr 'class', 'background-rect'
+      .attr 'fill', input['background-color'] || 'none'
+
+
     enteringLeafNodes.append("svg:image")
       .attr 'width', gridLayout.nodeSize()[0]
       .attr 'height', gridLayout.nodeSize()[1]
@@ -134,15 +144,23 @@ HTMLWidgets.widget
       .attr 'xlink:href', input.variableImageUrl
       .attr 'class', 'variable-image'
 
+    if input['tooltip']
+      enteringLeafNodes.append("svg:title")
+        .text input['tooltip']
+
     if input['text-overlay']
-      displayText = if input['text-override'] then input['text-override'] else "#{(100 * input.percentage).toFixed(0)}%"
+      displayText = if input['text-overlay'].match(/^percentage$/) then "#{(100 * input.percentage).toFixed(0)}%" else input['text-overlay']
 
       textOverlay = enteringLeafNodes.append("svg:text")
         .attr 'x', (d) -> gridLayout.nodeSize()[0] / 2
         .attr 'y', (d) -> gridLayout.nodeSize()[1] / 2
         .style 'text-anchor', 'middle'
+        #alignment-baseline and dominant-baseline should do same thing but are both may be necessary for browser compatabilitu
+        .style 'alignment-baseline', 'central'
+        .style 'dominant-baseline', 'central'
         .attr 'class', 'text-overlay'
         .text displayText
+
 
       textOverlay.attr('fill', input['font-color']) if _.has input, 'font-color'
       for cssAttribute in ['font-family', 'font-size', 'font-weight']

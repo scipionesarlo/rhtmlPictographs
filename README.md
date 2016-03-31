@@ -41,17 +41,16 @@ The signature definition is documented in the main [R file](src/R/CroppedImage.R
 # Todo
 
 1. local image support
-2. Go full JS class
-3. Resize support
-4. Pie chart (radians) support
-5. Multiple image substitute support
-7. table of infographic support
-2. Customisable multi image gutters (inner padding)
-3. Customisable multi image h/v alignmnent
+1. Go full JS class
+1. Resize support
+1. Pie chart (radians) support
+1. Multiple image substitute support
+1. table of infographic support
+1. Customisable multi image gutters (inner padding)
+1. Customisable multi image h/v alignmnent
 
 # Issues
 
-1. Vertical alignment of text overlay is slightly off (likely just a missing svg style setting).
-2. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
+1. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
 
 

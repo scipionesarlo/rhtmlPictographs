@@ -16,7 +16,7 @@ gulp.task('less', function () {
   return gulp.src('src/styles/**/*.less')
     .pipe(less({}))
     .pipe(gulp.dest('dist/browser/styles'))
-    .pipe(gulp.dest('dist/package/inst/htmlwidgets/lib/style'));
+    .pipe(gulp.dest('inst/htmlwidgets/lib/style'));
 });
 
 gulp.task('compile-coffee', function () {
@@ -25,7 +25,7 @@ gulp.task('compile-coffee', function () {
   gulp.src('src/scripts/**/*.coffee')
     .pipe(gulp_coffee({ bare: true }))
     .pipe(gulp.dest('dist/browser/scripts'))
-    .pipe(gulp.dest('dist/package/inst/htmlwidgets/'));
+    .pipe(gulp.dest('inst/htmlwidgets/'));
 });
 
 
@@ -49,48 +49,39 @@ gulp.task('copy', function () {
 
   gulp.src([
     'src/R/**/*.R'
-  ], {}).pipe(gulp.dest('dist/package/R'));
+  ], {}).pipe(gulp.dest('R'));
 
   var rename = require('gulp-rename');
   gulp.src('htmlwidget.yaml')
     .pipe(rename(widgetName + '.yaml'))
-    .pipe(gulp.dest('dist/package/inst/htmlwidgets/'));
-
-  gulp.src(['DESCRIPTION', 'NAMESPACE'])
-    .pipe(gulp.dest('dist/package/'));
-
-  gulp.src([
-    'man/**/*'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist/package/man'));
+    .pipe(gulp.dest('inst/htmlwidgets/'));
 
   var extLibs = [
     {
       src: 'node_modules/lodash/lodash.min.js',
       dest: [
-        'dist/package/inst/htmlwidgets/lib/lodash-4.6.1/',
+        'inst/htmlwidgets/lib/lodash-4.6.1/',
         'dist/browser/external/'
       ]
     },
     {
       src: 'node_modules/jquery/dist/jquery.min.js',
       dest: [
-        'dist/package/inst/htmlwidgets/lib/jquery-2.2.2/',
+        'inst/htmlwidgets/lib/jquery-2.2.2/',
         'dist/browser/external/'
       ]
     },
     {
       src: 'node_modules/d3/d3.min.js',
       dest: [
-        'dist/package/inst/htmlwidgets/lib/d3-3.5.16/',
+        'inst/htmlwidgets/lib/d3-3.5.16/',
         'dist/browser/external/'
       ]
     },
     {
       src: 'node_modules/d3-grid/d3-grid.js',
       dest: [
-        'dist/package/inst/htmlwidgets/lib/d3-grid-0.1.1/',
+        'inst/htmlwidgets/lib/d3-grid-0.1.1/',
         'dist/browser/external/'
       ]
     }

@@ -1,0 +1,179 @@
+'use strict';
+HTMLWidgets.widget({
+  name: 'CroppedImage',
+  type: 'output',
+  resize: function(el, width, height, instance) {
+    return console.log('resize not implemented');
+  },
+  initialize: function(el, width, height) {
+    return {
+      width: width,
+      height: height
+    };
+  },
+  renderValue: function(el, params, instance) {
+    var addTextBanner, cssAttribute, d3Data, displayText, enteringLeafNodes, generateClip, generateDataArray, gridLayout, i, input, len, normalizeInput, ref, results, rootElement, svg, textOverlay;
+    normalizeInput = function(params) {
+      var err, error, input, msg;
+      input = null;
+      try {
+        if (_.isString(params.settingsJsonString)) {
+          input = JSON.parse(params.settingsJsonString);
+        } else {
+          input = params.settingsJsonString;
+        }
+        input.percentage = params.percentage;
+      } catch (error) {
+        err = error;
+        msg = "CroppedImage HTMLWidget error : Cannot parse 'settingsJsonString'";
+        console.error(msg);
+        throw new Error(err);
+      }
+      if (input.baseImageUrl == null) {
+        throw new Error("Must specify 'baseImageUrl'");
+      }
+      if (input.variableImageUrl == null) {
+        throw new Error("Must specify 'variableImageUrl'");
+      }
+      if (input.percentage == null) {
+        throw new Error("Must specify 'percent'");
+      }
+      input.percentage = parseFloat(input.percentage);
+      if (_.isNaN(input.percentage)) {
+        throw new Error("percentage must be a number");
+      }
+      if (!(input.percentage >= 0)) {
+        throw new Error("percentage must be >= 0");
+      }
+      if (!(input.percentage <= 1)) {
+        throw new Error("percentage must be <= 1");
+      }
+      if (input['numImages'] == null) {
+        input['numImages'] = 1;
+      }
+      if (input['direction'] == null) {
+        input['direction'] = 'horizontal';
+      }
+      if (input['font-family'] == null) {
+        input['font-family'] = 'Verdana,sans-serif';
+      }
+      if (input['font-weight'] == null) {
+        input['font-weight'] = '900';
+      }
+      if (input['font-size'] == null) {
+        input['font-size'] = '20px';
+      }
+      if (input['font-color'] == null) {
+        input['font-color'] = 'white';
+      }
+      return input;
+    };
+    generateClip = function(input) {
+      var x;
+      if (input.direction === 'horizontal') {
+        x = input.percentage * instance.width;
+        return "rect(auto, " + x + "px, auto, auto)";
+      } else if (input.direction === 'vertical') {
+        x = instance.height - input.percentage * instance.height;
+        return "rect(" + x + "px, auto, auto, auto)";
+      } else {
+        throw new Error("Invalid direction: '" + input.direction + "'");
+      }
+    };
+    generateDataArray = function(percentage, numImages) {
+      var d3Data, i, num, ref, totalArea;
+      d3Data = [];
+      totalArea = percentage * numImages;
+      for (num = i = 1, ref = numImages; 1 <= ref ? i <= ref : i >= ref; num = 1 <= ref ? ++i : --i) {
+        percentage = Math.min(1, Math.max(0, 1 + totalArea - num));
+        d3Data.push({
+          percentage: percentage
+        });
+      }
+      return d3Data;
+    };
+    addTextBanner = function(el, className, text, args) {
+      var bannerContainer, cssAttribute, i, len, ref;
+      bannerContainer = $("<div class=\"" + className + "\">").css('width', instance.width).css('text-align', 'center').html(text);
+      if (_.has(args, 'font-color')) {
+        bannerContainer.css('color', args['font-color']);
+      }
+      ref = ['font-family', 'font-size', 'font-weight'];
+      for (i = 0, len = ref.length; i < len; i++) {
+        cssAttribute = ref[i];
+        if (_.has(args, cssAttribute)) {
+          bannerContainer.css(cssAttribute, args[cssAttribute]);
+        }
+      }
+      return $(el).append(bannerContainer);
+    };
+    input = normalizeInput(params);
+    d3Data = generateDataArray(input.percentage, input.numImages);
+    gridLayout = d3.layout.grid().bands().size([instance.width, instance.height]).padding([0.1, 0.1]);
+    if (input['numRows'] != null) {
+      gridLayout.rows(input['numRows']);
+    }
+    if (input['numCols'] != null) {
+      gridLayout.cols(input['numCols']);
+    }
+    rootElement = _.has(el, 'length') ? el[0] : el;
+    if (input['text-header'] != null) {
+      addTextBanner(rootElement, 'header-container', input['text-header'], input);
+    }
+    svg = d3.select(rootElement).append("svg").attr({
+      'width': instance.width
+    }).attr({
+      'height': instance.height
+    });
+    if (input['text-footer'] != null) {
+      addTextBanner(rootElement, 'footer-container', input['text-footer'], input);
+    }
+    enteringLeafNodes = svg.selectAll(".node").data(gridLayout(d3Data)).enter().append("g").attr("class", "node").attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+    enteringLeafNodes.append("svg:rect").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('class', 'background-rect').attr('fill', input['background-color'] || 'none');
+    enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('xlink:href', input.baseImageUrl).attr('class', 'base-image');
+    enteringLeafNodes.append("clipPath").attr("id", "my-clip").append("rect").attr("x", 0).attr("y", function(d) {
+      if (input.direction === 'horizontal') {
+        return 0;
+      }
+      return gridLayout.nodeSize()[1] * (1 - d.percentage);
+    }).attr("width", function(d) {
+      if (input.direction === 'horizontal') {
+        return gridLayout.nodeSize()[0] * d.percentage;
+      }
+      return gridLayout.nodeSize()[0];
+    }).attr("height", function(d) {
+      if (input.direction === 'vertical') {
+        return gridLayout.nodeSize()[1] * d.percentage;
+      }
+      return gridLayout.nodeSize()[1];
+    });
+    enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('clip-path', 'url(#my-clip)').attr('xlink:href', input.variableImageUrl).attr('class', 'variable-image');
+    if (input['tooltip']) {
+      enteringLeafNodes.append("svg:title").text(input['tooltip']);
+    }
+    if (input['text-overlay']) {
+      displayText = input['text-overlay'].match(/^percentage$/) ? ((100 * input.percentage).toFixed(0)) + "%" : input['text-overlay'];
+      textOverlay = enteringLeafNodes.append("svg:text").attr('x', function(d) {
+        return gridLayout.nodeSize()[0] / 2;
+      }).attr('y', function(d) {
+        return gridLayout.nodeSize()[1] / 2;
+      }).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').attr('class', 'text-overlay').text(displayText);
+      if (_.has(input, 'font-color')) {
+        textOverlay.attr('fill', input['font-color']);
+      }
+      ref = ['font-family', 'font-size', 'font-weight'];
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        cssAttribute = ref[i];
+        if (_.has(input, cssAttribute)) {
+          results.push(textOverlay.attr(cssAttribute, input[cssAttribute]));
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    }
+  }
+});

@@ -13,7 +13,7 @@
     generateExampleLinks = function() {
       var exampleList = $('.example-list');
 
-      $.ajax('./test/scenarios.json').done(function (response) {
+      $.ajax('./resources/data/scenarios.json').done(function (response) {
         _.forEach(response.scenarios, function (example, index) {
           var listItem = $('<li>');
           var link = "render.html?index=" + index;
@@ -25,9 +25,9 @@
 
         });
       }).fail( function(error) {
-        console.error("Download of ./test/scenarios.json failed. Probably invalid JSON.");
+        console.error("Download of ./resources/data/scenarios.json failed. Probably invalid JSON.");
         console.error(error);
-        $('body').append($('<div>').text("Failure to download/parse ./test/scenarios.json (probably invalid JSON). See dev tools console for error logging."));
+        $('body').append($('<div>').text("Failure to download/parse ./resources/data/scenarios.json (probably invalid JSON). See dev tools console for error logging."));
       });
     }
 

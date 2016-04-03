@@ -1,4 +1,5 @@
-An R HTMLWidget that displays a single cropped image infographic
+An R HTMLWidget that can generate single image graphics, mutli image graphics, or a table of single/multi image graphics.
+
 # Installation
 
 Prerequisites:
@@ -17,9 +18,9 @@ Prerequisites: Chrome installed (tested on OSX only, should work in Windows/Linu
 
 `gulp serve`
 
-This should load a browser window, where a list of links to examples will be displayed. Choose an example or add another example to [R file](src/R/index.html). When changes to the [widget definition](src/scripts/CroppedImage.coffee) or any other file are saved, the browser will automatically reload.
+This should load a browser window, where a list of links to examples will be displayed. Choose an example or add another example to [R file](src/R/index.html). When changes to the [widget definition](src/scripts/rhtmlPictographs.coffee) or any other file are saved, the browser will automatically reload.
 
-# To test locally in r context
+# To install in R
 
 Prerequisite: `gulp build`
 
@@ -27,31 +28,32 @@ Run this sequence in R:
 
 ```
 library('devtools')
-install('dist/package')
-source('dist/package/R/CroppedImage.r')
-CroppedImage(0.33, 400, 400, '{"baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
+install_github('NumbersInternational/rhtmlPictographs')
 ```
 
 # R Usage
 
-The actual R package - the project deliverable - is automatically generated in the `dist/package` directory when you run `gulp build`.
+Try building a single image graphic:
 
-The signature definition is documented in the main [R file](src/R/CroppedImage.R)
+```
+rhtmlPictographs::graphic(0.33, 400, 400, '{"baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
+```
+
+The method signatures and their definitions are detailed in the main [R file](src/R/rhtmlPictographs.R)
 
 # Todo
 
 1. local image support
-2. Go full JS class
-3. Resize support
-4. Pie chart (radians) support
-5. Multiple image substitute support
-7. table of infographic support
-2. Customisable multi image gutters (inner padding)
-3. Customisable multi image h/v alignmnent
+1. Go full JS class
+1. Resize support
+1. Pie chart (radians) support
+1. Multiple image substitute support
+1. table of infographic support
+1. Customisable multi image gutters (inner padding)
+1. Customisable multi image h/v alignmnent
 
 # Issues
 
-1. Vertical alignment of text overlay is slightly off (likely just a missing svg style setting).
-2. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
+1. How does R / R Studio handle JS Errors (this code throws specific errors on invalid input)
 
 

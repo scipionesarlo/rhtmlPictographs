@@ -1,6 +1,6 @@
 'use strict';
 HTMLWidgets.widget({
-  name: 'CroppedImage',
+  name: 'rhtmlPictographs',
   type: 'output',
   resize: function(el, width, height, instance) {
     return console.log('resize not implemented');
@@ -12,9 +12,9 @@ HTMLWidgets.widget({
     };
   },
   renderValue: function(el, params, instance) {
-    var addTextBanner, cssAttribute, d3Data, displayText, enteringLeafNodes, generateClip, generateDataArray, gridLayout, i, input, len, normalizeInput, ref, results, rootElement, svg, textOverlay;
+    var addTextBanner, cssAttribute, d3Data, displayText, enteringLeafNodes, generateClip, generateDataArray, gridLayout, input, normalizeInput, rootElement, svg, textOverlay, _i, _len, _ref, _results;
     normalizeInput = function(params) {
-      var err, error, input, msg;
+      var err, input, msg;
       input = null;
       try {
         if (_.isString(params.settingsJsonString)) {
@@ -23,9 +23,9 @@ HTMLWidgets.widget({
           input = params.settingsJsonString;
         }
         input.percentage = params.percentage;
-      } catch (error) {
-        err = error;
-        msg = "CroppedImage HTMLWidget error : Cannot parse 'settingsJsonString'";
+      } catch (_error) {
+        err = _error;
+        msg = "rhtmlPictographs error : Cannot parse 'settingsJsonString'";
         console.error(msg);
         throw new Error(err);
       }
@@ -81,10 +81,10 @@ HTMLWidgets.widget({
       }
     };
     generateDataArray = function(percentage, numImages) {
-      var d3Data, i, num, ref, totalArea;
+      var d3Data, num, totalArea, _i;
       d3Data = [];
       totalArea = percentage * numImages;
-      for (num = i = 1, ref = numImages; 1 <= ref ? i <= ref : i >= ref; num = 1 <= ref ? ++i : --i) {
+      for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
         percentage = Math.min(1, Math.max(0, 1 + totalArea - num));
         d3Data.push({
           percentage: percentage
@@ -93,14 +93,14 @@ HTMLWidgets.widget({
       return d3Data;
     };
     addTextBanner = function(el, className, text, args) {
-      var bannerContainer, cssAttribute, i, len, ref;
+      var bannerContainer, cssAttribute, _i, _len, _ref;
       bannerContainer = $("<div class=\"" + className + "\">").css('width', instance.width).css('text-align', 'center').html(text);
       if (_.has(args, 'font-color')) {
         bannerContainer.css('color', args['font-color']);
       }
-      ref = ['font-family', 'font-size', 'font-weight'];
-      for (i = 0, len = ref.length; i < len; i++) {
-        cssAttribute = ref[i];
+      _ref = ['font-family', 'font-size', 'font-weight'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cssAttribute = _ref[_i];
         if (_.has(args, cssAttribute)) {
           bannerContainer.css(cssAttribute, args[cssAttribute]);
         }
@@ -154,7 +154,7 @@ HTMLWidgets.widget({
       enteringLeafNodes.append("svg:title").text(input['tooltip']);
     }
     if (input['text-overlay']) {
-      displayText = input['text-overlay'].match(/^percentage$/) ? ((100 * input.percentage).toFixed(0)) + "%" : input['text-overlay'];
+      displayText = input['text-overlay'].match(/^percentage$/) ? "" + ((100 * input.percentage).toFixed(0)) + "%" : input['text-overlay'];
       textOverlay = enteringLeafNodes.append("svg:text").attr('x', function(d) {
         return gridLayout.nodeSize()[0] / 2;
       }).attr('y', function(d) {
@@ -163,17 +163,17 @@ HTMLWidgets.widget({
       if (_.has(input, 'font-color')) {
         textOverlay.attr('fill', input['font-color']);
       }
-      ref = ['font-family', 'font-size', 'font-weight'];
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        cssAttribute = ref[i];
+      _ref = ['font-family', 'font-size', 'font-weight'];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cssAttribute = _ref[_i];
         if (_.has(input, cssAttribute)) {
-          results.push(textOverlay.attr(cssAttribute, input[cssAttribute]));
+          _results.push(textOverlay.attr(cssAttribute, input[cssAttribute]));
         } else {
-          results.push(void 0);
+          _results.push(void 0);
         }
       }
-      return results;
+      return _results;
     }
   }
 });

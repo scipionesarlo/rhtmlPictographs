@@ -1,5 +1,5 @@
 (function() {
-  var DEBUG = true;
+  var DEBUG = false;
 
   d3.layout.grid = function() {
     var mode = "equal",
@@ -18,7 +18,7 @@
     }
 
     function _distributeEqually(nodes) {
-      var i = -1,
+      var i = -1, 
           n = nodes.length,
           _cols = cols ? cols : 0,
           _rows = rows ? rows : 0,
@@ -51,20 +51,13 @@
         actualSize[1] = y(1);
       }
 
-      if (DEBUG) console.log('specified cols/rows', cols, rows);
-      if (DEBUG) console.log('computed cols/rows', _cols, _rows);
+      if (DEBUG) console.log('cols/rows', _cols, _rows);
 
       while (++i < n) {
-        if (rows) {
-          row = i % _rows;
-          col = Math.floor(i / _rows);
-        }
-        else {
-          col = i % _cols;
-          row = Math.floor(i / _cols);
-        }
+        col = i % _cols;
+        row = Math.floor(i / _cols);
 
-        if (DEBUG) console.log("i: ", i, "row: ", row, "col: ", col);
+        if (DEBUG) console.log(i, col, row);
 
         nodes[i].x = x(col);
         nodes[i].y = y(row);

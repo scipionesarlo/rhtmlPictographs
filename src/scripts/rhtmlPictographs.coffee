@@ -1,7 +1,7 @@
 'use strict'
 
 HTMLWidgets.widget
-  name: 'CroppedImage'
+  name: 'rhtmlPictographs'
   type: 'output'
   resize: (el, width, height, instance) ->
     console.log 'resize not implemented'
@@ -25,7 +25,7 @@ HTMLWidgets.widget
 
         input.percentage = params.percentage
       catch err
-        msg =  "CroppedImage HTMLWidget error : Cannot parse 'settingsJsonString'"
+        msg =  "rhtmlPictographs error : Cannot parse 'settingsJsonString'"
         console.error msg
         throw new Error err
 

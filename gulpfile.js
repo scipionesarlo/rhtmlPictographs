@@ -1,6 +1,6 @@
 'use strict';
 
-var widgetName = 'CroppedImage';
+var widgetName = 'rhtmlPictographs';
 
 var _ = require('lodash');
 var gulp = require('gulp');
@@ -9,6 +9,7 @@ var $ = require('gulp-load-plugins')();
 gulp.task('clean', function(cb) {
   var fs = require('fs-extra');
   fs.remove('dist', cb);
+  fs.remove('inst', cb);
 });
 
 gulp.task('less', function () {
@@ -28,7 +29,6 @@ gulp.task('compile-coffee', function () {
     .pipe(gulp.dest('inst/htmlwidgets/'));
 });
 
-
 gulp.task('images', function () {
   return gulp.src('src/images/**/*')
     .pipe($.cache($.imagemin({
@@ -44,12 +44,8 @@ gulp.task('copy', function () {
   ], {}).pipe(gulp.dest('dist/browser'));
 
   gulp.src([
-    'test/**/*.json'
-  ], {}).pipe(gulp.dest('dist/browser/test'));
-
-  gulp.src([
-    'src/R/**/*.R'
-  ], {}).pipe(gulp.dest('R'));
+    'resources/**/*.json'
+  ], {}).pipe(gulp.dest('dist/browser/resources'));
 
   var rename = require('gulp-rename');
   gulp.src('htmlwidget.yaml')
@@ -128,7 +124,7 @@ gulp.task('watch', ['connect'], function () {
     'dist/browser/**/*',
   ]).on('change', $.livereload.changed);
 
-  gulp.watch('test/**/*.json', ['copy']);
+  gulp.watch('resources/**/*.json', ['copy']);
   gulp.watch('src/**/*.html', ['copy']);
   gulp.watch('src/images/**/*', ['images']);
   gulp.watch('src/styles/**/*.less', ['less']);

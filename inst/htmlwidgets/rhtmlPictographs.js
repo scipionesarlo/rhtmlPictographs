@@ -29,9 +29,6 @@ HTMLWidgets.widget({
         console.error(msg);
         throw new Error(err);
       }
-      if (input.baseImageUrl == null) {
-        throw new Error("Must specify 'baseImageUrl'");
-      }
       if (input.variableImageUrl == null) {
         throw new Error("Must specify 'variableImageUrl'");
       }
@@ -132,7 +129,9 @@ HTMLWidgets.widget({
       return "translate(" + d.x + "," + d.y + ")";
     });
     enteringLeafNodes.append("svg:rect").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('class', 'background-rect').attr('fill', input['background-color'] || 'none');
-    enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('xlink:href', input.baseImageUrl).attr('class', 'base-image');
+    if (input.baseImageUrl != null) {
+      enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('xlink:href', input.baseImageUrl).attr('class', 'base-image');
+    }
     enteringLeafNodes.append("clipPath").attr("id", "my-clip").append("rect").attr("x", 0).attr("y", function(d) {
       if (input.direction === 'horizontal') {
         return 0;

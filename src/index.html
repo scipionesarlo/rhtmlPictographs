@@ -14,14 +14,27 @@
       var exampleList = $('.example-list');
 
       $.ajax('./resources/data/scenarios.json').done(function (response) {
-        _.forEach(response.scenarios, function (example, index) {
-          var listItem = $('<li>');
-          var link = "render.html?index=" + index;
+        _.forEach(response.features, function (feature, featureIndex) {
+          var feature = response.features[featureIndex];
+          var featureItem = $('<li>');
+          var featureTitle = $('<h2>').html(feature.name);
+          featureItem.append(featureTitle);
 
-          var anchor = $('<a>').html(example.name)
-            .attr('href', link)
+          var featureList = $('<ul>');
 
-          exampleList.append(listItem.append(anchor));
+          _.forEach(feature.scenarios, function (scenario, scenarioIndex) {
+            var listItem = $('<li>');
+            var link = "render.html?featureIndex=" + featureIndex + "&scenarioIndex=" + scenarioIndex;
+
+            var scenario = feature.scenarios[scenarioIndex];
+            var anchor = $('<a>').html(scenario.name)
+              .attr('href', link)
+
+            featureList.append(listItem.append(anchor));
+
+          });
+
+          exampleList.append(featureItem.append(featureList));
 
         });
       }).fail( function(error) {

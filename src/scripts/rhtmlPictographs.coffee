@@ -29,7 +29,6 @@ HTMLWidgets.widget
         console.error msg
         throw new Error err
 
-      throw new Error "Must specify 'baseImageUrl'" unless input.baseImageUrl?
       throw new Error "Must specify 'variableImageUrl'" unless input.variableImageUrl?
 
       throw new Error "Must specify 'percent'" unless input.percentage?
@@ -113,12 +112,12 @@ HTMLWidgets.widget
       .attr 'class', 'background-rect'
       .attr 'fill', input['background-color'] || 'none'
 
-
-    enteringLeafNodes.append("svg:image")
-      .attr 'width', gridLayout.nodeSize()[0]
-      .attr 'height', gridLayout.nodeSize()[1]
-      .attr 'xlink:href', input.baseImageUrl
-      .attr 'class', 'base-image'
+    if input.baseImageUrl?
+      enteringLeafNodes.append("svg:image")
+        .attr 'width', gridLayout.nodeSize()[0]
+        .attr 'height', gridLayout.nodeSize()[1]
+        .attr 'xlink:href', input.baseImageUrl
+        .attr 'class', 'base-image'
 
     enteringLeafNodes.append("clipPath")
       .attr "id", "my-clip"

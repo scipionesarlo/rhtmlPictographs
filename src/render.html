@@ -58,17 +58,80 @@
         $.ajax('./resources/data/scenarios.json').done(function (response) {
           console.log("Scenario retrieved. Instantiating captured widget");
 
-          scenarioIndex = getQueryVariable('index');
-          if (scenarioIndex > 0) {
-            $('.prev-link').attr('href', 'render.html?index=' + (parseInt(scenarioIndex) - 1))
-              .css('display', 'inline-block');
-          }
-          if (scenarioIndex < response.scenarios.length - 1) {
-            $('.next-link').attr('href', 'render.html?index=' + (parseInt(scenarioIndex) + 1))
-              .css('display', 'inline-block');
+          var featureIndex = parseInt(getQueryVariable('featureIndex'));
+          var featureLength = response.features.length;
+          var feature = response.features[featureIndex];
+
+          var scenarioIndex = parseInt(getQueryVariable('scenarioIndex'));
+          var scenarioLength = feature.scenarios.length;
+          var scenario = feature.scenarios[scenarioIndex];
+
+          getNext = function() {
+            thereIsMoreScenarios = function () {
+              return (scenarioIndex + 1 < scenarioLength);
+            }
+
+            thereIsMoreFeatures = function () {
+              return (featureIndex + 1 < featureLength);
+            }
+
+            if (thereIsMoreScenarios()) {
+              return {
+                feature: featureIndex,
+                scenario: scenarioIndex + 1
+              }
+            }
+
+            else if (thereIsMoreFeatures()) {
+              return {
+                feature: featureIndex + 1,
+                scenario: 0
+              }
+            }
+
+            return null;
           }
 
-          scenario = response.scenarios[scenarioIndex];
+          getPrev = function() {
+            thereIsPreviousScenarios = function () {
+              return (scenarioIndex > 0);
+            }
+
+            thereIsPreviousFeatures = function () {
+              return (featureIndex > 0);
+            }
+
+            previousScenarioLength = function () {
+              response.features[featureIndex-1].length - 1;
+            }
+
+            if (thereIsPreviousScenarios()) {
+              return {
+                feature: featureIndex,
+                scenario: scenarioIndex - 1
+              }
+            }
+
+            else if (thereIsPreviousFeatures()) {
+              return {
+                feature: featureIndex - 1,
+                scenario: previousScenarioLength()
+              }
+            }
+
+            return null;
+          }
+
+          if (getPrev()) {
+            prev = getPrev();
+            link = 'render.html?featureIndex=' + prev.feature + '&scenarioIndex=' + prev.scenario;
+            $('.prev-link').attr('href', link).css('display', 'inline-block');          }
+
+          if (getNext()) {
+            next = getNext();
+            link = 'render.html?featureIndex=' + next.feature + '&scenarioIndex=' + next.scenario;
+            $('.next-link').attr('href', link).css('display', 'inline-block');
+          }
 
           $('.name').text(scenario.name);
           $('.percentage').text(scenario.percentage);

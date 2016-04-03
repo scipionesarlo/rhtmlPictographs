@@ -77,7 +77,7 @@ gulp.task('copy', function () {
     {
       src: 'node_modules/d3-grid/d3-grid.js',
       dest: [
-        'inst/htmlwidgets/lib/d3-grid-0.1.1/',
+        'inst/htmlwidgets/lib/d3-grid-0.1.2/',
         'dist/browser/external/'
       ]
     }

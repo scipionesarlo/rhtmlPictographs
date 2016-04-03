@@ -18,14 +18,13 @@
     }
 
     function _distributeEqually(nodes) {
-      var i = -1, 
+      var i = -1,
           n = nodes.length,
           _cols = cols ? cols : 0,
           _rows = rows ? rows : 0,
           col, row;
 
       // FIXME: make explicit rows/cols exclusive? Or find a smart way to deal with overflows (repeat?)
-      // FIXME: when rows are set, fill top-to-bottom (make test with 5 data points and 4 rows)
 
       if (_rows && !_cols) {
         _cols = Math.ceil(n / _rows)
@@ -51,13 +50,20 @@
         actualSize[1] = y(1);
       }
 
-      if (DEBUG) console.log('cols/rows', _cols, _rows);
+      if (DEBUG) console.log('specified cols/rows', cols, rows);
+      if (DEBUG) console.log('computed cols/rows', _cols, _rows);
 
       while (++i < n) {
-        col = i % _cols;
-        row = Math.floor(i / _cols);
+        if (rows) {
+          row = i % _rows;
+          col = Math.floor(i / _rows);
+        }
+        else {
+          col = i % _cols;
+          row = Math.floor(i / _cols);
+        }
 
-        if (DEBUG) console.log(i, col, row);
+        if (DEBUG) console.log("i: ", i, "row: ", row, "col: ", col);
 
         nodes[i].x = x(col);
         nodes[i].y = y(row);

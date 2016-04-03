@@ -184,23 +184,7 @@
           },
           "width": 100,
           "height": 400
-        },
-        {
-          "name": "Multiple Image Example - fill top-to-bottom Bug",
-          "description" : [
-            "This demonstrates a known issue with d3-grid. We specify 4 rows but only get 3. Tabernac!"
-          ],
-          "percentage": 0.46,
-          "settings": {
-            "numImages": 5,
-            "numRows": 4,
-            "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 100,
-          "height": 400
         }
-
       ]
     }
   ]

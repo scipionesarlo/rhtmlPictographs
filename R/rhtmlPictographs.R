@@ -42,6 +42,10 @@
 #'
 #' multiple cropped image graphic
 #' rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 3, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
+#'
+#' multiple cropped image , fixed row number graphic
+#' rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 22, "numRows": 6, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
+#'
 #' @author Kyle Zeeuwen <kyle.zeeuwen@gmail.com>
 #'
 #' @source https://github.com/NumbersInternational/htmlwidgets-croppedimage

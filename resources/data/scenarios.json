@@ -186,6 +186,53 @@
           "height": 400
         }
       ]
+    },
+    {
+      "name": "Multi Stick Man Graphic",
+      "scenarios": [
+        {
+          "name": "2 x 50 Stickmans - png",
+          "description" : [
+            "Some stick man - png"
+          ],
+          "percentage": 1,
+          "settings": {
+            "numImages": 100,
+            "numRows": 2,
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
+          },
+          "width": 800,
+          "height": 100
+        },
+        {
+          "name": "2 x 50 Stickmans - svg",
+          "description" : [
+            "Some stick man - svg"
+          ],
+          "percentage": 1,
+          "settings": {
+            "numImages": 100,
+            "numRows": 2,
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg"
+          },
+          "width": 800,
+          "height": 100
+        },
+        {
+          "name": "HUUUGE 2 x 50 Stickmans - svg",
+          "description" : [
+            "Some stick man - svg"
+          ],
+          "percentage": 1,
+          "settings": {
+            "numImages": 100,
+            "numRows": 2,
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg"
+          },
+          "width": 8000,
+          "height": 1000
+        }
+      ]
     }
   ]
 }

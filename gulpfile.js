@@ -14,7 +14,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('less', function () {
   var less = require('gulp-less');
-  return gulp.src('src/styles/**/*.less')
+  return gulp.src('theSrc/styles/**/*.less')
     .pipe(less({}))
     .pipe(gulp.dest('dist/browser/styles'))
     .pipe(gulp.dest('inst/htmlwidgets/lib/style'));
@@ -23,14 +23,14 @@ gulp.task('less', function () {
 gulp.task('compile-coffee', function () {
   var gulp_coffee = require("gulp-coffee");
 
-  gulp.src('src/scripts/**/*.coffee')
+  gulp.src('theSrc/scripts/**/*.coffee')
     .pipe(gulp_coffee({ bare: true }))
     .pipe(gulp.dest('dist/browser/scripts'))
     .pipe(gulp.dest('inst/htmlwidgets/'));
 });
 
 gulp.task('images', function () {
-  return gulp.src('src/images/**/*')
+  return gulp.src('theSrc/images/**/*')
     .pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true
@@ -40,7 +40,7 @@ gulp.task('images', function () {
 
 gulp.task('copy', function () {
   gulp.src([
-    'src/**/*.html'
+    'theSrc/**/*.html'
   ], {}).pipe(gulp.dest('dist/browser'));
 
   gulp.src([
@@ -125,10 +125,10 @@ gulp.task('watch', ['connect'], function () {
   ]).on('change', $.livereload.changed);
 
   gulp.watch('resources/**/*.json', ['copy']);
-  gulp.watch('src/**/*.html', ['copy']);
-  gulp.watch('src/images/**/*', ['images']);
-  gulp.watch('src/styles/**/*.less', ['less']);
-  gulp.watch('src/scripts/**/*.coffee', ['compile-coffee']);
+  gulp.watch('theSrc/**/*.html', ['copy']);
+  gulp.watch('theSrc/images/**/*', ['images']);
+  gulp.watch('theSrc/styles/**/*.less', ['less']);
+  gulp.watch('theSrc/scripts/**/*.coffee', ['compile-coffee']);
 
 });
 

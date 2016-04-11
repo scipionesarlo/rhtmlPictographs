@@ -4,7 +4,9 @@ HTMLWidgets.widget
   name: 'rhtmlPictographs'
   type: 'output'
   resize: (el, width, height, instance) ->
-    console.log 'resize not implemented'
+    instance.width = width
+    instance.height = height
+    return null
 
   initialize: (el, width, height) ->
     #@TODO strip all em, px, etc from the width height - i am just using them for the ratio, as the SVG is 100% of its container anyway
@@ -29,7 +31,11 @@ HTMLWidgets.widget
       .attr 'width', '100%'
       .attr 'height', '100%'
 
-    $(instance.rootElement).append(anonSvg)
+    $(instance.rootElement)
+      .attr('style', '') #NB clear the existing style because it sets the container height and width, which I am (contentiously) overiding
+      .width("100%")
+      .height("100%")
+      .append(anonSvg)
 
     instance.outerSvg = d3.select('.rhtml-pictograph-outer-svg')
 
@@ -41,6 +47,7 @@ HTMLWidgets.widget
       document.getElementsByClassName("rhtml-pictograph-outer-svg")[0]
         .setAttribute 'preserveAspectRatio', input['preserveAspectRatio']
 
+    #@TODO remove duplicated text-header and text-footer handling
     if input['text-header']?
       instance.textHeader = instance.outerSvg.append('svg:text')
         .attr 'x', instance.initialWidth / 2 #NB /2 because its midpoint

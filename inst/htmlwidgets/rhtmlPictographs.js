@@ -3,7 +3,9 @@ HTMLWidgets.widget({
   name: 'rhtmlPictographs',
   type: 'output',
   resize: function(el, width, height, instance) {
-    return console.log('resize not implemented');
+    instance.width = width;
+    instance.height = height;
+    return null;
   },
   initialize: function(el, width, height) {
     return {
@@ -19,7 +21,7 @@ HTMLWidgets.widget({
     dimensions = this._computeDimensions(input, instance);
     instance.rootElement = _.has(el, 'length') ? el[0] : el;
     anonSvg = $("<svg class=\"rhtml-pictograph-outer-svg\">").attr('width', '100%').attr('height', '100%');
-    $(instance.rootElement).append(anonSvg);
+    $(instance.rootElement).attr('style', '').width("100%").height("100%").append(anonSvg);
     instance.outerSvg = d3.select('.rhtml-pictograph-outer-svg');
     document.getElementsByClassName("rhtml-pictograph-outer-svg")[0].setAttribute('viewBox', "0 0 " + instance.initialWidth + " " + instance.initialHeight);
     if (input['preserveAspectRatio'] != null) {

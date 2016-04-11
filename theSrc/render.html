@@ -24,16 +24,18 @@
       <pre style="padding-left:20px" class="settings"></pre>
     </div>
 
+
     <form id="resize-form" style="padding-top:10px" >
-      <label for="width-input">Width</label>
+      <label for="width-input">New Width:</label>
       <input type="text" id="width-input" class="width-input" value="200"></input>
-      <label for="height-input">Height</label>
+      <label for="height-input">New Height:</label>
       <input type="text" id="height-input" class="height-input" value="200"></input>
       <button class="resize-button">Resize</button>
     </form>
 
-    <div class="content-window" style="padding-top:10px"></div>
-
+    <div class="outer-wrapper" style="padding-top:10px">
+      <div class="content-window"></div>
+    </div>
 
     <!-- NB This script should be defined before rhtmlPictographs.js is loaded-->
     <script>
@@ -71,9 +73,11 @@
           width = $('#width-input').val();
           height = $('#height-input').val();
 
-          container = $('.content-window')
+          outerWrapper = $('.outer-wrapper')
             .css('width', width)
             .css('height', height)
+
+          container = $('.content-window')
 
           myWidgetDefinition.resize(container, width, height, myWidgetInstance);
 
@@ -168,14 +172,16 @@
           });
           $('.settings').text(JSON.stringify(scenario.settings, {}, 2));
 
+          outerWrapper = $('.outer-wrapper')
+          container = $('.content-window')
 
-          myWidgetInstance = myWidgetDefinition.initialize($('.content-window'),scenario.width,scenario.height);
+          myWidgetInstance = myWidgetDefinition.initialize(container,scenario.width,scenario.height);
           params = {
             percentage: scenario.percentage,
             settingsJsonString: scenario.settings
           };
 
-          container = $('.content-window')
+          outerWrapper
             .css('width', scenario.width)
             .css('height', scenario.height)
 

@@ -11,76 +11,130 @@
         nodeSize = false,
         bands = false,
         padding = [0, 0],
-        cols, rows;
+        desiredCols, desiredRows;
 
     function grid(nodes) {
       return layout(nodes);
     }
 
     function _distributeEqually(nodes) {
-      var i = -1,
-          n = nodes.length,
-          _cols = cols ? cols : 0,
-          _rows = rows ? rows : 0,
-          col, row;
+      var numCols = desiredCols ? desiredCols : 0;
+      var numRows = desiredRows ? desiredRows : 0;
+      var col;
+      var row;
 
-      // FIXME: make explicit rows/cols exclusive? Or find a smart way to deal with overflows (repeat?)
-
-      if (_rows && !_cols) {
-        _cols = Math.ceil(n / _rows)
-      } else {
-        _cols || (_cols = Math.ceil(Math.sqrt(n)));
-        _rows || (_rows = Math.ceil(n / _cols));
-      }
-
-      if (nodeSize) {
-        x.domain(d3.range(_cols)).range(d3.range(0, (size[0] + padding[0]) * _cols, size[0] + padding[0]));
-        y.domain(d3.range(_rows)).range(d3.range(0, (size[1] + padding[1]) * _rows, size[1] + padding[1]));
-        actualSize[0] = bands ? x(_cols - 1) + size[0] : x(_cols - 1);
-        actualSize[1] = bands ? y(_rows - 1) + size[1] : y(_rows - 1);
-      } else if (bands) {
-        x.domain(d3.range(_cols)).rangeBands([0, size[0]], padding[0], 0);
-        y.domain(d3.range(_rows)).rangeBands([0, size[1]], padding[1], 0);
-        actualSize[0] = x.rangeBand();
-        actualSize[1] = y.rangeBand();
-      } else {
-        x.domain(d3.range(_cols)).rangePoints([0, size[0]]);
-        y.domain(d3.range(_rows)).rangePoints([0, size[1]]);
-        actualSize[0] = x(1);
-        actualSize[1] = y(1);
-      }
-
-      if (DEBUG) console.log('specified cols/rows', cols, rows);
-      if (DEBUG) console.log('computed cols/rows', _cols, _rows);
-
-      while (++i < n) {
-        if (rows) {
-          row = i % _rows;
-          col = Math.floor(i / _rows);
+      function calcGridDimensions() {
+        if (numRows && !numCols) {
+          numCols = Math.ceil(nodes.length / numRows)
+        } else {
+          numCols || (numCols = Math.ceil(Math.sqrt(nodes.length)));
+          numRows || (numRows = Math.ceil(nodes.length / numCols));
         }
-        else {
-          col = i % _cols;
-          row = Math.floor(i / _cols);
+      }
+
+      function calcActualSize() {
+        if (nodeSize) {
+          x.domain(d3.range(numCols)).range(d3.range(0, (size[0] + padding[0]) * numCols, size[0] + padding[0]));
+          y.domain(d3.range(numRows)).range(d3.range(0, (size[1] + padding[1]) * numRows, size[1] + padding[1]));
+          actualSize[0] = bands ? x(numCols - 1) + size[0] : x(numCols - 1);
+          actualSize[1] = bands ? y(numRows - 1) + size[1] : y(numRows - 1);
+        } else if (bands) {
+          x.domain(d3.range(numCols)).rangeBands([0, size[0]], padding[0], 0);
+          y.domain(d3.range(numRows)).rangeBands([0, size[1]], padding[1], 0);
+          actualSize[0] = x.rangeBand();
+          actualSize[1] = y.rangeBand();
+        } else {
+          x.domain(d3.range(numCols)).rangePoints([0, size[0]]);
+          y.domain(d3.range(numRows)).rangePoints([0, size[1]]);
+          actualSize[0] = x(1);
+          actualSize[1] = y(1);
+        }
+      }
+
+      // layout left to right (vary cols), then top to bottom (vary rows)
+      // detect when we are assigning to a "gap" and skip gaps
+
+      function layoutNodes() {
+
+        var nextVacantSpot = { col: 0, row: 0 };
+        var numGaps = numRows * numCols - nodes.length;
+        var modulo = nodes.length % numRows;
+
+        console.log("numGaps:" + numGaps);
+        console.log("modulo:" + modulo);
+
+        var pickNextSpot = function() {
+
+          var advance = function() {
+            if (nextVacantSpot.col < numCols - 1) {
+              nextVacantSpot.col++;
+            }
+            else {
+              nextVacantSpot.row++;
+              nextVacantSpot.col = 0;
+            }
+          };
+
+          var isGap = function() {
+
+            if (numGaps == 0) {
+              return false;
+            }
+
+            if (!desiredRows && !desiredCols) {
+              return false;
+            }
+
+            //NB the layout is left-to-right then top-to-bottom, so gaps are not an issue if numCols specified
+            if (desiredRows) {
+              if (nextVacantSpot.col == numCols - 1) {
+                if (nextVacantSpot.row + 1 > modulo) {
+                  return true;
+                }
+              }
+            }
+
+            return false;
+          }
+
+          var runAwayBreaker = 0; //NB shouldn't happen but guard anyway
+          while (true) {
+            runAwayBreaker++;
+            advance();
+
+            if (!isGap()) {
+              break;
+            }
+
+            if (runAwayBreaker > nodes.length) {
+              break;
+            }
+          }
         }
 
-        if (DEBUG) console.log("i: ", i, "row: ", row, "col: ", col);
+        var i = -1;
+        while (++i < nodes.length) {
 
-        nodes[i].x = x(col);
-        nodes[i].y = y(row);
+          nodes[i].x = x(nextVacantSpot.col);
+          nodes[i].y = y(nextVacantSpot.row);
+          nodes[i].col = nextVacantSpot.col;
+          nodes[i].row = nextVacantSpot.row;
+
+          pickNextSpot();
+
+        }
       }
+
+      calcGridDimensions();
+      calcActualSize();
+
+      if (DEBUG) console.log('specified cols/rows', desiredCols, desiredRows);
+      if (DEBUG) console.log('computed cols/rows', numCols, numRows);
+
+      layoutNodes();
 
       return nodes;
     }
-
-    // grid.mode = function(value) {
-    //   if (!arguments.length) return mode;
-    //   switch(mode = value) {
-    //     case "equal":
-    //       layout = _distributeEqually;
-    //       break;
-    //   }
-    //   return grid;
-    // }
 
     grid.size = function(value) {
       if (!arguments.length) return nodeSize ? actualSize : size;
@@ -97,14 +151,16 @@
     }
 
     grid.rows = function(value) {
-      if (!arguments.length) return rows;
-      rows = value;
+      if (!arguments.length) return desiredRows;
+      if (desiredCols) throw new Error("Cannot specify both rows and cols");
+      desiredRows = value;
       return grid;
     }
 
     grid.cols = function(value) {
-      if (!arguments.length) return cols;
-      cols = value;
+      if (!arguments.length) return desiredCols;
+      if (desiredRows) throw new Error("Cannot specify both rows and cols");
+      desiredCols = value;
       return grid;
     }
 

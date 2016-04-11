@@ -179,6 +179,15 @@ HTMLWidgets.widget({
     verifyKeyIsFloat(input, 'percentage', 1, 'Must be number between 0 and 1');
     verifyKeyIsRatio(input, 'percentage');
     verifyKeyIsInt(input, 'numImages', 1);
+    if (input['numRows'] != null) {
+      verifyKeyIsInt(input, 'numRows', 1);
+    }
+    if (input['numCols'] != null) {
+      verifyKeyIsInt(input, 'numCols', 1);
+    }
+    if ((input['numRows'] != null) && (input['numCols'] != null)) {
+      throw new Error("Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions.");
+    }
     if (input['direction'] == null) {
       input['direction'] = 'horizontal';
     }

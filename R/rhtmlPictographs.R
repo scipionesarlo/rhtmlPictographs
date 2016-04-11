@@ -17,9 +17,9 @@
 #' @param height: positive numeric representing desired height of graphic. Note that specified height will be total height including header and footer text banners.
 #' @param settingsJsonString: valid JSON string containing the following params
 #'   - direction: ("horizontal"|"vertical") - default horizontal. Indicates direction of cropping
-#'   - numImages: integer - default 1. The number of images to display
-#'   - numRows: integer - optional. default unset. The number of rows in the grid. Must be <= numImages
-#'   - numCols: integer - optional. default unset. The number of cols in the grid. Must be <= numImages
+#'   - numImages: integer - default 1. The number of images to display.
+#'   - numRows: integer - optional. default unset. The number of rows in the grid. Must be <= numImages. Cannot set numRows and numCols (use numImages) !
+#'   - numCols: integer - optional. default unset. The number of cols in the grid. Must be <= numImages. Cannot set numRows and numCols (use numImages) !
 #'   - baseImageUrl: URL - optional. default unset. The URL (including http://) of baseImage
 #'   - variableImageUrl: URL - required. The URL (including http://) of variableImageUrl
 #'   - background-color: string - optional. default unset. Set a background color under both images

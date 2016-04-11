@@ -45,11 +45,9 @@ The method signatures and their definitions are detailed in the main [R file](sr
 
 1. local image support
 1. Go full JS class
-1. Resize support
 1. Pie chart (radians) support
 1. Multiple image substitute support
 1. table of infographic support
-1. Customisable multi image gutters (inner padding)
 1. Customisable multi image h/v alignmnent
 
 # Issues

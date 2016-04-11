@@ -213,6 +213,10 @@ HTMLWidgets.widget
     verifyKeyIsRatio input, 'percentage'
 
     verifyKeyIsInt input, 'numImages', 1
+    verifyKeyIsInt(input, 'numRows', 1) if input['numRows']?
+    verifyKeyIsInt(input, 'numCols', 1) if input['numCols']?
+    if input['numRows']? and input['numCols']?
+      throw new Error "Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions."
 
     input['direction'] = 'horizontal' unless input['direction']?
     unless input['direction'] in ['horizontal', 'vertical']

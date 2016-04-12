@@ -1,4 +1,22 @@
 dependencies:
+ - name: BaseCell
+   version: 0.0.1
+   src: htmlwidgets/
+   script:
+     - BaseCell.js
+
+ - name: GraphicCell
+   version: 0.0.1
+   src: htmlwidgets/
+   script:
+     - GraphicCell.js
+
+ - name: Pictograph
+   version: 0.0.1
+   src: htmlwidgets/
+   script:
+     - Pictograph.js
+
  - name: jquery
    version: 2.2.2
    src: htmlwidgets/lib/jquery-2.2.2

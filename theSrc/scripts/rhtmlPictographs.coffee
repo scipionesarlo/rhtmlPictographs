@@ -5,7 +5,7 @@ HTMLWidgets.widget
   type: 'output'
 
   resize: (el, width, height, instance) ->
-    console.log "resize not implemented"
+    instance.resize width, height
 
   initialize: (el, width, height) ->
     return new Pictograph el, width, height

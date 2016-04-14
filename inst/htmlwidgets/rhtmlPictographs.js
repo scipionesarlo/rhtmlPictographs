@@ -3,7 +3,7 @@ HTMLWidgets.widget({
   name: 'rhtmlPictographs',
   type: 'output',
   resize: function(el, width, height, instance) {
-    return console.log("resize not implemented");
+    return instance.resize(width, height);
   },
   initialize: function(el, width, height) {
     return new Pictograph(el, width, height);

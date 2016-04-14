@@ -7,6 +7,7 @@ class Pictograph
     @initialHeight = height
     @config = {}
 
+  #@TODO : config vs params vs input
   setConfig: (params) ->
 
     @input = params
@@ -23,6 +24,11 @@ class Pictograph
           ]
         ]
       @input['table'] = tableOfOneGraphic
+
+    @input['resizable'] = true if @input['resizable'] is 'true'
+    @input['resizable'] = false if @input['resizable'] is 'false'
+    @input['resizable'] = true unless @input['resizable']?
+    throw new Error "resizable must be string [true|false]" unless _.isBoolean(@input['resizable'])
 
     #@TODO address duplication
     #default text params
@@ -120,6 +126,8 @@ class Pictograph
     maxCols = 0
 
   draw: () ->
+    @_manipulateRootElementSize()
+
     @_addRootSvg()
 
     @_computeTableDimensions()
@@ -168,6 +176,19 @@ class Pictograph
 
     return null
 
+  resize: (width, height) ->
+    #NB delberately not implemented - not needed
+
+  _manipulateRootElementSize: () ->
+
+    #root element has width and height in a style tag. Clear that
+    $(@rootElement).attr('style', '')
+
+    if @input['resizable']
+      $(@rootElement).width("100%").height("100%")
+    else
+      $(@rootElement).width(@initialWidth).height(@initialHeight)
+
   _addRootSvg: (instance, input) ->
     #NB the following sequence is a little rough because I am switching between native JS, jQuery, and D3
     #@TODO : clean this up
@@ -176,11 +197,7 @@ class Pictograph
       .attr 'width', '100%'
       .attr 'height', '100%'
 
-    $(@rootElement)
-      .attr('style', '') #NB clear the existing style because it sets the container height and width, which I am (contentiously) overiding
-      .width("100%")
-      .height("100%")
-      .append(anonSvg)
+    $(@rootElement).append(anonSvg)
 
     @outerSvg = d3.select('.rhtml-pictograph-outer-svg')
 

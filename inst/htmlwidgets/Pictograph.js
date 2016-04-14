@@ -24,6 +24,18 @@ Pictograph = (function() {
       };
       this.input['table'] = tableOfOneGraphic;
     }
+    if (this.input['resizable'] === 'true') {
+      this.input['resizable'] = true;
+    }
+    if (this.input['resizable'] === 'false') {
+      this.input['resizable'] = false;
+    }
+    if (this.input['resizable'] == null) {
+      this.input['resizable'] = true;
+    }
+    if (!_.isBoolean(this.input['resizable'])) {
+      throw new Error("resizable must be string [true|false]");
+    }
     this.config['text'] = {};
     textParamsFromInput = {};
     if (this.input['font-family'] != null) {
@@ -153,6 +165,7 @@ Pictograph = (function() {
 
   Pictograph.prototype.draw = function() {
     var enteringCells, pictographContext, tableCells, tableLayout;
+    this._manipulateRootElementSize();
     this._addRootSvg();
     this._computeTableDimensions();
     tableLayout = d3.layout.grid().bands().size([this.initialWidth, this.initialHeight]).padding([0.1, 0.1]);
@@ -188,10 +201,21 @@ Pictograph = (function() {
     return null;
   };
 
+  Pictograph.prototype.resize = function(width, height) {};
+
+  Pictograph.prototype._manipulateRootElementSize = function() {
+    $(this.rootElement).attr('style', '');
+    if (this.input['resizable']) {
+      return $(this.rootElement).width("100%").height("100%");
+    } else {
+      return $(this.rootElement).width(this.initialWidth).height(this.initialHeight);
+    }
+  };
+
   Pictograph.prototype._addRootSvg = function(instance, input) {
     var anonSvg;
     anonSvg = $("<svg class=\"rhtml-pictograph-outer-svg\">").attr('width', '100%').attr('height', '100%');
-    $(this.rootElement).attr('style', '').width("100%").height("100%").append(anonSvg);
+    $(this.rootElement).append(anonSvg);
     this.outerSvg = d3.select('.rhtml-pictograph-outer-svg');
     document.getElementsByClassName("rhtml-pictograph-outer-svg")[0].setAttribute('viewBox', "0 0 " + this.initialWidth + " " + this.initialHeight);
     if (this.input['preserveAspectRatio'] != null) {

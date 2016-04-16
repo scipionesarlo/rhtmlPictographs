@@ -9,8 +9,8 @@
             "This demonstrates a minimal invocation of the widget and relies on all of the default settings:",
             "As such it may change as the defaults change."
           ],
-          "percentage": 0.4,
           "settings": {
+            "percentage": 0.4,
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
           },
@@ -22,8 +22,8 @@
           "description" : [
             "This demonstrates the base image is not necessary:"
           ],
-          "percentage": 0.4,
           "settings": {
+            "percentage": 0.4,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
           },
           "width": 400,
@@ -34,8 +34,8 @@
           "description" : [
             "by setting text-overlay to 'percentage' (case insensitive) then a percentage string will be overlaid"
           ],
-          "percentage": 0.4,
           "settings": {
+            "percentage": 0.4,
             "text-overlay": "percentage",
             "font-color": "white",
             "font-size": "96px",
@@ -51,8 +51,8 @@
             "This demonstrates the use of the vertical cropping feature. The percentage is set to 66%.",
             "The bottom 2/3 of the widget should be image should be blue, and the top 1/2 should be black."
           ],
-          "percentage": 0.66,
           "settings": {
+            "percentage": 0.66,
             "direction": "vertical",
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
@@ -65,8 +65,8 @@
           "description" : [
             "This demonstrates all of the available customizations."
           ],
-          "percentage": 0.66,
           "settings": {
+            "percentage": 0.66,
             "direction": "vertical",
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
@@ -85,8 +85,8 @@
         },
         {
           "name": "Really small",
-          "percentage": 0.23,
           "settings": {
+            "percentage": 0.23,
             "font-size": "10px",
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
@@ -104,8 +104,8 @@
           "description" : [
             "This demonstrates a minimal invocation of the widget with multiple images"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
           },
@@ -118,8 +118,8 @@
             "This demonstrates the use of header and footer text",
             "Notice how the adition of the footer messes with the internal horizontal padding ?!"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
@@ -134,8 +134,8 @@
             "This demonstrates the use of debugBorder for visual aid",
             "You can see the padding is correct but now the images are being centred to maintain their aspect ratio"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
@@ -150,8 +150,8 @@
           "description" : [
             "This demonstrates that adding height to compensate for the header and footer gets everything back to normal"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
@@ -171,8 +171,8 @@
           "description" : [
             "This demonstrates a minimal invocation of the widget with multiple images"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/perl_248_128.jpg",
             "debugBorder": "anything"
@@ -186,8 +186,8 @@
             "This demonstrates the use of header and footer text",
             "Notice how the adition of the footer messes with the internal horizontal padding ?!"
           ],
-          "percentage": 0.8,
           "settings": {
+            "percentage": 0.8,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/perl_248_128.jpg",
             "text-header": "Big header",
@@ -207,8 +207,8 @@
           "description" : [
             "This demonstrates how to specify the number of rows"
           ],
-          "percentage": 0.43,
           "settings": {
+            "percentage": 0.43,
             "numImages": 12,
             "numRows": 1,
             "bannerRatio": 0.5,
@@ -228,8 +228,8 @@
           "description" : [
             "This demonstrates how to specify the number of columns"
           ],
-          "percentage": 0.46,
           "settings": {
+            "percentage": 0.46,
             "numImages": 12,
             "numCols": 1,
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
@@ -253,8 +253,8 @@
             "A value of 0.5 sets the padding = the image size",
             "For more info, these two parameters sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "interColumnPadding": "0.5",
@@ -269,8 +269,8 @@
             "A value of 0 removes all inner padding",
             "For more info, these two parameters sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "interColumnPadding": "0",
@@ -290,8 +290,8 @@
             "The preserveAspectRatio does not come into play until the image is resized. Try resizing.",
             "Docs: https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "preserveAspectRatio": "xMidYMid"
@@ -305,8 +305,8 @@
             "The preserveAspectRatio does not come into play until the image is resized. Try resizing.",
             "Docs: https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "preserveAspectRatio": "none"
@@ -320,8 +320,8 @@
             "The preserveAspectRatio does not come into play until the image is resized. Try resizing.",
             "Docs: https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "preserveAspectRatio": "xMinYMin"
@@ -335,8 +335,8 @@
             "The preserveAspectRatio does not come into play until the image is resized. Try resizing.",
             "Docs: https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 3,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "preserveAspectRatio": "xMaxYMax"
@@ -354,8 +354,8 @@
           "description" : [
             "Some stick man - png"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 100,
             "numRows": 2,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
@@ -368,8 +368,8 @@
           "description" : [
             "Some stick man - svg"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 100,
             "numRows": 2,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg"
@@ -382,14 +382,102 @@
           "description" : [
             "Some stick man - svg"
           ],
-          "percentage": 1,
           "settings": {
+            "percentage": 1,
             "numImages": 100,
             "numRows": 2,
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg"
           },
           "width": 8000,
           "height": 1000
+        }
+      ]
+    },
+    {
+      "name": "Table of infographic",
+      "scenarios": [
+        {
+          "name": "Table WIP",
+          "description" : [],
+          "percentage" : 1,
+          "width": 500,
+          "height": 800,
+          "settings" : {
+            "table": {
+              "rows": [
+                [
+                  {
+                    "type": "label",
+                    "tags": ["header-row"],
+                    "value": "Col 1 Title"
+                  },
+                  {
+                    "type": "label",
+                    "tags": ["header-row"],
+                    "value": "Col 2 Title"
+                  }
+                ],
+                [
+                  {
+                    "type": "label",
+                    "tags": ["header-col"],
+                    "value": "2x20 Stickman"
+                  },
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 1,
+                      "height": 200,
+                      "width": 2000,
+                      "numRows": 2,
+                      "numImages": 20,
+                      "direction": "horizontal",
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "label",
+                    "tags": ["header-col"],
+                    "value": "3x10 Stickman"
+                  },
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 1,
+                      "numRows": 3,
+                      "numImages": 30,
+                      "height": 200,
+                      "width": 2000,
+                      "direction": "horizontal",
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "label",
+                    "tags": ["header-col"],
+                    "value": "3.5 blue squares"
+                  },
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 0.875,
+                      "numRows": 2,
+                      "numImages": 4,
+                      "height": 200,
+                      "width": 200,
+                      "direction": "horizontal",
+                      "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
         }
       ]
     }

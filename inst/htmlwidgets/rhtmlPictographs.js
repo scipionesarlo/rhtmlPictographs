@@ -9,7 +9,7 @@ HTMLWidgets.widget({
     return new Pictograph(el, width, height);
   },
   renderValue: function(el, params, instance) {
-    var config, err, msg;
+    var config, err, errorHandler, readableError;
     config = null;
     try {
       if (_.isString(params.settingsJsonString)) {
@@ -22,11 +22,20 @@ HTMLWidgets.widget({
       }
     } catch (_error) {
       err = _error;
-      msg = "Pictograph error : Cannot parse 'settingsJsonString': " + err;
-      console.error(msg);
+      readableError = new Error("Pictograph error : Cannot parse 'settingsJsonString': " + err);
+      console.error(readableError);
+      errorHandler = new DisplayError(el, readableError);
+      errorHandler.draw();
       throw new Error(err);
     }
-    instance.setConfig(config);
-    return instance.draw();
+    try {
+      instance.setConfig(config);
+      return instance.draw();
+    } catch (_error) {
+      err = _error;
+      console.error(err);
+      errorHandler = new DisplayError(el, err);
+      return errorHandler.draw();
+    }
   }
 });

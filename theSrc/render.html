@@ -179,7 +179,8 @@
           myWidgetInstance = myWidgetDefinition.initialize(container,scenario.width,scenario.height);
           params = {
             percentage: scenario.percentage,
-            settingsJsonString: scenario.settings
+            // favour the json string if specified (used primarily for error testing)
+            settingsJsonString: scenario.settingsString || scenario.settings
           };
 
           outerWrapper
@@ -196,6 +197,7 @@
       });
     </script>
 
+    <script src="scripts/DisplayError.js"></script>
     <script src="scripts/BaseCell.js"></script>
     <script src="scripts/GraphicCell.js"></script>
     <script src="scripts/Pictograph.js"></script>

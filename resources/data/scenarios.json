@@ -97,6 +97,26 @@
       ]
     },
     {
+      "name": "Fixed size graphics (aka not resizable)",
+      "scenarios": [
+        {
+          "name": "A graphic that is not resiazable",
+          "description" : [
+            "This demonstrates a minimal invocation of the widget and relies on all of the default settings:",
+            "As such it may change as the defaults change."
+          ],
+          "settings": {
+            "percentage": 0.4,
+            "resizable": "false",
+            "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+          },
+          "width": 400,
+          "height": 400
+        }
+      ]
+    },
+    {
       "name": "Multiple Image Graphic - Squares",
       "scenarios": [
         {
@@ -399,7 +419,6 @@
         {
           "name": "Table WIP",
           "description" : [],
-          "percentage" : 1,
           "width": 500,
           "height": 800,
           "settings" : {
@@ -477,6 +496,33 @@
                 ]
               ]
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "scenarios": [
+        {
+          "name": "Bad JSON",
+          "description" : [ "Bad JSON results in a visually displayed, human readable error." ],
+          "width": 400,
+          "height": 400,
+          "settingsString" : "{ json is fun? }",
+          "settings" : {}
+        },
+        {
+          "name": "Col and Row specified at same time",
+          "description" : [ "Setting numRows and numCols at same time is currently a nono. Result is a visually displayed, human readable error." ],
+          "percentage" : 1,
+          "width": 400,
+          "height": 400,
+          "settings" : {
+            "percentage": 0.4,
+            "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "numCols": 4,
+            "numRows": 4
           }
         }
       ]

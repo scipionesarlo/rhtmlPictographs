@@ -24,9 +24,18 @@ HTMLWidgets.widget
         config.percentage = params.percentage
 
     catch err
-      msg =  "Pictograph error : Cannot parse 'settingsJsonString': #{err}"
-      console.error msg
+      readableError = new Error "Pictograph error : Cannot parse 'settingsJsonString': #{err}"
+      console.error readableError
+      errorHandler = new DisplayError el, readableError
+      errorHandler.draw()
+
       throw new Error err
 
-    instance.setConfig config
-    instance.draw()
+    try
+      instance.setConfig config
+      instance.draw()
+
+    catch err
+      console.error err
+      errorHandler = new DisplayError el, err
+      errorHandler.draw()

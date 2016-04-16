@@ -12,6 +12,14 @@ gulp.task('clean', function(cb) {
   fs.remove('inst', cb);
 });
 
+gulp.task('makedocs', function () {
+  var shell = require('gulp-shell');
+  return gulp.src('resources/build/makeDoc.r', {read: false})
+    .pipe(shell([
+      'r --no-save < <%= file.path %>',
+    ], {}))
+});
+
 gulp.task('less', function () {
   var less = require('gulp-less');
   return gulp.src('theSrc/styles/**/*.less')
@@ -134,7 +142,7 @@ gulp.task('watch', ['connect'], function () {
 
 //@TODO clean doesn't finish before next task ..
 //gulp.task('build', ['clean', 'compile-coffee', 'images', 'less', 'copy'], function () {
-gulp.task('build', ['compile-coffee', 'images', 'less', 'copy'], function () {
+gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makedocs'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 

@@ -33,7 +33,7 @@ HTMLWidgets.widget({
       return instance.draw();
     } catch (_error) {
       err = _error;
-      console.error(err);
+      console.error(err.stack);
       errorHandler = new DisplayError(el, err);
       return errorHandler.draw();
     }

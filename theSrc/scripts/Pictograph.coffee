@@ -1,174 +1,106 @@
 
 class Pictograph
 
-  constructor: (el, width, height) ->
+  #NB Coffeescript class syntax note:
+  # @ in front of method / variable def: static class method
+  # @ within method body : short hand for this / self / instance context
+  # e.g @pictograph is a static variable, @rootElement is an instance variable
+
+  @pictographIndex = -1
+
+  constructor: (el, width, height, @parentCss=null) ->
+    Pictograph.pictographIndex++
+
     @rootElement = if _.has(el, 'length') then el[0] else el
     @initialWidth = width
     @initialHeight = height
-    @config = {}
 
-  #@TODO : config vs params vs input
-  setConfig: (params) ->
+  setConfig: (@config) ->
 
-    @input = params
-
-    unless @input['table']?
-
+    unless @config['table']?
       tableOfOneGraphic =
-        rows: [
-          [
-            {
-              type: 'graphic'
-              value: _.clone(@input)
-            }
-          ]
-        ]
-      @input['table'] = tableOfOneGraphic
+        rows: [[{type: 'graphic', value: _.clone(@config) }]]
+      @config['table'] = tableOfOneGraphic
 
-    @input['resizable'] = true if @input['resizable'] is 'true'
-    @input['resizable'] = false if @input['resizable'] is 'false'
-    @input['resizable'] = true unless @input['resizable']?
-    throw new Error "resizable must be string [true|false]" unless _.isBoolean(@input['resizable'])
+    #@TODO: resizble handling needs work
+    @config['resizable'] = true if @config['resizable'] is 'true'
+    @config['resizable'] = false if @config['resizable'] is 'false'
+    @config['resizable'] = true unless @config['resizable']?
+    throw new Error 'resizable must be string [true|false]' unless _.isBoolean(@config['resizable'])
 
-    #@TODO address duplication
-    #default text params
-    @config['text'] = {}
+    @config['table-id'] = "pictograph-#{Pictograph.pictographIndex}" unless @config['table-id']
+    @cssCollector = new BaseCell(null, "#{@config['table-id']}") #hacky, @TODO extract CssCollector from BaseCell
+    @cssCollector._draw = () -> _.noop
 
-    textParamsFromInput = {}
-    textParamsFromInput['font-family'] = @input['font-family'] if @input['font-family']?
-    textParamsFromInput['font-weight'] = parseInt(@input['font-weight']) if @input['font-weight']?
-    textParamsFromInput['font-size'] = parseInt(@input['font-size'].replace(/(px|em)/, '')) if @input['font-size']?
-    textParamsFromInput['font-color'] = @input['font-color'] if @input['font-color']?
-
-    pictograpghTextDefaults = {
+    pictographDefaults = {
       'font-family': 'Verdana,sans-serif'
       'font-weight': '900'
-      'font-size': '24'
+      'font-size': '24px'
       'font-color': 'black'
     }
 
-    _.defaults @config['text'], textParamsFromInput, pictograpghTextDefaults
-
-  validateGraphicCellConfig: (cellConfig, defaults) ->
-
-    #@TODO: apply defaults
-
-    throw new Error "Must specify 'variableImageUrl'" unless cellConfig.variableImageUrl?
-
-    @verifyKeyIsFloat cellConfig, 'percentage', 1, 'Must be number between 0 and 1'
-    @verifyKeyIsRatio cellConfig, 'percentage'
-
-    @verifyKeyIsInt cellConfig, 'numImages', 1
-    @verifyKeyIsInt(cellConfig, 'numRows', 1) if cellConfig['numRows']?
-    @verifyKeyIsInt(cellConfig, 'numCols', 1) if cellConfig['numCols']?
-    if cellConfig['numRows']? and cellConfig['numCols']?
-      throw new Error "Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions."
-
-    cellConfig['direction'] = 'horizontal' unless cellConfig['direction']?
-    unless cellConfig['direction'] in ['horizontal', 'vertical']
-      throw new Error "direction must be either (horizontal|vertical)"
-
-    @verifyKeyIsFloat cellConfig, 'interColumnPadding', 0.05, 'Must be number between 0 and 1'
-    @verifyKeyIsRatio cellConfig, 'interColumnPadding'
-    @verifyKeyIsFloat cellConfig, 'interRowPadding', 0.05, 'Must be number between 0 and 1'
-    @verifyKeyIsRatio cellConfig, 'interRowPadding'
-
-    #default text params
-    cellConfig['text'] = {}
-
-    textParamsFromCellDefinition = {}
-    textParamsFromCellDefinition['font-family'] = cellConfig['font-family'] if cellConfig['font-family']?
-    textParamsFromCellDefinition['font-weight'] = parseInt(cellConfig['font-weight']) if cellConfig['font-weight']?
-    textParamsFromCellDefinition['font-size'] = parseInt(cellConfig['font-size'].replace(/(px|em)/, '')) if cellConfig['font-size']?
-    textParamsFromCellDefinition['font-color'] = cellConfig['font-color'] if cellConfig['font-color']?
-
-    _.defaults cellConfig['text'], textParamsFromCellDefinition, @config['text']
-
-    return cellConfig
-
-  verifyKeyIsFloat: (input, key, defaultValue, message='Must be float') ->
-    if !_.isUndefined defaultValue
-      unless _.has input, key
-        input[key] = defaultValue
-        return
-
-    if _.isNaN parseFloat input[key]
-      throw new Error "invalid '#{key}': #{input[key]}. #{message}."
-
-    input[key] = parseFloat input[key]
-    return
-
-  verifyKeyIsInt: (input, key, defaultValue, message='Must be integer') ->
-    if !_.isUndefined defaultValue
-      unless _.has input, key
-        input[key] = defaultValue
-        return
-
-    if _.isNaN parseInt input[key]
-      throw new Error "invalid '#{key}': #{input[key]}. #{message}."
-
-    input[key] = parseFloat input[key]
-    return
-
-  verifyKeyIsRatio: (input, key) ->
-    throw new Error "#{key} must be >= 0" unless input[key] >= 0
-    throw new Error "#{key} must be <= 1" unless input[key] <= 1
+    _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
+      cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
+      @cssCollector.setCss '', cssAttribute, cssValue
+      BaseCell.setDefault cssAttribute, cssValue # currently this is only necessary for 'font-size'
 
   _computeTableDimensions: () ->
-    @numTableRows = @input.table.rows.length
+    @numTableRows = @config.table.rows.length
     @numTableCols = null
-    @input.table.rows.forEach (row) =>
+    @config.table.rows.forEach (row) =>
       if _.isNull @numTableCols
         @numTableCols = row.length
-      else
-        throw new Error "Table is 'jagged' : contains rows with varying column length" unless @numTableCols == row.length
+
+      if @numTableCols != row.length
+        throw new Error "Table is 'jagged' : contains rows with varying column length"
 
     maxCols = 0
 
   draw: () ->
+    @cssCollector.draw()
+
     @_manipulateRootElementSize()
-
-    @_addRootSvg()
-
+    @_addRootSvgToRootElement()
     @_computeTableDimensions()
 
     #d3.layout.grid must be provided by github.com/NumbersInternational/d3-grid
     tableLayout = d3.layout.grid()
       .bands()
       .size [@initialWidth, @initialHeight]
-      .padding([0.1, 0.1]); #@TODO control padding ?
+      .padding([0.1, 0.1]) #@TODO control padding
+      .rows(@numTableRows)
 
-    tableLayout.rows(@numTableRows)
+    tableCells = _.flatten(@config.table.rows)
 
-    #@TODO apply default input params
-    tableCells = _.flatten(@input.table.rows).map (cellConfig) =>
-      if cellConfig.type is 'graphic'
-        @validateGraphicCellConfig cellConfig.value, @input
-      cellConfig
-
-    console.log "tableCells"
-    console.log tableCells
-
-    enteringCells = @outerSvg.selectAll('.node')
-      .data tableLayout(tableCells)
+    enteringCells = @outerSvg.selectAll('.table-cell')
+      .data tableLayout tableCells
       .enter()
       .append 'g'
-        .attr 'class', 'node'
+        .attr 'class', 'table-cell'
         .attr 'transform', (d) ->
           return "translate(" + d.x + "," + d.y + ")"
 
     pictographContext = @
+    tableId = @config['table-id']
     enteringCells.each (d, i) ->
+
+      cssWrapperClass = "table-cell-#{d.row}-#{d.col}"
+      d3.select(this).classed cssWrapperClass, true
+
       if d.type is 'graphic'
-        graphic = new GraphicCell d3.select(this), d.value, tableLayout.nodeSize()[0], tableLayout.nodeSize()[1]
+        d3.select(this).classed 'graphic', true
+        graphic = new GraphicCell d3.select(this), [tableId, cssWrapperClass], tableLayout.nodeSize()[0], tableLayout.nodeSize()[1]
+        graphic.setConfig d.value
         graphic.draw()
 
       if d.type is 'label'
-        d3.select(this).append("svg:text")
+        d3.select(this).classed 'label', true
+        d3.select(this).append('svg:text')
           .attr 'x', (d) -> tableLayout.nodeSize()[0] / 2
           .attr 'y', (d) -> tableLayout.nodeSize()[1] / 2
           .style 'text-anchor', 'middle'
-          #alignment-baseline and dominant-baseline should do same thing but are both may be necessary for browser compatability
+          #alignment-baseline and dominant-baseline should do similar thing
+          # but both may be necessary for browser compatability ...
           .style 'alignment-baseline', 'central'
           .style 'dominant-baseline', 'central'
           .attr 'class', 'text-overlay'
@@ -184,29 +116,31 @@ class Pictograph
     #root element has width and height in a style tag. Clear that
     $(@rootElement).attr('style', '')
 
-    if @input['resizable']
-      $(@rootElement).width("100%").height("100%")
+    if @config['resizable']
+      $(@rootElement).width('100%').height('100%')
     else
       $(@rootElement).width(@initialWidth).height(@initialHeight)
 
-  _addRootSvg: (instance, input) ->
-    #NB the following sequence is a little rough because I am switching between native JS, jQuery, and D3
+  _addRootSvgToRootElement: () ->
+    #NB the following sequence is a little rough because I am switching between native JS, jQuery, and D3 selectors
     #@TODO : clean this up
 
-    anonSvg = $("<svg class=\"rhtml-pictograph-outer-svg\">")
+    anonSvg = $('<svg class="pictograph-outer-svg">')
+      .addClass @config['table-id']
+      .attr 'id', @config['table-id']
       .attr 'width', '100%'
       .attr 'height', '100%'
 
     $(@rootElement).append(anonSvg)
 
-    @outerSvg = d3.select('.rhtml-pictograph-outer-svg')
+    @outerSvg = d3.select(anonSvg[0])
 
     #NB JQuery insists on lowercasing attributes, so we must use JS directly
     # when setting viewBox and preserveAspectRatio ?!
-    document.getElementsByClassName("rhtml-pictograph-outer-svg")[0]
+    document.getElementsByClassName("pictograph-outer-svg")[0]
       .setAttribute 'viewBox', "0 0 #{@initialWidth} #{@initialHeight}"
-    if @input['preserveAspectRatio']?
-      document.getElementsByClassName("rhtml-pictograph-outer-svg")[0]
-        .setAttribute 'preserveAspectRatio', @input['preserveAspectRatio']
+    if @config['preserveAspectRatio']?
+      document.getElementsByClassName("pictograph-outer-svg")[0]
+        .setAttribute 'preserveAspectRatio', @config['preserveAspectRatio']
 
     return null

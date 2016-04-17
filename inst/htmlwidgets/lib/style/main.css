@@ -1,23 +1,4 @@
-.cropped-image-container .background-rect {
-  position: absolute;
-  z-index: 1;
-}
-.cropped-image-container .base-image {
-  position: absolute;
-  z-index: 2;
-}
-.cropped-image-container .variable-image {
-  position: absolute;
-  z-index: 3;
-}
-.cropped-image-container .text-container {
-  position: absolute;
-}
-.cropped-image-container .text-container .text-overlay {
-  z-index: 4;
-  position: absolute;
-}
-.error-container {
+.pictograph-error-container {
   color: red;
   font-weight: 900;
 }

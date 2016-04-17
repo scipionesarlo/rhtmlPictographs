@@ -70,18 +70,18 @@
             "direction": "vertical",
             "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-            "text-overlay": "Heaps customizable!",
+            "text-overlay": { "text": "Heaps customizable!", "font-weight" : "100", "font-color": "white" },
             "background-color": "green",
-            "text-header": "Big header",
-            "text-footer": "Big footer",
+            "text-header": { "text": "Header def is a dict of terms", "font-color" : "orange", "font-size": "16px", "font-family": "Arial" },
+            "text-footer": "Footer, just a string, uses graphic defaults",
             "font-family": "verdana",
             "font-weight": "900",
-            "font-size": "32px",
+            "font-size": "24px",
             "font-color": "magenta",
             "tooltip": "hover text!"
           },
-          "width": 400,
-          "height": 400
+          "width": 600,
+          "height": 600
         },
         {
           "name": "Really small",
@@ -127,6 +127,7 @@
           "settings": {
             "percentage": 0.8,
             "numImages": 3,
+            "text-overlay": "foo",
             "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
           },
           "width": 400,
@@ -417,6 +418,51 @@
       "name": "Table of infographic",
       "scenarios": [
         {
+          "name": "Font customization",
+          "description" : [],
+          "width": 500,
+          "height": 220,
+          "settings" : {
+            "font-size" : "32px",
+            "font-weight" : "900",
+            "font-family" : "Verdana",
+            "font-color" : "green",
+            "table": {
+              "rows": [
+                [
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 1,
+                      "text-header": {"font-color": "black", "text": "large", "font-size": "48px"},
+                      "text-overlay": {"font-color": "white", "text": "small", "font-size": "16px"},
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+                    }
+                  },
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 1,
+                      "text-header": {"text": "defaults", "font-size": "32px" },
+                      "text-overlay": {"text": "defaults", "font-size": "32px"},
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+                    }
+                  },
+                  {
+                    "type": "graphic",
+                    "value": {
+                      "percentage": 1,
+                      "text-header": {"font-color": "purple", "text": "small", "font-size": "16px"},
+                      "text-overlay": {"font-color": "orange", "text": "large", "font-size": "48px"},
+                      "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        {
           "name": "Table WIP",
           "description" : [],
           "width": 500,
@@ -446,8 +492,6 @@
                     "type": "graphic",
                     "value": {
                       "percentage": 1,
-                      "height": 200,
-                      "width": 2000,
                       "numRows": 2,
                       "numImages": 20,
                       "direction": "horizontal",
@@ -467,8 +511,6 @@
                       "percentage": 1,
                       "numRows": 3,
                       "numImages": 30,
-                      "height": 200,
-                      "width": 2000,
                       "direction": "horizontal",
                       "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
                     }
@@ -486,8 +528,6 @@
                       "percentage": 0.875,
                       "numRows": 2,
                       "numImages": 4,
-                      "height": 200,
-                      "width": 200,
                       "direction": "horizontal",
                       "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
                       "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"

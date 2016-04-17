@@ -3,6 +3,5 @@
 .Rhistory
 .Rproj.user
 node_modules
-dist/browser
-dist/package
+browser
 *.Rproj

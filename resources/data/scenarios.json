@@ -84,6 +84,28 @@
           "height": 600
         },
         {
+          "name": "arbitrary css can be added",
+          "description" : [
+            "This demonstrates a customization achieved by supplying css strings targeting specific element."
+          ],
+          "settings": {
+            "numImages": 6,
+            "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "text-overlay": { "text": "Foo" },
+            "text-header": "Header",
+            "font-family": "verdana",
+            "font-weight": "500",
+            "font-size": "48px",
+            "font-color": "black",
+            "css": {
+              ".node-index-2 .text-overlay" : { "stroke" : "yellow", "fill": "brown" },
+              ".node-xy-1-2 .text-overlay" : { "stroke" : "#ffffff" }
+            }
+          },
+          "width": 600,
+          "height": 600
+        },
+        {
           "name": "Really small",
           "settings": {
             "percentage": 0.23,

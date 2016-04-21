@@ -75,7 +75,10 @@ class GraphicCell extends BaseCell
       .data gridLayout(d3Data)
       .enter()
       .append "g"
-        .attr "class", "node"
+        .attr "class", (d) ->
+          cssLocation = "node-index-#{d.i} node-xy-#{d.row}-#{d.col}"
+          "node #{cssLocation}"
+
         .attr "transform", (d) -> return "translate(#{d.x},#{d.y})"
 
     backgroundRect = enteringLeafNodes.append("svg:rect")
@@ -151,10 +154,11 @@ class GraphicCell extends BaseCell
       .style 'dominant-baseline', 'central'
       .text text
 
+  #@TODO the math here is non-intuitive, clean up
   _generateDataArray: (percentage, numImages) ->
     d3Data = []
     totalArea = percentage * numImages
     for num in [1..numImages]
       percentage = Math.min(1, Math.max(0, 1 + totalArea - num))
-      d3Data.push { percentage: percentage }
+      d3Data.push { percentage: percentage, i: num - 1 }
     return d3Data

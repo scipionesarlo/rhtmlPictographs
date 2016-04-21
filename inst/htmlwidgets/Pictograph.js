@@ -52,7 +52,7 @@ Pictograph = (function() {
       'font-size': '24px',
       'font-color': 'black'
     };
-    return _.forEach(pictographDefaults, (function(_this) {
+    _.forEach(pictographDefaults, (function(_this) {
       return function(defaultValue, cssAttribute) {
         var cssValue;
         cssValue = _this.config[cssAttribute] ? _this.config[cssAttribute] : defaultValue;
@@ -60,6 +60,15 @@ Pictograph = (function() {
         return BaseCell.setDefault(cssAttribute, cssValue);
       };
     })(this));
+    if (this.config['css']) {
+      return _.forEach(this.config['css'], (function(_this) {
+        return function(cssBlock, cssLocationString) {
+          return _.forEach(cssBlock, function(cssValue, cssAttribute) {
+            return _this.cssCollector.setCss(cssLocationString, cssAttribute, cssValue);
+          });
+        };
+      })(this));
+    }
   };
 
   Pictograph.prototype._computeTableDimensions = function() {

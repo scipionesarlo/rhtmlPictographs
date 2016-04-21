@@ -87,7 +87,11 @@ GraphicCell = (function(_super) {
     if (this.config['numCols'] != null) {
       gridLayout.cols(this.config['numCols']);
     }
-    enteringLeafNodes = graphicContainer.selectAll(".node").data(gridLayout(d3Data)).enter().append("g").attr("class", "node").attr("transform", function(d) {
+    enteringLeafNodes = graphicContainer.selectAll(".node").data(gridLayout(d3Data)).enter().append("g").attr("class", function(d) {
+      var cssLocation;
+      cssLocation = "node-index-" + d.i + " node-xy-" + d.row + "-" + d.col;
+      return "node " + cssLocation;
+    }).attr("transform", function(d) {
       return "translate(" + d.x + "," + d.y + ")";
     });
     backgroundRect = enteringLeafNodes.append("svg:rect").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
@@ -150,7 +154,8 @@ GraphicCell = (function(_super) {
     for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
       percentage = Math.min(1, Math.max(0, 1 + totalArea - num));
       d3Data.push({
-        percentage: percentage
+        percentage: percentage,
+        i: num - 1
       });
     }
     return d3Data;

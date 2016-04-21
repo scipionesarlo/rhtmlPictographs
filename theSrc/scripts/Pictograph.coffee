@@ -44,6 +44,11 @@ class Pictograph
       @cssCollector.setCss '', cssAttribute, cssValue
       BaseCell.setDefault cssAttribute, cssValue # currently this is only necessary for 'font-size'
 
+    if @config['css']
+      _.forEach @config['css'], (cssBlock, cssLocationString) =>
+        _.forEach cssBlock, (cssValue, cssAttribute) =>
+          @cssCollector.setCss cssLocationString, cssAttribute, cssValue
+
   _computeTableDimensions: () ->
     @numTableRows = @config.table.rows.length
     @numTableCols = null
@@ -122,8 +127,6 @@ class Pictograph
       $(@rootElement).width(@initialWidth).height(@initialHeight)
 
   _addRootSvgToRootElement: () ->
-    #NB the following sequence is a little rough because I am switching between native JS, jQuery, and D3 selectors
-    #@TODO : clean this up
 
     anonSvg = $('<svg class="pictograph-outer-svg">')
       .addClass @config['table-id']

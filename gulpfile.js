@@ -4,9 +4,9 @@ var widgetName = 'rhtmlPictographs';
 
 var _ = require('lodash');
 var gulp = require('gulp');
-var fs = require('fs');
 var $ = require('gulp-load-plugins')();
 var Promise = require('bluebird');
+var fs =Promise.promisifyAll(require('fs-extra'));
 
 gulp.task('default', function () {
   gulp.start('build');
@@ -14,27 +14,14 @@ gulp.task('default', function () {
 
 //@TODO clean doesn't finish before next task ..
 //gulp.task('build', ['clean', 'compile-coffee', 'images', 'less', 'copy'], function () {
-gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makeDocs', 'makeExample'], function () {
-  return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
-});
+gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makeDocs', 'makeExample']);
 
 gulp.task('serve', ['connect', 'watch'], function () {
   require('opn')('http://localhost:9000');
 });
 
 gulp.task('clean', function(done) {
-
-  var fs = require('fs-extra');
-  Promise.promisifyAll(fs);
-
-  var locationsToDelete = [
-    'dist',
-    'inst',
-    'man',
-    'R',
-    'examples'
-  ]
-
+  var locationsToDelete = ['inst', 'man', 'R', 'examples'];
   var deletePromises = locationsToDelete.map( function(location) { return fs.removeAsync(location); })
   Promise.all(deletePromises).then(done);
   return true;
@@ -49,9 +36,7 @@ gulp.task('makeDocs', function () {
 });
 
 gulp.task('makeExample', function (done) {
-  var fs = require('fs-extra');
   var generateR = require('./resources/build/generateExamplesInR.js');
-  Promise.promisifyAll(fs);
   fs.mkdirpAsync('examples')
     .then(function () { return fs.readFileAsync('resources/data/scenarios.json', { encoding: 'utf8' }) })
     .then(JSON.parse)
@@ -73,7 +58,7 @@ gulp.task('compile-coffee', function () {
   var gulp_coffee = require("gulp-coffee");
 
   gulp.src('theSrc/scripts/**/*.coffee')
-    .pipe(gulp_coffee({ bare: true }))
+    .pipe(gulp_coffee({ bare: true, header: true }))
     .pipe(gulp.dest('browser/scripts'))
     .pipe(gulp.dest('inst/htmlwidgets/'));
 });

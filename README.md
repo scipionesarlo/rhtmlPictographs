@@ -44,6 +44,10 @@ help(graphic)
 
 [here](docs/htmlwidget_build_system.md)
 
+## Detailed list of CSS class names - useful when targeting these DOM via the custom CSS feature
+
+[here](docs/pictograph-dom-class-names.md)
+
 ## R Examples
 
 [examples file](examples/features.R)

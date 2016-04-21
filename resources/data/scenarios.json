@@ -567,7 +567,7 @@
       "scenarios": [
         {
           "name": "Bad JSON",
-          "description" : [ "Bad JSON results in a visually displayed, human readable error." ],
+          "description" : [ "EXPECTED: visually displayed, human readable error. Caused by Bad JSON." ],
           "width": 400,
           "height": 400,
           "settingsString" : "{ json is fun? }",
@@ -575,7 +575,7 @@
         },
         {
           "name": "Col and Row specified at same time",
-          "description" : [ "Setting numRows and numCols at same time is currently a nono. Result is a visually displayed, human readable error." ],
+          "description" : [ "EXPECTED: visually displayed, human readable error. Caused by Setting numRows and numCols at same time (currently a nono)." ],
           "percentage" : 1,
           "width": 400,
           "height": 400,

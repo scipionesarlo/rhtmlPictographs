@@ -112,7 +112,7 @@ class BaseCell
     if _.isNaN parseInt input[key]
       throw new Error "invalid '#{key}': #{input[key]}. #{message}."
 
-    input[key] = parseFloat input[key]
+    input[key] = parseInt input[key]
     return
 
   _verifyKeyIsRatio: (input, key) ->

@@ -14,7 +14,7 @@ class GraphicCell extends BaseCell
       throw new Error "Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions."
 
     @config['direction'] = 'horizontal' unless @config['direction']?
-    unless @config['direction'] in ['horizontal', 'vertical']
+    unless @config['direction'] in ['horizontal', 'vertical', 'scale']
       throw new Error "direction must be either (horizontal|vertical)"
 
     @_verifyKeyIsFloat @config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1'
@@ -99,29 +99,16 @@ class GraphicCell extends BaseCell
         .attr 'xlink:href', @config.baseImageUrl
         .attr 'class', 'base-image'
 
-    enteringLeafNodes.append('clipPath')
-      .attr 'id', 'my-clip'
-      .append 'rect'
-        .attr 'x', 0
-
-        .attr 'y', (d) =>
-          return 0 if @config.direction == 'horizontal'
-          return gridLayout.nodeSize()[1] * (1 -d.percentage)
-
-        .attr 'width', (d) =>
-          return gridLayout.nodeSize()[0] * d.percentage if @config.direction == 'horizontal'
-          return gridLayout.nodeSize()[0]
-
-        .attr 'height', (d) =>
-          return gridLayout.nodeSize()[1] * d.percentage if @config.direction == 'vertical'
-          return gridLayout.nodeSize()[1]
-
-    enteringLeafNodes.append("svg:image")
-      .attr 'width', gridLayout.nodeSize()[0]
-      .attr 'height', gridLayout.nodeSize()[1]
-      .attr 'clip-path', 'url(#my-clip)'
-      .attr 'xlink:href', @config.variableImageUrl
-      .attr 'class', 'variable-image'
+    imageWidth = gridLayout.nodeSize()[0]
+    imageHeight = gridLayout.nodeSize()[1]
+    if @config.direction is 'horizontal'
+      enteringLeafNodes.each _.partial(@_appendHorizontalClipPathToD3Collection, imageWidth, imageHeight)
+      enteringLeafNodes.each _.partial(@_appendClippedImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
+    if @config.direction is 'vertical'
+      enteringLeafNodes.each _.partial(@_appendVerticalClipPathToD3Collection, imageWidth, imageHeight)
+      enteringLeafNodes.each _.partial(@_appendClippedImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
+    if @config.direction is 'scale'
+      enteringLeafNodes.each _.partial(@_appendScaledImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
 
     if @config['tooltip']
       enteringLeafNodes.append("svg:title")
@@ -143,6 +130,7 @@ class GraphicCell extends BaseCell
     @dimensions.graphicOffSet = 0 + @dimensions.headerHeight
 
     @dimensions.footerOffset = 0 + @dimensions.headerHeight + @dimensions.graphicHeight
+
   _addTextTo: (parent, text, myClass, x, y) ->
     parent.append('svg:text')
       .attr 'class', myClass
@@ -153,6 +141,41 @@ class GraphicCell extends BaseCell
       .style 'alignment-baseline', 'central'
       .style 'dominant-baseline', 'central'
       .text text
+
+  _appendClippedImageToD3Collection: (width, height, imageUrl) ->
+    d3.select(this).append("svg:image")
+      .attr 'width', width
+      .attr 'height', height
+      .attr 'clip-path', 'url(#my-clip)'
+      .attr 'xlink:href', imageUrl
+      .attr 'class', 'variable-image'
+
+  _appendVerticalClipPathToD3Collection: (width, height) ->
+    d3.select(this).append('clipPath')
+      .attr 'id', 'my-clip'
+      .append 'rect'
+        .attr 'x', 0
+        .attr 'y', (d) -> height * (1 - d.percentage)
+        .attr 'width', width
+        .attr 'height', (d) -> height * d.percentage
+
+  _appendHorizontalClipPathToD3Collection: (width, height) ->
+    d3.select(this).append('clipPath')
+      .attr 'id', 'my-clip'
+      .append 'rect'
+        .attr 'x', 0
+        .attr 'y', 0
+        .attr 'width', (d) -> width * d.percentage
+        .attr 'height', height
+
+  _appendScaledImageToD3Collection: (width, height, imageUrl) ->
+    d3.select(this).append("svg:image")
+      .attr 'x', (d) -> width * (1 - d.percentage) / 2
+      .attr 'y', (d) -> height * (1 - d.percentage) / 2
+      .attr 'width', (d) -> width * d.percentage
+      .attr 'height', (d) -> height * d.percentage
+      .attr 'xlink:href', imageUrl
+      .attr 'class', 'variable-image'
 
   #@TODO the math here is non-intuitive, clean up
   _generateDataArray: (percentage, numImages) ->

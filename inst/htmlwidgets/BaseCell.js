@@ -147,7 +147,7 @@ BaseCell = (function() {
     if (_.isNaN(parseInt(input[key]))) {
       throw new Error("invalid '" + key + "': " + input[key] + ". " + message + ".");
     }
-    input[key] = parseFloat(input[key]);
+    input[key] = parseInt(input[key]);
   };
 
   BaseCell.prototype._verifyKeyIsRatio = function(input, key) {

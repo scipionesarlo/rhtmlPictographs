@@ -31,7 +31,7 @@ GraphicCell = (function(_super) {
     if (this.config['direction'] == null) {
       this.config['direction'] = 'horizontal';
     }
-    if ((_ref = this.config['direction']) !== 'horizontal' && _ref !== 'vertical') {
+    if ((_ref = this.config['direction']) !== 'horizontal' && _ref !== 'vertical' && _ref !== 'scale') {
       throw new Error("direction must be either (horizontal|vertical)");
     }
     this._verifyKeyIsFloat(this.config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1');
@@ -67,7 +67,7 @@ GraphicCell = (function(_super) {
   };
 
   GraphicCell.prototype._draw = function() {
-    var backgroundRect, d3Data, enteringLeafNodes, graphicContainer, gridLayout, x, y;
+    var backgroundRect, d3Data, enteringLeafNodes, graphicContainer, gridLayout, imageHeight, imageWidth, x, y;
     this._computeDimensions();
     if (this.config['text-header'] != null) {
       x = this.width / 2;
@@ -102,29 +102,19 @@ GraphicCell = (function(_super) {
     if (this.config.baseImageUrl != null) {
       enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('xlink:href', this.config.baseImageUrl).attr('class', 'base-image');
     }
-    enteringLeafNodes.append('clipPath').attr('id', 'my-clip').append('rect').attr('x', 0).attr('y', (function(_this) {
-      return function(d) {
-        if (_this.config.direction === 'horizontal') {
-          return 0;
-        }
-        return gridLayout.nodeSize()[1] * (1 - d.percentage);
-      };
-    })(this)).attr('width', (function(_this) {
-      return function(d) {
-        if (_this.config.direction === 'horizontal') {
-          return gridLayout.nodeSize()[0] * d.percentage;
-        }
-        return gridLayout.nodeSize()[0];
-      };
-    })(this)).attr('height', (function(_this) {
-      return function(d) {
-        if (_this.config.direction === 'vertical') {
-          return gridLayout.nodeSize()[1] * d.percentage;
-        }
-        return gridLayout.nodeSize()[1];
-      };
-    })(this));
-    enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('clip-path', 'url(#my-clip)').attr('xlink:href', this.config.variableImageUrl).attr('class', 'variable-image');
+    imageWidth = gridLayout.nodeSize()[0];
+    imageHeight = gridLayout.nodeSize()[1];
+    if (this.config.direction === 'horizontal') {
+      enteringLeafNodes.each(_.partial(this._appendHorizontalClipPathToD3Collection, imageWidth, imageHeight));
+      enteringLeafNodes.each(_.partial(this._appendClippedImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
+    }
+    if (this.config.direction === 'vertical') {
+      enteringLeafNodes.each(_.partial(this._appendVerticalClipPathToD3Collection, imageWidth, imageHeight));
+      enteringLeafNodes.each(_.partial(this._appendClippedImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
+    }
+    if (this.config.direction === 'scale') {
+      enteringLeafNodes.each(_.partial(this._appendScaledImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
+    }
     if (this.config['tooltip']) {
       enteringLeafNodes.append("svg:title").text(this.config['tooltip']);
     }
@@ -146,6 +136,36 @@ GraphicCell = (function(_super) {
 
   GraphicCell.prototype._addTextTo = function(parent, text, myClass, x, y) {
     return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
+  };
+
+  GraphicCell.prototype._appendClippedImageToD3Collection = function(width, height, imageUrl) {
+    return d3.select(this).append("svg:image").attr('width', width).attr('height', height).attr('clip-path', 'url(#my-clip)').attr('xlink:href', imageUrl).attr('class', 'variable-image');
+  };
+
+  GraphicCell.prototype._appendVerticalClipPathToD3Collection = function(width, height) {
+    return d3.select(this).append('clipPath').attr('id', 'my-clip').append('rect').attr('x', 0).attr('y', function(d) {
+      return height * (1 - d.percentage);
+    }).attr('width', width).attr('height', function(d) {
+      return height * d.percentage;
+    });
+  };
+
+  GraphicCell.prototype._appendHorizontalClipPathToD3Collection = function(width, height) {
+    return d3.select(this).append('clipPath').attr('id', 'my-clip').append('rect').attr('x', 0).attr('y', 0).attr('width', function(d) {
+      return width * d.percentage;
+    }).attr('height', height);
+  };
+
+  GraphicCell.prototype._appendScaledImageToD3Collection = function(width, height, imageUrl) {
+    return d3.select(this).append("svg:image").attr('x', function(d) {
+      return width * (1 - d.percentage) / 2;
+    }).attr('y', function(d) {
+      return height * (1 - d.percentage) / 2;
+    }).attr('width', function(d) {
+      return width * d.percentage;
+    }).attr('height', function(d) {
+      return height * d.percentage;
+    }).attr('xlink:href', imageUrl).attr('class', 'variable-image');
   };
 
   GraphicCell.prototype._generateDataArray = function(percentage, numImages) {

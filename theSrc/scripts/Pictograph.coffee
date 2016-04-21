@@ -22,7 +22,7 @@ class Pictograph
         rows: [[{type: 'graphic', value: _.clone(@config) }]]
       @config['table'] = tableOfOneGraphic
 
-    #@TODO: resizble handling needs work
+    #@TODO: resizable string vs boolean handling needs work
     @config['resizable'] = true if @config['resizable'] is 'true'
     @config['resizable'] = false if @config['resizable'] is 'false'
     @config['resizable'] = true unless @config['resizable']?
@@ -49,7 +49,11 @@ class Pictograph
         _.forEach cssBlock, (cssValue, cssAttribute) =>
           @cssCollector.setCss cssLocationString, cssAttribute, cssValue
 
-  _computeTableDimensions: () ->
+  #@TODO I am a beast of a 100 line function. Could create a custom layout function, could combine with d3-grid
+  _computeTableLayout: () ->
+
+    numGuttersAtIndex = (index) -> index
+
     @numTableRows = @config.table.rows.length
     @numTableCols = null
     @config.table.rows.forEach (row) =>
@@ -59,33 +63,124 @@ class Pictograph
       if @numTableCols != row.length
         throw new Error "Table is 'jagged' : contains rows with varying column length"
 
-    maxCols = 0
+    @_verifyKeyIsInt @config.table, 'innerRowPadding', 0
+    @_verifyKeyIsInt @config.table, 'innerColumnPadding', 0
+
+    if @config.table.rowHeights
+      #@TODO: verify and cast Array values to Ints
+      unless _.isArray @config.table.rowHeights
+        throw new Error "rowHeights must be array"
+
+      unless @config.table.rowHeights.length == @numTableRows
+        throw new Error "rowHeights length must match num rows specified"
+
+      sumSpecified = _.sum(@config.table.rowHeights) + (@numTableRows-1) * @config.table.innerRowPadding
+      unless sumSpecified <= @initialHeight
+        throw new Error "Cannot specify rowHeights/innerRowPadding where sum(rows+padding) exceeds table height: #{sumSpecified} !< #{@initialHeight}"
+
+    else
+      @config.table.rowHeights = [1..@numTableRows].map ( => @initialHeight / @numTableRows )
+
+    if @config.table.colWidths
+      #@TODO: verify and cast Array values to Ints
+      unless _.isArray @config.table.colWidths
+        throw new Error "colWidths must be array"
+
+      unless @config.table.colWidths.length == @numTableCols
+        throw new Error "colWidths length must match num columns specified"
+
+      sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.innerColumnPadding
+      unless sumSpecified <= @initialWidth
+        throw new Error "Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
+
+    else
+      @config.table.colWidths = [1..@numTableCols].map ( => @initialWidth / @numTableCols )
+
+    #TODO: verify input
+    @config.table.lines = {} unless @config.table.lines
+    @config.table.lines.horizontal = (@config.table.lines.horizontal || []).sort()
+    @config.table.lines.vertical = (@config.table.lines.vertical || []).sort()
+
+    ["padding-left", "padding-right", "padding-top", "padding-bottom"].forEach (attr) =>
+      @_verifyKeyIsInt @config.table.lines, attr, 0
+
+    calcLineVariableDimension = (linePosition, cellSizes, paddingSize) ->
+      numCellsPast = Math.floor(linePosition)
+      fractionOfCell = linePosition - numCellsPast
+
+      sizeOfNumCellsPast = _.sum(_.slice(cellSizes, 0, numCellsPast))
+      sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize
+      sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize)
+
+      return sizeOfNumCellsPast + sizeOfGuttersPast + sizeOfFraction
+
+    @config.table.lines.horizontal = @config.table.lines.horizontal.map (lineIndex) =>
+      y = calcLineVariableDimension lineIndex, @config.table.rowHeights, @config.table.innerRowPadding
+      return {
+        position: lineIndex
+        x1: 0 + @config.table.lines['padding-left']
+        x2: @initialWidth - @config.table.lines['padding-right']
+        y1: y
+        y2: y
+        style: @config.table.lines.style || "stroke:black;stroke-width:2"
+      }
+
+    @config.table.lines.vertical = @config.table.lines.vertical.map (lineIndex) =>
+      x = calcLineVariableDimension lineIndex, @config.table.colWidths, @config.table.innerColumnPadding
+      return {
+        position: lineIndex
+        x1: x
+        x2: x
+        y1: 0 + @config.table.lines['padding-top']
+        y2: @initialHeight - @config.table.lines['padding-bottom']
+        style: @config.table.lines.style || "stroke:black;stroke-width:2"
+      }
+
+    console.log "@config.table.lines"
+    console.log @config.table.lines
+
+    @config.table.rows.forEach (row, rowIndex) =>
+      row.forEach (cell, columnIndex) =>
+        cell.x = _.sum( _.slice(@config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * @config.table.innerColumnPadding
+        cell.y = _.sum( _.slice(@config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * @config.table.innerRowPadding
+        cell.width = @config.table.colWidths[columnIndex]
+        cell.height = @config.table.rowHeights[rowIndex]
+        cell.row = rowIndex
+        cell.col = columnIndex
+        console.log("setting xy for cell #{rowIndex}:#{columnIndex} = #{cell.x}:#{cell.y}. width:height= #{cell.width}:#{cell.height}")
 
   draw: () ->
     @cssCollector.draw()
 
     @_manipulateRootElementSize()
     @_addRootSvgToRootElement()
-    @_computeTableDimensions()
-
-    #d3.layout.grid must be provided by github.com/NumbersInternational/d3-grid
-    tableLayout = d3.layout.grid()
-      .bands()
-      .size [@initialWidth, @initialHeight]
-      .padding([0.1, 0.1]) #@TODO control padding
-      .rows(@numTableRows)
+    @_computeTableLayout()
 
     tableCells = _.flatten(@config.table.rows)
 
+    addLines = (lineType, data) =>
+      @outerSvg.selectAll(".#{lineType}")
+        .data data
+        .enter()
+        .append 'line'
+          .attr 'x1', (d) -> d.x1
+          .attr 'x2', (d) -> d.x2
+          .attr 'y1', (d) -> d.y1
+          .attr 'y2', (d) -> d.y2
+          .attr 'style', (d) -> d.style
+          .attr 'class', (d) -> "line #{lineType} line-#{d.position}"
+
+    addLines 'horizontal-line', @config.table.lines.horizontal
+    addLines 'vertical-line', @config.table.lines.vertical
+
     enteringCells = @outerSvg.selectAll('.table-cell')
-      .data tableLayout tableCells
+      .data tableCells
       .enter()
       .append 'g'
         .attr 'class', 'table-cell'
         .attr 'transform', (d) ->
           return "translate(" + d.x + "," + d.y + ")"
 
-    pictographContext = @
     tableId = @config['table-id']
     enteringCells.each (d, i) ->
 
@@ -94,15 +189,15 @@ class Pictograph
 
       if d.type is 'graphic'
         d3.select(this).classed 'graphic', true
-        graphic = new GraphicCell d3.select(this), [tableId, cssWrapperClass], tableLayout.nodeSize()[0], tableLayout.nodeSize()[1]
+        graphic = new GraphicCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
         graphic.setConfig d.value
         graphic.draw()
 
       if d.type is 'label'
         d3.select(this).classed 'label', true
         d3.select(this).append('svg:text')
-          .attr 'x', (d) -> tableLayout.nodeSize()[0] / 2
-          .attr 'y', (d) -> tableLayout.nodeSize()[1] / 2
+          .attr 'x', (d) -> d.width / 2
+          .attr 'y', (d) -> d.height / 2
           .style 'text-anchor', 'middle'
           #alignment-baseline and dominant-baseline should do similar thing
           # but both may be necessary for browser compatability ...
@@ -147,3 +242,15 @@ class Pictograph
         .setAttribute 'preserveAspectRatio', @config['preserveAspectRatio']
 
     return null
+
+  _verifyKeyIsInt: (input, key, defaultValue, message='Must be integer') ->
+    if !_.isUndefined defaultValue
+      unless _.has input, key
+        input[key] = defaultValue
+        return
+
+    if _.isNaN parseInt input[key]
+      throw new Error "invalid '#{key}': #{input[key]}. #{message}."
+
+    input[key] = parseInt input[key]
+    return

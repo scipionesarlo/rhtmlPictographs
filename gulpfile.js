@@ -12,9 +12,9 @@ gulp.task('default', function () {
   gulp.start('build');
 });
 
-//@TODO clean doesn't finish before next task ..
-//gulp.task('build', ['clean', 'compile-coffee', 'images', 'less', 'copy'], function () {
-gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makeDocs', 'makeExample']);
+//@TODO clean doesn't finish before next task so I have left it out for now ..
+gulp.task('core', ['compile-coffee', 'less', 'copy']);
+gulp.task('build', ['core', 'makeDocs', 'makeExample']);
 
 gulp.task('serve', ['connect', 'watch'], function () {
   require('opn')('http://localhost:9000');
@@ -63,19 +63,14 @@ gulp.task('compile-coffee', function () {
     .pipe(gulp.dest('inst/htmlwidgets/'));
 });
 
-gulp.task('images', function () {
-  return gulp.src('theSrc/images/**/*')
-    .pipe($.cache($.imagemin({
-      progressive: true,
-      interlaced: true
-    })))
-    .pipe(gulp.dest('browser/images'));
-});
-
 gulp.task('copy', function () {
   gulp.src([
     'theSrc/**/*.html'
   ], {}).pipe(gulp.dest('browser'));
+
+  gulp.src([
+    'theSrc/images/**/*'
+  ], {}).pipe(gulp.dest('browser/images'));
 
   gulp.src([
     'resources/**/*.json'
@@ -135,7 +130,7 @@ gulp.task('copy', function () {
 
 });
 
-gulp.task('connect', ['build'], function () {
+gulp.task('connect', ['core'], function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
   var app = require('connect')()
@@ -162,7 +157,7 @@ gulp.task('watch', ['connect'], function () {
   // for example when the json file changes rerun the copy command
   gulp.watch('resources/**/*.json', ['copy']);
   gulp.watch('theSrc/**/*.html', ['copy']);
-  gulp.watch('theSrc/images/**/*', ['images']);
+  gulp.watch('theSrc/images/**/*', ['copy']);
   gulp.watch('theSrc/styles/**/*.less', ['less']);
   gulp.watch('theSrc/scripts/**/*.coffee', ['compile-coffee']);
 });

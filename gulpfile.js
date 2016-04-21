@@ -4,6 +4,7 @@ var widgetName = 'rhtmlPictographs';
 
 var _ = require('lodash');
 var gulp = require('gulp');
+var fs = require('fs');
 var $ = require('gulp-load-plugins')();
 var Promise = require('bluebird');
 
@@ -13,7 +14,7 @@ gulp.task('default', function () {
 
 //@TODO clean doesn't finish before next task ..
 //gulp.task('build', ['clean', 'compile-coffee', 'images', 'less', 'copy'], function () {
-gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makedocs'], function () {
+gulp.task('build', ['compile-coffee', 'images', 'less', 'copy', 'makeDocs', 'makeExample'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
@@ -26,22 +27,39 @@ gulp.task('clean', function(done) {
   var fs = require('fs-extra');
   Promise.promisifyAll(fs);
 
-  var deletePromises = []
-  deletePromises.push(fs.removeAsync('dist'));
-  deletePromises.push(fs.removeAsync('inst'));
-  deletePromises.push(fs.removeAsync('man'));
-  deletePromises.push(fs.removeAsync('R'));
+  var locationsToDelete = [
+    'dist',
+    'inst',
+    'man',
+    'R',
+    'examples'
+  ]
+
+  var deletePromises = locationsToDelete.map( function(location) { return fs.removeAsync(location); })
   Promise.all(deletePromises).then(done);
   return true;
 });
 
-gulp.task('makedocs', function () {
+gulp.task('makeDocs', function () {
   var shell = require('gulp-shell');
   return gulp.src('resources/build/makeDoc.r', {read: false})
     .pipe(shell([
       'r --no-save < <%= file.path %>',
     ], {}))
 });
+
+gulp.task('makeExample', function (done) {
+  var fs = require('fs-extra');
+  var generateR = require('./resources/build/generateExamplesInR.js');
+  Promise.promisifyAll(fs);
+  fs.mkdirpAsync('examples')
+    .then(function () { return fs.readFileAsync('resources/data/scenarios.json', { encoding: 'utf8' }) })
+    .then(JSON.parse)
+    .then(generateR)
+    .then(function (content) { return fs.writeFileAsync('examples/features.R', content, { encoding: 'utf8' }) })
+    .catch( function(err) { console.log("makeExample error: " + err)})
+    .then(done);
+})
 
 gulp.task('less', function () {
   var less = require('gulp-less');

@@ -119,7 +119,11 @@
               }
             }
 
-            return null;
+            // NB wrap around case
+            return {
+              feature: 0,
+              scenario: 0
+            };
           }
 
           getPrev = function() {
@@ -149,19 +153,37 @@
               }
             }
 
-            return null;
+            //NB Wrap around case
+            lastFeatureIndex = response.features.length - 1,
+            lastFeature = response.features[lastFeatureIndex]
+            lastScenarioIndex = lastFeature.scenarios.length - 1
+            return {
+              feature: lastFeatureIndex,
+              scenario: lastScenarioIndex
+            };
           }
 
-          if (getPrev()) {
-            prev = getPrev();
-            link = 'render.html?featureIndex=' + prev.feature + '&scenarioIndex=' + prev.scenario;
-            $('.prev-link').attr('href', link).css('display', 'inline-block');          }
-
-          if (getNext()) {
-            next = getNext();
-            link = 'render.html?featureIndex=' + next.feature + '&scenarioIndex=' + next.scenario;
-            $('.next-link').attr('href', link).css('display', 'inline-block');
+          makeLink = function(args) {
+            if (!args) { return null; }
+            return 'render.html?featureIndex=' + args.feature + '&scenarioIndex=' + args.scenario;
           }
+
+          prevLink = makeLink(getPrev());
+          nextLink = makeLink(getNext());
+
+          if (prevLink) {
+            $('.prev-link').attr('href', prevLink).css('display', 'inline-block');
+          }
+          if (nextLink) {
+            $('.next-link').attr('href', nextLink).css('display', 'inline-block');
+          }
+
+          $("body").keydown(function(e){
+              var leftKey = 37;
+              var rightKey = 39;
+              if (prevLink && (e.keyCode || e.which) == leftKey) { window.location = prevLink; }
+              if (nextLink && (e.keyCode || e.which) == rightKey) { window.location = nextLink; }
+          });
 
           $('.name').text(scenario.name);
           $('.percentage').text(scenario.percentage);

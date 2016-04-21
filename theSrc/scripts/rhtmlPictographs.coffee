@@ -36,6 +36,6 @@ HTMLWidgets.widget
       instance.draw()
 
     catch err
-      console.error err
+      console.error err.stack
       errorHandler = new DisplayError el, err
       errorHandler.draw()

@@ -19,7 +19,7 @@ graphic(percentage, width = NULL, height = NULL,
 
 \item{settingsJsonString}{A valid JSON string containing the following params:
 \itemize{
-  \item direction: ("horizontal"|"vertical") - default horizontal. Indicates direction of cropping
+  \item direction: ("horizontal"|"vertical"|"scale") - default horizontal. Indicates direction of cropping. Scale will cause image to shrink based on percentage provided
   \item numImages: integer - default 1. The number of images to display.
   \item numRows: integer - optional. default unset. The number of rows in the grid. Must be <= numImages. Cannot set numRows and numCols (use numImages) !
   \item numCols: integer - optional. default unset. The number of cols in the grid. Must be <= numImages. Cannot set numRows and numCols (use numImages) !

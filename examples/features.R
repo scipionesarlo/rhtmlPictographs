@@ -52,6 +52,14 @@ rhtmlPictographs::graphic(0.4,400,400,'{"percentage":0.4,"resizable":"false","ba
 
 rhtmlPictographs::graphic(0.8,400,400,'{"percentage":0.8,"numImages":3,"text-overlay":"foo","variableImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 
+##Multiple Squares Example - Scale image based on percentage
+###This demonstrates the direction: scale property
+###Given we still are using a single cell with multiple images we can only specify one percentage.
+###If we wanted each image to have a specific percentage then we would use a table of multiple cells (each potentially having multiple images),
+###not a single cell with multiple images
+
+rhtmlPictographs::graphic(0.8,400,400,'{"percentage":0.8,"direction":"scale","numImages":3,"text-overlay":"foo","variableImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
+
 ##Multiple Squares Example - Text Header and Footer
 ###This demonstrates the use of header and footer text
 ###Notice how the adition of the footer messes with the internal horizontal padding ?!

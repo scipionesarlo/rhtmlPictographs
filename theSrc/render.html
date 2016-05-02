@@ -85,7 +85,10 @@
           return false;
         });
 
-        $.ajax('./resources/data/scenarios.json').done(function (response) {
+        var featureFileLocation = './resources/data/';
+        var featureFile = getQueryVariable('featureFile') || 'scenarios.json';
+
+        $.ajax(featureFileLocation + featureFile).done(function (response) {
           console.log("Scenario retrieved. Instantiating captured widget");
 
           var featureIndex = parseInt(getQueryVariable('featureIndex'));

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG Tiny 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">
+<svg width="512px" height="512px" viewBox="-512 -512 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="tiny"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+<circle id="circle" cx="0" cy="0" r="512" fill="pink" class="circle"/>
+</svg>
+

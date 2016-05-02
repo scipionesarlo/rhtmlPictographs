@@ -1,0 +1,178 @@
+
+<html>
+  <head>
+  <script src="/external/jquery.min.js"></script>
+  <style>
+    .fill-blue { fill: blue; }
+    .fill-red { fill: red; }
+    .fill-green { fill: green; }
+
+    .background-blue { background-color: blue; }
+    .background-red { background-color: red; }
+    .background-green { background-color: green; }
+    .background-radial { background: radial-gradient(50% 50%, red, white); }
+
+    .mask {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    -webkit-mask-image: url(/images/colorless_circle.svg);
+    mask: url(/images/colorless_circle.svg);
+    }
+
+    .base-red-icon {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    background: url(/images/red_circle_512.svg);
+    background-size: cover;
+    }
+
+    .rotate-to-blue {
+    -webkit-filter: hue-rotate(240deg) saturate(100);
+    }
+
+    .rotate-to-green {
+    -webkit-filter: hue-rotate(120deg) saturate(100);
+    }
+  </style>
+
+  <script>
+    $(document).ready( function() {
+    console.log("Technique 2: dynamic SVG inline")
+    $('img.t2-svg').each(function(){
+      var $img = jQuery(this);
+      var imgID = $img.attr('id');
+      var imgClass = $img.attr('class');
+      var imgURL = $img.attr('src');
+      var imgHeight = $img.attr('height');
+      var imgWidth = $img.attr('width');
+
+      jQuery.get(imgURL, function(data) {
+        // Get the SVG tag, ignore the rest
+        var $svg = jQuery(data).find('svg');
+
+        if(typeof imgID !== 'undefined') { $svg = $svg.attr('id', imgID); }
+        if(typeof imgHeight !== 'undefined') { $svg = $svg.attr('height', imgHeight); }
+        if(typeof imgWidth !== 'undefined') { $svg = $svg.attr('width', imgWidth); }
+        if(typeof imgClass !== 'undefined') { $svg = $svg.attr('class', imgClass+' replaced-svg'); }
+
+        // Remove any invalid XML tags as per http://validator.w3.org
+        $svg = $svg.removeAttr('xmlns:a');
+
+        // Replace image with new SVG
+        $img.replaceWith($svg);
+      }, 'xml');
+    });
+    });
+
+    $(document).ready( function() {
+      console.log("Technique 5: Canvas");
+
+      function makeCanvas(id, r,g,b) {
+        var startTime = performance.now();
+
+        var canvas = document.getElementById(id);
+        var ctx = canvas.getContext("2d");
+
+        // var ctx = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml",'canvas')[index].getContext('2d');
+
+        var img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = start;
+        img.src = "/images/colorless_circle_100.svg";
+
+        function start() {
+          ctx.drawImage(img, 0, 0);
+          recolor(r,g,b, 0, 0, 100, 100);
+        }
+
+        function recolor(newRed, newGreen, newBlue, x, y, width, height) {
+
+          var imgData = ctx.getImageData(x, y, width, height);
+          var data = imgData.data;
+
+          for (var i = 0; i < data.length; i += 4) {
+            red = data[i + 0];
+            green = data[i + 1];
+            blue = data[i + 2];
+            alpha = data[i + 3];
+
+            //isBlack
+            if (red == 0 && green == 0 && blue == 0) {
+              data[i + 0] = newRed;
+              data[i + 1] = newGreen;
+              data[i + 2] = newBlue;
+            }
+          }
+          ctx.putImageData(imgData, x, y);
+          var endTime = performance.now();
+          console.log("Canvas draw took " + Math.round(endTime - startTime, 2) + " ms");
+        }
+      };
+
+      makeCanvas('canvas1', 0,0,255);
+      makeCanvas('canvas2', 255,0,0);
+      makeCanvas('canvas3', 0,255,0);
+    });
+
+  </script>
+  </head>
+
+  <body>
+  <div class="technique-1">
+    <h1>SVG Use tag + parent fill class</h1>
+    <svg class="fill-blue" height="100" width="100" viewBox="-512 -512 1024 1024">
+    <use xlink:href="/images/colorless_circle_512.svg#circle"></use>
+    </svg>
+
+    <svg class="fill-red" height="100" width="100" viewBox="-512 -512 1024 1024">
+    <use xlink:href="/images/colorless_circle_512.svg#circle"></use>
+    </svg>
+
+    <svg class="fill-green" height="100" width="100" viewBox="-512 -512 1024 1024">
+    <use xlink:href="/images/colorless_circle_512.svg#circle"></use>
+    </svg>
+  </div>
+
+  <div class="technique-2">
+    <h1>SVG Image Tags + JS Replace method</h1>
+    <img height="100" width="100" class="t2-svg fill-blue" src="/images/colorless_circle_512.svg"/>
+    <img height="100" width="100" class="t2-svg fill-red" src="/images/colorless_circle_512.svg"/>
+    <img height="100" width="100" class="t2-svg fill-green" src="/images/colorless_circle_512.svg"/>
+  </div>
+
+  <div class="technique-3">
+    <h1>SVG + Background + Mask</h1>
+    <div height="100" width="100" class="mask background-blue"></div>
+    <div height="100" width="100" class="mask background-red"></div>
+    <div height="100" width="100" class="mask background-green"></div>
+    <div height="100" width="100" class="mask background-radial"></div>
+  </div>
+
+  <div class="technique-4">
+    <h1>SVG + Background + Filter</h1>
+    <div height="100" width="100" class="base-red-icon rotate-to-blue"></div>
+    <div height="100" width="100" class="base-red-icon"></div>
+    <div height="100" width="100" class="base-red-icon rotate-to-green"></div>
+  </div>
+
+  <div class="technique-5">
+    <h1>Canvas Color Redraws</h1>
+    <svg id="t5-svg1" width=100 height=100 xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+      <foreignObject x="0" y="0" width="100" height="100">
+        <canvas id="canvas1" width="100" height="100">
+        </canvas>
+      </foreignObject>
+      <foreignObject x="100" y="0" width="100" height="100">
+        <canvas id="canvas2" width="100" height="100">
+        </canvas>
+      </foreignObject>
+      <foreignObject x="200" y="0" width="100" height="100">
+        <canvas id="canvas3" width="100" height="100">
+        </canvas>
+      </foreignObject>
+    </svg>
+  </div>
+  </body>
+</html>

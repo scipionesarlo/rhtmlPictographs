@@ -39,3 +39,4 @@ HTMLWidgets.widget
       console.error err.stack
       errorHandler = new DisplayError el, err
       errorHandler.draw()
+      throw new Error err

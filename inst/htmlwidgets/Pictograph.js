@@ -72,8 +72,11 @@ Pictograph = (function() {
     }
   };
 
-  Pictograph.prototype._computeTableDimensions = function() {
-    var maxCols;
+  Pictograph.prototype._computeTableLayout = function() {
+    var calcLineVariableDimension, numGuttersAtIndex, sumSpecified, _i, _j, _ref, _ref1, _results, _results1;
+    numGuttersAtIndex = function(index) {
+      return index;
+    };
     this.numTableRows = this.config.table.rows.length;
     this.numTableCols = null;
     this.config.table.rows.forEach((function(_this) {
@@ -86,21 +89,145 @@ Pictograph = (function() {
         }
       };
     })(this));
-    return maxCols = 0;
+    this._verifyKeyIsInt(this.config.table, 'innerRowPadding', 0);
+    this._verifyKeyIsInt(this.config.table, 'innerColumnPadding', 0);
+    if (this.config.table.rowHeights) {
+      if (!_.isArray(this.config.table.rowHeights)) {
+        throw new Error("rowHeights must be array");
+      }
+      if (this.config.table.rowHeights.length !== this.numTableRows) {
+        throw new Error("rowHeights length must match num rows specified");
+      }
+      sumSpecified = _.sum(this.config.table.rowHeights) + (this.numTableRows - 1) * this.config.table.innerRowPadding;
+      if (!(sumSpecified <= this.initialHeight)) {
+        throw new Error("Cannot specify rowHeights/innerRowPadding where sum(rows+padding) exceeds table height: " + sumSpecified + " !< " + this.initialHeight);
+      }
+    } else {
+      this.config.table.rowHeights = (function() {
+        _results = [];
+        for (var _i = 1, _ref = this.numTableRows; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(((function(_this) {
+        return function() {
+          return _this.initialHeight / _this.numTableRows;
+        };
+      })(this)));
+    }
+    if (this.config.table.colWidths) {
+      if (!_.isArray(this.config.table.colWidths)) {
+        throw new Error("colWidths must be array");
+      }
+      if (this.config.table.colWidths.length !== this.numTableCols) {
+        throw new Error("colWidths length must match num columns specified");
+      }
+      sumSpecified = _.sum(this.config.table.colWidths) + (this.numTableCols - 1) * this.config.table.innerColumnPadding;
+      if (!(sumSpecified <= this.initialWidth)) {
+        throw new Error("Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : " + sumSpecified + " !< " + this.initialWidth);
+      }
+    } else {
+      this.config.table.colWidths = (function() {
+        _results1 = [];
+        for (var _j = 1, _ref1 = this.numTableCols; 1 <= _ref1 ? _j <= _ref1 : _j >= _ref1; 1 <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
+        return _results1;
+      }).apply(this).map(((function(_this) {
+        return function() {
+          return _this.initialWidth / _this.numTableCols;
+        };
+      })(this)));
+    }
+    if (!this.config.table.lines) {
+      this.config.table.lines = {};
+    }
+    this.config.table.lines.horizontal = (this.config.table.lines.horizontal || []).sort();
+    this.config.table.lines.vertical = (this.config.table.lines.vertical || []).sort();
+    ["padding-left", "padding-right", "padding-top", "padding-bottom"].forEach((function(_this) {
+      return function(attr) {
+        return _this._verifyKeyIsInt(_this.config.table.lines, attr, 0);
+      };
+    })(this));
+    calcLineVariableDimension = function(linePosition, cellSizes, paddingSize) {
+      var fractionOfCell, numCellsPast, sizeOfFraction, sizeOfGuttersPast, sizeOfNumCellsPast;
+      numCellsPast = Math.floor(linePosition);
+      fractionOfCell = linePosition - numCellsPast;
+      sizeOfNumCellsPast = _.sum(_.slice(cellSizes, 0, numCellsPast));
+      sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize;
+      sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize);
+      return sizeOfNumCellsPast + sizeOfGuttersPast + sizeOfFraction;
+    };
+    this.config.table.lines.horizontal = this.config.table.lines.horizontal.map((function(_this) {
+      return function(lineIndex) {
+        var y;
+        y = calcLineVariableDimension(lineIndex, _this.config.table.rowHeights, _this.config.table.innerRowPadding);
+        return {
+          position: lineIndex,
+          x1: 0 + _this.config.table.lines['padding-left'],
+          x2: _this.initialWidth - _this.config.table.lines['padding-right'],
+          y1: y,
+          y2: y,
+          style: _this.config.table.lines.style || "stroke:black;stroke-width:2"
+        };
+      };
+    })(this));
+    this.config.table.lines.vertical = this.config.table.lines.vertical.map((function(_this) {
+      return function(lineIndex) {
+        var x;
+        x = calcLineVariableDimension(lineIndex, _this.config.table.colWidths, _this.config.table.innerColumnPadding);
+        return {
+          position: lineIndex,
+          x1: x,
+          x2: x,
+          y1: 0 + _this.config.table.lines['padding-top'],
+          y2: _this.initialHeight - _this.config.table.lines['padding-bottom'],
+          style: _this.config.table.lines.style || "stroke:black;stroke-width:2"
+        };
+      };
+    })(this));
+    console.log("@config.table.lines");
+    console.log(this.config.table.lines);
+    return this.config.table.rows.forEach((function(_this) {
+      return function(row, rowIndex) {
+        return row.forEach(function(cell, columnIndex) {
+          cell.x = _.sum(_.slice(_this.config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * _this.config.table.innerColumnPadding;
+          cell.y = _.sum(_.slice(_this.config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * _this.config.table.innerRowPadding;
+          cell.width = _this.config.table.colWidths[columnIndex];
+          cell.height = _this.config.table.rowHeights[rowIndex];
+          cell.row = rowIndex;
+          cell.col = columnIndex;
+          return console.log("setting xy for cell " + rowIndex + ":" + columnIndex + " = " + cell.x + ":" + cell.y + ". width:height= " + cell.width + ":" + cell.height);
+        });
+      };
+    })(this));
   };
 
   Pictograph.prototype.draw = function() {
-    var enteringCells, pictographContext, tableCells, tableId, tableLayout;
+    var addLines, enteringCells, tableCells, tableId;
     this.cssCollector.draw();
     this._manipulateRootElementSize();
     this._addRootSvgToRootElement();
-    this._computeTableDimensions();
-    tableLayout = d3.layout.grid().bands().size([this.initialWidth, this.initialHeight]).padding([0.1, 0.1]).rows(this.numTableRows);
+    this._computeTableLayout();
     tableCells = _.flatten(this.config.table.rows);
-    enteringCells = this.outerSvg.selectAll('.table-cell').data(tableLayout(tableCells)).enter().append('g').attr('class', 'table-cell').attr('transform', function(d) {
+    addLines = (function(_this) {
+      return function(lineType, data) {
+        return _this.outerSvg.selectAll("." + lineType).data(data).enter().append('line').attr('x1', function(d) {
+          return d.x1;
+        }).attr('x2', function(d) {
+          return d.x2;
+        }).attr('y1', function(d) {
+          return d.y1;
+        }).attr('y2', function(d) {
+          return d.y2;
+        }).attr('style', function(d) {
+          return d.style;
+        }).attr('class', function(d) {
+          return "line " + lineType + " line-" + d.position;
+        });
+      };
+    })(this);
+    addLines('horizontal-line', this.config.table.lines.horizontal);
+    addLines('vertical-line', this.config.table.lines.vertical);
+    enteringCells = this.outerSvg.selectAll('.table-cell').data(tableCells).enter().append('g').attr('class', 'table-cell').attr('transform', function(d) {
       return "translate(" + d.x + "," + d.y + ")";
     });
-    pictographContext = this;
     tableId = this.config['table-id'];
     enteringCells.each(function(d, i) {
       var cssWrapperClass, graphic;
@@ -108,16 +235,16 @@ Pictograph = (function() {
       d3.select(this).classed(cssWrapperClass, true);
       if (d.type === 'graphic') {
         d3.select(this).classed('graphic', true);
-        graphic = new GraphicCell(d3.select(this), [tableId, cssWrapperClass], tableLayout.nodeSize()[0], tableLayout.nodeSize()[1]);
+        graphic = new GraphicCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
         graphic.setConfig(d.value);
         graphic.draw();
       }
       if (d.type === 'label') {
         d3.select(this).classed('label', true);
         return d3.select(this).append('svg:text').attr('x', function(d) {
-          return tableLayout.nodeSize()[0] / 2;
+          return d.width / 2;
         }).attr('y', function(d) {
-          return tableLayout.nodeSize()[1] / 2;
+          return d.height / 2;
         }).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').attr('class', 'text-overlay').text(d.value);
       }
     });
@@ -145,6 +272,22 @@ Pictograph = (function() {
       document.getElementsByClassName("pictograph-outer-svg")[0].setAttribute('preserveAspectRatio', this.config['preserveAspectRatio']);
     }
     return null;
+  };
+
+  Pictograph.prototype._verifyKeyIsInt = function(input, key, defaultValue, message) {
+    if (message == null) {
+      message = 'Must be integer';
+    }
+    if (!_.isUndefined(defaultValue)) {
+      if (!_.has(input, key)) {
+        input[key] = defaultValue;
+        return;
+      }
+    }
+    if (_.isNaN(parseInt(input[key]))) {
+      throw new Error("invalid '" + key + "': " + input[key] + ". " + message + ".");
+    }
+    input[key] = parseInt(input[key]);
   };
 
   return Pictograph;

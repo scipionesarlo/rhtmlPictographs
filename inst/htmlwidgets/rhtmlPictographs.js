@@ -36,7 +36,8 @@ HTMLWidgets.widget({
       err = _error;
       console.error(err.stack);
       errorHandler = new DisplayError(el, err);
-      return errorHandler.draw();
+      errorHandler.draw();
+      throw new Error(err);
     }
   }
 });

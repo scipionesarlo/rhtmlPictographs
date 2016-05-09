@@ -28,7 +28,7 @@ Steps:
 
 You should now see a page listing a bunch of links to examples, each of which has some kind of pictograph image.
 
-Choose an example or add another example to [scenarios.json](resources/data/scenarios.json). When changes to the [coffeescript](theSrc/scripts) or any other file in `./theSrc` are saved, the browser will automatically reload.
+Choose an example or add another example to [features.json](theSrc/features/features.json). When changes to the [coffeescript](theSrc/scripts) or any other file in `./theSrc` are saved, the browser will automatically reload.
 
 # Docs
 

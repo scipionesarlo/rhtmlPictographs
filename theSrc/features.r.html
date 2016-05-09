@@ -23,7 +23,7 @@
         console.log("Document ready. Fetching scenarios");
 
 
-        $.ajax('./resources/data/scenarios.json').done(function (response) {
+        $.ajax('./theSrc/features/features.json').done(function (response) {
 
           _.forEach(response.features, function(feature) {
             $('.pre-content').append($('<span>').html('#' + feature.name));
@@ -53,9 +53,9 @@
           });
 
         }).fail( function(error) {
-          console.error("Download of ./resources/data/scenarios.json failed. Probably invalid JSON.");
+          console.error("Download of ./theSrc/features/features.json failed. Probably invalid JSON.");
           console.error(error);
-          $('body').append($('<div>').text("Failure to download/parse ./resources/data/scenarios.json (probably invalid JSON). See dev tools console for error logging."));
+          $('body').append($('<div>').text("Failure to download/parse ./theSrc/features/features.json (probably invalid JSON). See dev tools console for error logging."));
         });
       });
     </script>

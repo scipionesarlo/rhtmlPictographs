@@ -86,7 +86,7 @@
         });
 
         var featureFileLocation = './resources/data/';
-        var featureFile = getQueryVariable('featureFile') || 'scenarios.json';
+        var featureFile = getQueryVariable('featureFile') || 'features.json';
 
         $.ajax(featureFileLocation + featureFile).done(function (response) {
           console.log("Scenario retrieved. Instantiating captured widget");
@@ -215,9 +215,9 @@
           myWidgetDefinition.renderValue(container, params, myWidgetInstance);
 
         }).fail( function(error) {
-          console.error("Download of ./resources/data/scenarios.json failed. Probably invalid JSON.");
+          console.error("Download of ./theSrc/features/features.json failed. Probably invalid JSON.");
           console.error(error);
-          $('body').append($('<div>').text("Failure to download/parse ./resources/data/scenarios.json (probably invalid JSON). See dev tools console for error logging."));
+          $('body').append($('<div>').text("Failure to download/parse ./theSrc/features/features.json (probably invalid JSON). See dev tools console for error logging."));
         });
       });
     </script>
@@ -225,6 +225,8 @@
     <script src="scripts/DisplayError.js"></script>
     <script src="scripts/BaseCell.js"></script>
     <script src="scripts/GraphicCell.js"></script>
+    <script src="scripts/RhtmlStatefulWidget.js"></script>
+    <script src="scripts/RhtmlSvgWidget.js"></script>
     <script src="scripts/Pictograph.js"></script>
     <script src="scripts/rhtmlPictographs.js"></script>
   </body>

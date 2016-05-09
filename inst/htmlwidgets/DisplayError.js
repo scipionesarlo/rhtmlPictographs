@@ -9,7 +9,7 @@ DisplayError = (function() {
 
   DisplayError.prototype.draw = function() {
     var errorContainer, errorImage, errorText;
-    errorContainer = $('<div class="pictograph-error-container">');
+    errorContainer = $('<div class="rhtml-error-container">');
     errorImage = $('<img width="32px" height="32px" src="https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/error_128.png"/>');
     errorText = $('<span>').html(this.error.toString());
     errorContainer.append(errorImage);

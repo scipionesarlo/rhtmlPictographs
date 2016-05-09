@@ -1,21 +1,10 @@
 
-class Pictograph
+class Pictograph extends RhtmlSvgWidget
 
-  #NB Coffeescript class syntax note:
-  # @ in front of method / variable def: static class method
-  # @ within method body : short hand for this / self / instance context
-  # e.g @pictograph is a static variable, @rootElement is an instance variable
+  constructor: (el, width, height) ->
+    super el, width, height
 
-  @pictographIndex = -1
-
-  constructor: (el, width, height, @parentCss=null) ->
-    Pictograph.pictographIndex++
-
-    @rootElement = if _.has(el, 'length') then el[0] else el
-    @initialWidth = width
-    @initialHeight = height
-
-  setConfig: (@config) ->
+  _processConfig: () ->
 
     unless @config['table']?
       tableOfOneGraphic =
@@ -28,7 +17,6 @@ class Pictograph
     @config['resizable'] = true unless @config['resizable']?
     throw new Error 'resizable must be string [true|false]' unless _.isBoolean(@config['resizable'])
 
-    @config['table-id'] = "pictograph-#{Pictograph.pictographIndex}" unless @config['table-id']
     @cssCollector = new BaseCell(null, "#{@config['table-id']}") #hacky, @TODO extract CssCollector from BaseCell
     @cssCollector._draw = () -> _.noop
 
@@ -149,11 +137,8 @@ class Pictograph
         cell.col = columnIndex
         console.log("setting xy for cell #{rowIndex}:#{columnIndex} = #{cell.x}:#{cell.y}. width:height= #{cell.width}:#{cell.height}")
 
-  draw: () ->
+  _redraw: () ->
     @cssCollector.draw()
-
-    @_manipulateRootElementSize()
-    @_addRootSvgToRootElement()
     @_computeTableLayout()
 
     tableCells = _.flatten(@config.table.rows)
@@ -205,41 +190,6 @@ class Pictograph
           .style 'dominant-baseline', 'central'
           .attr 'class', 'text-overlay'
           .text d.value
-
-    return null
-
-  resize: (width, height) ->
-    #NB delberately not implemented - not needed
-
-  _manipulateRootElementSize: () ->
-
-    #root element has width and height in a style tag. Clear that
-    $(@rootElement).attr('style', '')
-
-    if @config['resizable']
-      $(@rootElement).width('100%').height('100%')
-    else
-      $(@rootElement).width(@initialWidth).height(@initialHeight)
-
-  _addRootSvgToRootElement: () ->
-
-    anonSvg = $('<svg class="pictograph-outer-svg">')
-      .addClass @config['table-id']
-      .attr 'id', @config['table-id']
-      .attr 'width', '100%'
-      .attr 'height', '100%'
-
-    $(@rootElement).append(anonSvg)
-
-    @outerSvg = d3.select(anonSvg[0])
-
-    #NB JQuery insists on lowercasing attributes, so we must use JS directly
-    # when setting viewBox and preserveAspectRatio ?!
-    document.getElementsByClassName("pictograph-outer-svg")[0]
-      .setAttribute 'viewBox', "0 0 #{@initialWidth} #{@initialHeight}"
-    if @config['preserveAspectRatio']?
-      document.getElementsByClassName("pictograph-outer-svg")[0]
-        .setAttribute 'preserveAspectRatio', @config['preserveAspectRatio']
 
     return null
 

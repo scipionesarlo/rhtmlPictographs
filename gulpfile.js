@@ -21,7 +21,7 @@ gulp.task('serve', ['connect', 'watch'], function () {
 });
 
 gulp.task('clean', function(done) {
-  var locationsToDelete = ['inst', 'man', 'R', 'examples'];
+  var locationsToDelete = ['browser', 'inst', 'man', 'R', 'examples'];
   var deletePromises = locationsToDelete.map( function(location) { return fs.removeAsync(location); })
   Promise.all(deletePromises).then(done);
   return true;
@@ -29,16 +29,16 @@ gulp.task('clean', function(done) {
 
 gulp.task('makeDocs', function () {
   var shell = require('gulp-shell');
-  return gulp.src('resources/build/makeDoc.r', {read: false})
+  return gulp.src('./build/makeDoc.r', {read: false})
     .pipe(shell([
       'r --no-save < <%= file.path %>',
     ], {}))
 });
 
 gulp.task('makeExample', function (done) {
-  var generateR = require('./resources/build/generateExamplesInR.js');
+  var generateR = require('./build/generateExamplesInR.js');
   fs.mkdirpAsync('examples')
-    .then(function () { return fs.readFileAsync('resources/data/scenarios.json', { encoding: 'utf8' }) })
+    .then(function () { return fs.readFileAsync('theSrc/features/features.json', { encoding: 'utf8' }) })
     .then(JSON.parse)
     .then(generateR)
     .then(function (content) { return fs.writeFileAsync('examples/features.R', content, { encoding: 'utf8' }) })
@@ -73,8 +73,8 @@ gulp.task('copy', function () {
   ], {}).pipe(gulp.dest('browser/images'));
 
   gulp.src([
-    'resources/**/*.json'
-  ], {}).pipe(gulp.dest('browser/resources'));
+    'theSrc/features/*.json'
+  ], {}).pipe(gulp.dest('browser/features'));
 
   var rename = require('gulp-rename');
   gulp.src('theSrc/R/htmlwidget.yaml')
@@ -86,47 +86,15 @@ gulp.task('copy', function () {
     .pipe(gulp.dest('R/'));
 
   var extLibs = [
-    {
-      src: 'node_modules/lodash/lodash.min.js',
-      dest: [
-        'inst/htmlwidgets/lib/lodash-4.6.1/',
-        'browser/external/'
-      ]
-    },
-    {
-      src: 'node_modules/jquery/dist/jquery.min.js',
-      dest: [
-        'inst/htmlwidgets/lib/jquery-2.2.2/',
-        'browser/external/'
-      ]
-    },
-    {
-      src: 'node_modules/d3/d3.min.js',
-      dest: [
-        'inst/htmlwidgets/lib/d3-3.5.16/',
-        'browser/external/'
-      ]
-    },
-    {
-      src: 'node_modules/d3-grid/d3-grid.js',
-      dest: [
-        'inst/htmlwidgets/lib/d3-grid-0.1.2/',
-        'browser/external/'
-      ]
-    }
+    'node_modules/lodash/lodash.min.js',
+    'node_modules/jquery/dist/jquery.min.js',
+    'node_modules/d3/d3.min.js',
+    'node_modules/d3-grid/d3-grid.js'
   ]
 
-  _.forEach(extLibs, function(extLib) {
-    var gulpSrc = gulp.src([
-      extLib.src
-    ], {
-      dot: true
-    })
-
-    _.forEach(extLib.dest, function(dest) {
-      gulpSrc.pipe(gulp.dest(dest));
-    });
-  });
+  gulp.src(extLibs)
+    .pipe(gulp.dest('inst/htmlwidgets/lib/'))
+    .pipe(gulp.dest('browser/external/'))
 
 });
 

@@ -122,10 +122,9 @@
       "name": "Fixed size graphics (aka not resizable)",
       "scenarios": [
         {
-          "name": "A graphic that is not resiazable",
+          "name": "A graphic that is not resizable",
           "description" : [
-            "This demonstrates a minimal invocation of the widget and relies on all of the default settings:",
-            "As such it may change as the defaults change."
+            "It doesnt resize. try it using the controls below"
           ],
           "settings": {
             "percentage": 0.4,

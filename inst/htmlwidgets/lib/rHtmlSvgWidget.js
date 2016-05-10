@@ -64,3 +64,7 @@ RhtmlSvgWidget = (function(_super) {
   return RhtmlSvgWidget;
 
 })(RhtmlStatefulWidget);
+
+if (typeof module !== 'undefined') {
+  module.exports = RhtmlSvgWidget;
+}

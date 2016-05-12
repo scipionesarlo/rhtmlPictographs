@@ -40,9 +40,8 @@ rhtmlPictographs::graphic(NULL,600,600,'{"numImages":6,"variableImageUrl":"https
 rhtmlPictographs::graphic(0.23,50,50,'{"percentage":0.23,"font-size":"10px","baseImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png","variableImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 
 #Fixed size graphics (aka not resizable)
-##A graphic that is not resiazable
-###This demonstrates a minimal invocation of the widget and relies on all of the default settings:
-###As such it may change as the defaults change.
+##A graphic that is not resizable
+###It doesnt resize. try it using the controls below
 
 rhtmlPictographs::graphic(0.4,400,400,'{"percentage":0.4,"resizable":"false","baseImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png","variableImageUrl":"https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
 

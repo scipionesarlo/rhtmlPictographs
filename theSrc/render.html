@@ -8,6 +8,8 @@
     <script src="external/jquery.min.js"></script>
     <script src="external/d3.min.js"></script>
     <script src="external/d3-grid.js"></script>
+    <script src="external/rHtmlStatefulWidget.js"></script>
+    <script src="external/rHtmlSvgWidget.js"></script>
 
     <a href="/" class="prev-link" style="display:none">Prev</a>
     <a href="/">Back to Examples</a>
@@ -85,7 +87,7 @@
           return false;
         });
 
-        var featureFileLocation = './resources/data/';
+        var featureFileLocation = './features/';
         var featureFile = getQueryVariable('featureFile') || 'features.json';
 
         $.ajax(featureFileLocation + featureFile).done(function (response) {
@@ -225,8 +227,6 @@
     <script src="scripts/DisplayError.js"></script>
     <script src="scripts/BaseCell.js"></script>
     <script src="scripts/GraphicCell.js"></script>
-    <script src="scripts/RhtmlStatefulWidget.js"></script>
-    <script src="scripts/RhtmlSvgWidget.js"></script>
     <script src="scripts/Pictograph.js"></script>
     <script src="scripts/rhtmlPictographs.js"></script>
   </body>

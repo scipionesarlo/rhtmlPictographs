@@ -4,6 +4,9 @@ class GraphicCell extends BaseCell
   setConfig: (@config) ->
     throw new Error "Must specify 'variableImageUrl'" unless @config.variableImageUrl?
 
+    if _.isString(@config['percentage']) and @config['percentage'].startsWith('=')
+      @config['percentage'] = eval(@config['percentage'].substring(1))
+
     @_verifyKeyIsFloat @config, 'percentage', 1, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'percentage'
 

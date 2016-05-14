@@ -145,7 +145,10 @@ Pictograph = (function(_super) {
       fractionOfCell = linePosition - numCellsPast;
       sizeOfNumCellsPast = _.sum(_.slice(cellSizes, 0, numCellsPast));
       sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize;
-      sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize);
+      sizeOfFraction = 0;
+      if (numCellsPast.length < cellSizes.length) {
+        sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize);
+      }
       return sizeOfNumCellsPast + sizeOfGuttersPast + sizeOfFraction;
     };
     this.config.table.lines.horizontal = this.config.table.lines.horizontal.map((function(_this) {
@@ -176,8 +179,6 @@ Pictograph = (function(_super) {
         };
       };
     })(this));
-    console.log("@config.table.lines");
-    console.log(this.config.table.lines);
     return this.config.table.rows.forEach((function(_this) {
       return function(row, rowIndex) {
         return row.forEach(function(cell, columnIndex) {
@@ -186,8 +187,7 @@ Pictograph = (function(_super) {
           cell.width = _this.config.table.colWidths[columnIndex];
           cell.height = _this.config.table.rowHeights[rowIndex];
           cell.row = rowIndex;
-          cell.col = columnIndex;
-          return console.log("setting xy for cell " + rowIndex + ":" + columnIndex + " = " + cell.x + ":" + cell.y + ". width:height= " + cell.width + ":" + cell.height);
+          return cell.col = columnIndex;
         });
       };
     })(this));
@@ -222,7 +222,7 @@ Pictograph = (function(_super) {
     });
     tableId = this.config['table-id'];
     enteringCells.each(function(d, i) {
-      var cssWrapperClass, graphic;
+      var cssWrapperClass, graphic, label;
       cssWrapperClass = "table-cell-" + d.row + "-" + d.col;
       d3.select(this).classed(cssWrapperClass, true);
       if (d.type === 'graphic') {
@@ -233,11 +233,9 @@ Pictograph = (function(_super) {
       }
       if (d.type === 'label') {
         d3.select(this).classed('label', true);
-        return d3.select(this).append('svg:text').attr('x', function(d) {
-          return d.width / 2;
-        }).attr('y', function(d) {
-          return d.height / 2;
-        }).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').attr('class', 'text-overlay').text(d.value);
+        label = new LabelCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
+        label.setConfig(d.value);
+        return label.draw();
       }
     });
     return null;

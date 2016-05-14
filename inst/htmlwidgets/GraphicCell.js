@@ -16,6 +16,9 @@ GraphicCell = (function(_super) {
     if (this.config.variableImageUrl == null) {
       throw new Error("Must specify 'variableImageUrl'");
     }
+    if (_.isString(this.config['percentage']) && this.config['percentage'].startsWith('=')) {
+      this.config['percentage'] = eval(this.config['percentage'].substring(1));
+    }
     this._verifyKeyIsFloat(this.config, 'percentage', 1, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'percentage');
     this._verifyKeyIsInt(this.config, 'numImages', 1);

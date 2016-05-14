@@ -17,6 +17,7 @@ dependencies:
    script:
      - BaseCell.js
      - GraphicCell.js
+     - LabelCell.js
      - Pictograph.js
      - DisplayError.js
 

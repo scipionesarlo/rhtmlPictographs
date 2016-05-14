@@ -98,7 +98,9 @@ class Pictograph extends RhtmlSvgWidget
 
       sizeOfNumCellsPast = _.sum(_.slice(cellSizes, 0, numCellsPast))
       sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize
-      sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize)
+      sizeOfFraction = 0
+      if numCellsPast.length < cellSizes.length
+        sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize)
 
       return sizeOfNumCellsPast + sizeOfGuttersPast + sizeOfFraction
 
@@ -124,9 +126,6 @@ class Pictograph extends RhtmlSvgWidget
         style: @config.table.lines.style || "stroke:black;stroke-width:2"
       }
 
-    console.log "@config.table.lines"
-    console.log @config.table.lines
-
     @config.table.rows.forEach (row, rowIndex) =>
       row.forEach (cell, columnIndex) =>
         cell.x = _.sum( _.slice(@config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * @config.table.innerColumnPadding
@@ -135,7 +134,6 @@ class Pictograph extends RhtmlSvgWidget
         cell.height = @config.table.rowHeights[rowIndex]
         cell.row = rowIndex
         cell.col = columnIndex
-        console.log("setting xy for cell #{rowIndex}:#{columnIndex} = #{cell.x}:#{cell.y}. width:height= #{cell.width}:#{cell.height}")
 
   _redraw: () ->
     @cssCollector.draw()
@@ -180,16 +178,9 @@ class Pictograph extends RhtmlSvgWidget
 
       if d.type is 'label'
         d3.select(this).classed 'label', true
-        d3.select(this).append('svg:text')
-          .attr 'x', (d) -> d.width / 2
-          .attr 'y', (d) -> d.height / 2
-          .style 'text-anchor', 'middle'
-          #alignment-baseline and dominant-baseline should do similar thing
-          # but both may be necessary for browser compatability ...
-          .style 'alignment-baseline', 'central'
-          .style 'dominant-baseline', 'central'
-          .attr 'class', 'text-overlay'
-          .text d.value
+        label = new LabelCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
+        label.setConfig d.value
+        label.draw()
 
     return null
 

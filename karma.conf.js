@@ -1,29 +1,21 @@
 module.exports = function(config) {
-  config.set({
-    browsers: ['PhantomJS'],
-    // browsers: ['Chrome'],
-    basePath: '',
-    files: [
-      'browser/external/d3.min.js',
-      'browser/external/d3-grid.js',
-      'browser/external/jquery.min.js',
-      'browser/external/lodash.min.js',
-      'browser/external/rHtmlStatefulWidget.js',
-      'browser/external/rHtmlSvgWidget.js',
 
-      'browser/scripts/BaseCell.js',
-      'browser/scripts/DisplayError.js',
-      'browser/scripts/GraphicCell.js',
-      'browser/scripts/LabelCell.js',
-      'browser/scripts/Pictograph.js',
+  config.set({
+    // browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
+    basePath: '',
+    files: require('./build/externalLibs.json').concat([
+      'theSrc/scripts/BaseCell.coffee',
+      'theSrc/scripts/DisplayError.coffee',
+      'theSrc/scripts/GraphicCell.coffee',
+      'theSrc/scripts/LabelCell.coffee',
+      'theSrc/scripts/Pictograph.coffee',
 
       'test/*Spec.coffee',
-      'test/**/*Spec.coffee',
-      'testSpec.js',
-      'testSpecC.coffee'
-    ],
+      'test/**/*Spec.coffee'
+    ]),
 
-    frameworks: ['mocha', 'chai-dom', 'chai-as-promised', 'chai', 'sinon'],
+    frameworks: ['mocha', 'sinon-chai', 'chai-dom', 'chai-as-promised', 'chai', 'sinon'],
 
     preprocessors: {
       '**/*.coffee': ['coffee']

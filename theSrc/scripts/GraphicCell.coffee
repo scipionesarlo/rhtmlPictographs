@@ -1,7 +1,8 @@
 
 class GraphicCell extends BaseCell
 
-  setConfig: (@config) ->
+  setConfig: (config) ->
+    @config = _.cloneDeep config
     throw new Error "Must specify 'variableImageUrl'" unless @config.variableImageUrl?
 
     if _.isString(@config['percentage']) and @config['percentage'].startsWith('=')

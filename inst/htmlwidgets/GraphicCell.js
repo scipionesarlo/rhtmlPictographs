@@ -12,7 +12,7 @@ GraphicCell = (function(_super) {
 
   GraphicCell.prototype.setConfig = function(config) {
     var _ref;
-    this.config = config;
+    this.config = _.cloneDeep(config);
     if (this.config.variableImageUrl == null) {
       throw new Error("Must specify 'variableImageUrl'");
     }

@@ -44,7 +44,11 @@ class Pictograph extends RhtmlSvgWidget
 
     @numTableRows = @config.table.rows.length
     @numTableCols = null
-    @config.table.rows.forEach (row) =>
+    @config.table.rows.forEach (row, rowIndex) =>
+
+      unless _.isArray row
+        throw new Error "Invalid rows spec: row #{rowIndex} must be array of cell definitions"
+
       if _.isNull @numTableCols
         @numTableCols = row.length
 
@@ -62,12 +66,18 @@ class Pictograph extends RhtmlSvgWidget
       unless @config.table.rowHeights.length == @numTableRows
         throw new Error "rowHeights length must match num rows specified"
 
+      @config.table.rowHeights = @config.table.rowHeights.map (candidate) ->
+        rowHeight = parseInt candidate
+        if _.isNaN rowHeight
+          throw new Error "Invalid rowHeight '#{candidate}': must be integer"
+        rowHeight
+
       sumSpecified = _.sum(@config.table.rowHeights) + (@numTableRows-1) * @config.table.innerRowPadding
       unless sumSpecified <= @initialHeight
         throw new Error "Cannot specify rowHeights/innerRowPadding where sum(rows+padding) exceeds table height: #{sumSpecified} !< #{@initialHeight}"
 
     else
-      @config.table.rowHeights = [1..@numTableRows].map ( => @initialHeight / @numTableRows )
+      @config.table.rowHeights = [1..@numTableRows].map ( => parseInt(@initialHeight / @numTableRows) )
 
     if @config.table.colWidths
       #@TODO: verify and cast Array values to Ints
@@ -77,14 +87,20 @@ class Pictograph extends RhtmlSvgWidget
       unless @config.table.colWidths.length == @numTableCols
         throw new Error "colWidths length must match num columns specified"
 
+      @config.table.colWidths = @config.table.colWidths.map (candidate) ->
+        colWidth = parseInt candidate
+        if _.isNaN colWidth
+          throw new Error "Invalid colWidth '#{candidate}': must be integer"
+        colWidth
+
       sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.innerColumnPadding
       unless sumSpecified <= @initialWidth
         throw new Error "Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
 
-    else
-      @config.table.colWidths = [1..@numTableCols].map ( => @initialWidth / @numTableCols )
 
-    #TODO: verify input
+    else
+      @config.table.colWidths = [1..@numTableCols].map ( => parseInt(@initialWidth / @numTableCols) )
+
     @config.table.lines = {} unless @config.table.lines
     @config.table.lines.horizontal = (@config.table.lines.horizontal || []).sort()
     @config.table.lines.vertical = (@config.table.lines.vertical || []).sort()
@@ -97,14 +113,30 @@ class Pictograph extends RhtmlSvgWidget
       fractionOfCell = linePosition - numCellsPast
 
       sizeOfNumCellsPast = _.sum(_.slice(cellSizes, 0, numCellsPast))
-      sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize
+
+      sizeOfGuttersPast = 0
+      if numCellsPast > 0 and numCellsPast < cellSizes.length
+        sizeOfGuttersPast = numGuttersAtIndex(numCellsPast) * paddingSize - 0.5 * paddingSize
+      else if numCellsPast > 0 and numCellsPast == cellSizes.length
+        sizeOfGuttersPast = numGuttersAtIndex(numCellsPast - 1) * paddingSize
+
       sizeOfFraction = 0
-      if numCellsPast.length < cellSizes.length
+      if numCellsPast == 0
+        sizeOfFraction = fractionOfCell * cellSizes[numCellsPast]
+      else if numCellsPast < cellSizes.length
         sizeOfFraction = fractionOfCell * (cellSizes[numCellsPast] + paddingSize)
 
       return sizeOfNumCellsPast + sizeOfGuttersPast + sizeOfFraction
 
-    @config.table.lines.horizontal = @config.table.lines.horizontal.map (lineIndex) =>
+    @config.table.lines.horizontal = @config.table.lines.horizontal.map (lineIndexCandidate) =>
+
+      lineIndex = parseFloat lineIndexCandidate
+      if _.isNaN lineIndex
+        throw new Error "Invalid vertical line position '#{lineIndexCandidate}': must be numeric"
+
+      if lineIndex > @numTableRows or lineIndex < 0
+        throw new Error "Cannot create line at '#{lineIndex}': past end of table"
+
       y = calcLineVariableDimension lineIndex, @config.table.rowHeights, @config.table.innerRowPadding
       return {
         position: lineIndex
@@ -115,7 +147,15 @@ class Pictograph extends RhtmlSvgWidget
         style: @config.table.lines.style || "stroke:black;stroke-width:2"
       }
 
-    @config.table.lines.vertical = @config.table.lines.vertical.map (lineIndex) =>
+    @config.table.lines.vertical = @config.table.lines.vertical.map (lineIndexCandidate) =>
+
+      lineIndex = parseFloat lineIndexCandidate
+      if _.isNaN lineIndex
+        throw new Error "Invalid vertical line position '#{lineIndexCandidate}': must be numeric"
+
+      if lineIndex > @numTableCols  or lineIndex < 0
+        throw new Error "Cannot create line at '#{lineIndex}': past end of table"
+
       x = calcLineVariableDimension lineIndex, @config.table.colWidths, @config.table.innerColumnPadding
       return {
         position: lineIndex

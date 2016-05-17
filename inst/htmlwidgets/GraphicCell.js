@@ -21,12 +21,12 @@ GraphicCell = (function(_super) {
     }
     this._verifyKeyIsFloat(this.config, 'percentage', 1, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'percentage');
-    this._verifyKeyIsInt(this.config, 'numImages', 1);
+    this._verifyKeyIsPositiveInt(this.config, 'numImages', 1);
     if (this.config['numRows'] != null) {
-      this._verifyKeyIsInt(this.config, 'numRows', 1);
+      this._verifyKeyIsPositiveInt(this.config, 'numRows', 1);
     }
     if (this.config['numCols'] != null) {
-      this._verifyKeyIsInt(this.config, 'numCols', 1);
+      this._verifyKeyIsPositiveInt(this.config, 'numCols', 1);
     }
     if ((this.config['numRows'] != null) && (this.config['numCols'] != null)) {
       throw new Error("Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions.");
@@ -35,7 +35,7 @@ GraphicCell = (function(_super) {
       this.config['direction'] = 'horizontal';
     }
     if ((_ref = this.config['direction']) !== 'horizontal' && _ref !== 'vertical' && _ref !== 'scale') {
-      throw new Error("direction must be either (horizontal|vertical)");
+      throw new Error("direction must be either (horizontal|vertical|scale)");
     }
     this._verifyKeyIsFloat(this.config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'interColumnPadding');
@@ -43,10 +43,7 @@ GraphicCell = (function(_super) {
     this._verifyKeyIsRatio(this.config, 'interRowPadding');
     this._processTextConfig('text-header');
     this._processTextConfig('text-overlay');
-    this._processTextConfig('text-footer');
-    if ((this.config['text-overlay'] != null) && this.config['text-overlay']['text'].match(/^percentage$/)) {
-      return this.config['text-overlay']['text'] = "" + ((100 * this.config.percentage).toFixed(0)) + "%";
-    }
+    return this._processTextConfig('text-footer');
   };
 
   GraphicCell.prototype._processTextConfig = function(key) {
@@ -55,6 +52,12 @@ GraphicCell = (function(_super) {
       textConfig = _.isString(this.config[key]) ? {
         text: this.config[key]
       } : this.config[key];
+      if (textConfig['text'] == null) {
+        throw new Error("Invalid " + key + " config: must have text field");
+      }
+      if ((textConfig != null) && textConfig['text'].match(/^percentage$/)) {
+        textConfig['text'] = "" + ((100 * this.config.percentage).toFixed(0)) + "%";
+      }
       if (textConfig['font-size'] == null) {
         textConfig['font-size'] = BaseCell.getDefault('font-size');
       }
@@ -77,7 +80,7 @@ GraphicCell = (function(_super) {
       y = this.dimensions.headerHeight / 2;
       this._addTextTo(this.parentSvg, this.config['text-header']['text'], 'text-header', x, y);
     }
-    graphicContainer = this.parentSvg.append('g').attr('class', 'graphic-container').attr('transform', "translate(0," + this.dimensions.graphicOffSet + ")");
+    graphicContainer = this.parentSvg.append('g').attr('class', 'graphic-container').attr('transform', "translate(0," + this.dimensions.graphicOffset + ")");
     if (this.config['text-footer'] != null) {
       x = this.width / 2;
       y = this.dimensions.footerOffset + this.dimensions.footerHeight / 2;
@@ -133,7 +136,7 @@ GraphicCell = (function(_super) {
     this.dimensions.headerHeight = 0 + (this.config['text-header'] != null ? parseInt(this.config['text-header']['font-size'].replace(/(px|em)/, '')) : 0);
     this.dimensions.footerHeight = 0 + (this.config['text-footer'] != null ? parseInt(this.config['text-footer']['font-size'].replace(/(px|em)/, '')) : 0);
     this.dimensions.graphicHeight = this.height - this.dimensions.headerHeight - this.dimensions.footerHeight;
-    this.dimensions.graphicOffSet = 0 + this.dimensions.headerHeight;
+    this.dimensions.graphicOffset = 0 + this.dimensions.headerHeight;
     return this.dimensions.footerOffset = 0 + this.dimensions.headerHeight + this.dimensions.graphicHeight;
   };
 

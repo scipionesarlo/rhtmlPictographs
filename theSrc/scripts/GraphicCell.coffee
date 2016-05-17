@@ -12,15 +12,15 @@ class GraphicCell extends BaseCell
     @_verifyKeyIsFloat @config, 'percentage', 1, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'percentage'
 
-    @_verifyKeyIsInt @config, 'numImages', 1
-    @_verifyKeyIsInt(@config, 'numRows', 1) if @config['numRows']?
-    @_verifyKeyIsInt(@config, 'numCols', 1) if @config['numCols']?
+    @_verifyKeyIsPositiveInt @config, 'numImages', 1
+    @_verifyKeyIsPositiveInt(@config, 'numRows', 1) if @config['numRows']?
+    @_verifyKeyIsPositiveInt(@config, 'numCols', 1) if @config['numCols']?
     if @config['numRows']? and @config['numCols']?
       throw new Error "Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions."
 
     @config['direction'] = 'horizontal' unless @config['direction']?
     unless @config['direction'] in ['horizontal', 'vertical', 'scale']
-      throw new Error "direction must be either (horizontal|vertical)"
+      throw new Error "direction must be either (horizontal|vertical|scale)"
 
     @_verifyKeyIsFloat @config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'interColumnPadding'
@@ -31,15 +31,18 @@ class GraphicCell extends BaseCell
     @_processTextConfig 'text-overlay'
     @_processTextConfig 'text-footer'
 
-    if @config['text-overlay']? and @config['text-overlay']['text'].match(/^percentage$/)
-      @config['text-overlay']['text'] = "#{(100 * @config.percentage).toFixed(0)}%"
-
   _processTextConfig: (key) ->
     if @config[key]?
       textConfig = if _.isString(@config[key]) then { text : @config[key] } else @config[key]
 
+      throw new Error "Invalid #{key} config: must have text field" unless textConfig['text']?
+
+      if textConfig? and textConfig['text'].match(/^percentage$/)
+        textConfig['text'] = "#{(100 * @config.percentage).toFixed(0)}%"
+
       #font-size must be present to compute dimensions
-      textConfig['font-size'] = BaseCell.getDefault('font-size') unless textConfig['font-size']?
+      textConfig['font-size'] ?= BaseCell.getDefault('font-size')
+
 
       for cssAttribute in ['font-family', 'font-size', 'font-weight', 'font-color']
         @setCss(key, cssAttribute, textConfig[cssAttribute]) if textConfig[cssAttribute]?
@@ -57,7 +60,7 @@ class GraphicCell extends BaseCell
 
     graphicContainer = @parentSvg.append('g')
       .attr('class', 'graphic-container')
-      .attr 'transform', "translate(0,#{@dimensions.graphicOffSet})"
+      .attr 'transform', "translate(0,#{@dimensions.graphicOffset})"
 
     if @config['text-footer']?
       x = @width / 2
@@ -132,7 +135,7 @@ class GraphicCell extends BaseCell
     @dimensions.footerHeight = 0 + (if @config['text-footer']? then parseInt(@config['text-footer']['font-size'].replace(/(px|em)/, '')) else 0)
 
     @dimensions.graphicHeight = @height - @dimensions.headerHeight - @dimensions.footerHeight
-    @dimensions.graphicOffSet = 0 + @dimensions.headerHeight
+    @dimensions.graphicOffset = 0 + @dimensions.headerHeight
 
     @dimensions.footerOffset = 0 + @dimensions.headerHeight + @dimensions.graphicHeight
 

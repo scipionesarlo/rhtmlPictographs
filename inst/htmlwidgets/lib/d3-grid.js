@@ -60,9 +60,6 @@
         var numGaps = numRows * numCols - nodes.length;
         var modulo = nodes.length % numRows;
 
-        console.log("numGaps:" + numGaps);
-        console.log("modulo:" + modulo);
-
         var pickNextSpot = function() {
 
           var advance = function() {

@@ -65,13 +65,18 @@ LabelCell = (function(_super) {
   };
 
   LabelCell.prototype._draw = function() {
-    var y;
-    y = this.config['padding-top'];
+    var currentY;
+    currentY = this.config['padding-top'];
     return _.forEach(this.labels, (function(_this) {
       return function(labelConfig) {
-        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], _this.width / 2, y + labelConfig['font-size'].replace(/(px|em)/, '') / 2);
-        y += parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
-        return y += parseInt(_this.config['padding-inner']);
+        var fontSize, labelCenter;
+        fontSize = parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
+        labelCenter = {
+          x: _this.width / 2,
+          y: currentY + fontSize / 2
+        };
+        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelCenter.x, labelCenter.y);
+        return currentY += fontSize + _this.config['padding-inner'];
       };
     })(this));
   };

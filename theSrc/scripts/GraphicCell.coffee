@@ -5,6 +5,7 @@ class GraphicCell extends BaseCell
     @config = _.cloneDeep config
     throw new Error "Must specify 'variableImageUrl'" unless @config.variableImageUrl?
 
+    #@TODO document and demonstrate
     if _.isString(@config['percentage']) and @config['percentage'].startsWith('=')
       @config['percentage'] = eval(@config['percentage'].substring(1))
 

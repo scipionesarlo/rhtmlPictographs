@@ -40,11 +40,16 @@ class LabelCell extends BaseCell
         @setCss(labelConfig['class'], labelKey, labelValue)
 
   _draw: () ->
-    y = @config['padding-top']
+    currentY = @config['padding-top']
     _.forEach @labels, (labelConfig) =>
-      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], @width / 2, y + labelConfig['font-size'].replace(/(px|em)/, '') / 2
-      y += parseInt labelConfig['font-size'].replace(/(px|em)/, '')
-      y += parseInt @config['padding-inner']
+      fontSize = parseInt labelConfig['font-size'].replace(/(px|em)/, '')
+      labelCenter =
+        x: @width / 2
+        y: currentY + fontSize / 2
+
+      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], labelCenter.x, labelCenter.y
+
+      currentY += fontSize + @config['padding-inner']
 
   _addTextTo: (parent, text, myClass, x, y) ->
     parent.append('svg:text')

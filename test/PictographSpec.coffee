@@ -1,6 +1,4 @@
 
-#TODO : test cell placement
-
 describe 'Pictograph class', ->
 
   beforeEach ->
@@ -10,91 +8,75 @@ describe 'Pictograph class', ->
       label: (config='label') =>
         return { type: 'label', value: config }
 
-  describe '_processConfig(): ', ->
+  # describe '_processConfig(): ', ->
 
-    beforeEach ->
-      @instantiateAndSetConfigTo = (config, width=100, height=100) ->
-        @instance = new Pictograph '<div class="outer-container">', width, height
-        @instance.setConfig config
+  #   beforeEach ->
+  #     @instantiateAndSetConfigTo = (config, width=100, height=100) ->
+  #       @instance = new Pictograph '<div class="outer-container">', width, height
+  #       @instance.setConfig config
 
-    describe 'without "table" field:', ->
+  #   describe 'without "table" field:', ->
 
-      beforeEach ->
-        @instantiateAndSetConfigTo {
-          variableImageUrl: 'images/foo'
-        }
+  #     beforeEach ->
+  #       @instantiateAndSetConfigTo { variableImageUrl: 'images/foo' }
 
-      it 'creates a top level "table" config field', ->
-        expect(@instance.config).to.have.property('table')
+  #     it 'creates a top level "table" config field', ->
+  #       expect(@instance.config).to.have.property 'table'
 
-      it 'the table field contains a rows field', ->
-        expect(@instance.config.table).to.have.property('rows')
+  #     it 'the table field contains a rows field', ->
+  #       expect(@instance.config.table).to.have.property 'rows'
 
-      it 'there is one graphic cell in the table', ->
-        expect(@instance.config.table.rows.length).to.equal(1)
-        expect(@instance.config.table.rows[0].length).to.equal(1)
-        expect(@instance.config.table.rows[0][0].type).to.equal('graphic')
+  #     it 'there is one graphic cell in the table', ->
+  #       expect(@instance.config.table.rows.length).to.equal 1
+  #       expect(@instance.config.table.rows[0].length).to.equal 1
+  #       expect(@instance.config.table.rows[0][0].type).to.equal 'graphic'
 
-    describe 'setting default css:', ->
+  #   describe 'setting default css:', ->
 
-      beforeEach ->
-        @baseCellSetDefaultSpy = sinon.spy BaseCell, 'setDefault'
-        @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
+  #     beforeEach ->
+  #       @baseCellSetDefaultSpy = sinon.spy BaseCell, 'setDefault'
+  #       @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
 
-        @instantiateAndSetConfigTo { variableImageUrl: 'images/foo' }
+  #       @instantiateAndSetConfigTo { variableImageUrl: 'images/foo' }
 
-        @defaultFieldsSet = @baseCellSetDefaultSpy.args.map (callValues) -> callValues[0]
-        @defaultCssSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
+  #       @wasSet = (param) ->
+  #         defaultsThatWereSet = @baseCellSetDefaultSpy.args.map (callValues) -> callValues[0]
+  #         cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
 
-      afterEach ->
-        BaseCell.setDefault.restore()
-        BaseCell.prototype.setCss.restore()
+  #         expect(defaultsThatWereSet).to.include param
+  #         expect(cssThatWasSet).to.include param
 
-      it 'sets font-family to something', ->
-        expect(@defaultFieldsSet).to.include 'font-family'
-        expect(@defaultCssSet).to.include 'font-family'
+  #     afterEach ->
+  #       BaseCell.setDefault.restore()
+  #       BaseCell.prototype.setCss.restore()
 
-      it 'sets font-weight to something', ->
-        expect(@defaultFieldsSet).to.include 'font-weight'
-        expect(@defaultCssSet).to.include 'font-weight'
+  #     it 'sets font-family to something', -> @wasSet 'font-family'
+  #     it 'sets font-weight to something', -> @wasSet 'font-weight'
+  #     it 'sets font-size to something', -> @wasSet 'font-size'
+  #     it 'sets font-color to something', -> @wasSet 'font-color'
 
-      it 'sets font-size to something', ->
-        expect(@defaultFieldsSet).to.include 'font-size'
-        expect(@defaultCssSet).to.include 'font-size'
+  #   describe 'setting custom css:', ->
 
-      it 'sets font-color to something', ->
-        expect(@defaultFieldsSet).to.include 'font-color'
-        expect(@defaultCssSet).to.include 'font-color'
+  #     beforeEach ->
+  #       @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
 
-    describe 'setting custom css:', ->
+  #       @instantiateAndSetConfigTo
+  #         variableImageUrl: 'images/foo'
+  #         css: {
+  #           "cssLocation1" : { "cssAttr1" : "cssValue1", "cssAttr2" : "cssValue2" }
+  #           "cssLocation2" : { "cssAttr3" : "cssValue3", "cssAttr4" : "cssValue4" }
+  #         }
 
-      beforeEach ->
-        @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
+  #       @verifyCss = (location, attr, value) ->
+  #         expect(@baseCellSetCssSpy).to.have.been.calledWith location, attr, value
 
-        @instantiateAndSetConfigTo
-          variableImageUrl: 'images/foo'
-          css: {
-            "cssLocation1" : { "cssAttr1" : "cssValue1", "cssAttr2" : "cssValue2" }
-            "cssLocation2" : { "cssAttr3" : "cssValue3", "cssAttr4" : "cssValue4" }
-          }
+  #     afterEach ->
+  #       BaseCell.prototype.setCss.restore()
 
-        @defaultCssSet = @baseCellSetCssSpy.args.map (callValues) ->
-          callValues[1]
-
-      afterEach ->
-        BaseCell.prototype.setCss.restore()
-
-      it 'set css attr1 on css location 1', ->
-        expect(@baseCellSetCssSpy).to.have.been.calledWith "cssLocation1", "cssAttr1", "cssValue1"
-
-      it 'set css attr2 on css location 1', ->
-        expect(@baseCellSetCssSpy).to.have.been.calledWith "cssLocation1", "cssAttr2", "cssValue2"
-
-      it 'set css attr3 on css location 2', ->
-        expect(@baseCellSetCssSpy).to.have.been.calledWith "cssLocation2", "cssAttr3", "cssValue3"
-
-      it 'set css attr4 on css location 2', ->
-        expect(@baseCellSetCssSpy).to.have.been.calledWith "cssLocation2", "cssAttr4", "cssValue4"
+  #     it 'set css attr1 on css location 1', -> @verifyCss "cssLocation1", "cssAttr1", "cssValue1"
+  #     it 'set css attr2 on css location 1', -> @verifyCss "cssLocation1", "cssAttr2", "cssValue2"
+  #     it 'set css attr3 on css location 2', -> @verifyCss "cssLocation2", "cssAttr3", "cssValue3"
+  #     it 'set css attr4 on css location 2', -> @verifyCss "cssLocation2", "cssAttr4", "cssValue4"
 
   describe '_computeTableLayout(): ', ->
 
@@ -104,43 +86,79 @@ describe 'Pictograph class', ->
         @instance.setConfig config
         @instance._computeTableLayout()
 
+      #params:
+      #  - 'width=1000'
+      #  - 'height=1000'
+      #  - 'numRows=2'
+      #  - 'numCols=2'
+      #  - 'rowHeights'
+      #  - 'colWidths'
+      #  - 'innerRowPadding'
+      #  - 'innerColumnPadding'
+      #  - 'lPLeft'
+      #  - 'lPRight'
+      #  - 'lPTop'
+      #  - 'lPBottom'
+      #  - 'hLines'
+      #  - 'vLines'
+      @makeTable = (c) ->
+        tableConfig =
+          table:
+            rows: []
+
+        for key in ['rowHeights', 'colWidths', 'innerRowPadding', 'innerColumnPadding']
+          tableConfig.table[key] = c[key] if c[key]?
+
+        for i in _.range(0, c.numRows || 2)
+          tableConfig.table.rows.push([])
+          for j in _.range(0, c.numCols || 2)
+            tableConfig.table.rows[i].push @gen.graphic()
+
+        tableConfig.table.lines ?= {}
+        for {alias, setting} in [
+          { alias: 'lPLeft', setting: 'padding-left'}
+          { alias: 'lPRight', setting: 'padding-right'}
+          { alias: 'lPTop', setting: 'padding-top'}
+          { alias: 'lPBottom', setting: 'padding-bottom'}
+        ]
+          tableConfig.table.lines[setting] = c[alias] if c[alias]?
+
+        tableConfig.table.lines.horizontal = c.hLines if c.hLines?
+        tableConfig.table.lines.vertical = c.vLines if c.vLines?
+
+        @instance = new Pictograph '<div class="outer-container">', c.width || 1000, c.height || 1000
+        @instance.setConfig tableConfig
+        @instance._computeTableLayout()
+
+      @badConfig = (c) ->
+        return => @setup c
+
     describe 'invalid rows definition:', ->
       it 'throws error if row is not array', ->
-        thrower = () =>
-          @setup {
-            table:
-              rows: [
-                'dogs'
-              ]
-          }
-
-        expect(thrower).to.throw(new RegExp 'row 0 must be array')
+        expect(@badConfig { table: rows: ['dogs'] }).to.throw(new RegExp 'row 0 must be array')
 
     describe 'jagged table:', ->
       it 'throws error if rowLengths are not consistent', ->
-        thrower = () =>
-          @setup {
-            table:
-              rows: [
-                [@gen.graphic(), @gen.graphic()],
-                [@gen.graphic()]
-              ]
-          }
-
-        expect(thrower).to.throw(new RegExp 'jagged')
+        jaggedRows = [
+          [@gen.graphic(), @gen.graphic()],
+          [@gen.graphic()]
+        ]
+        expect(@badConfig { table: rows: jaggedRows }).to.throw(new RegExp 'jagged')
 
     describe 'row heights:', ->
 
       beforeEach ->
-        @withRowHeights = (rowHeights, width=100, height=100) ->
-          @setup {
+        @withRowHeights = (rowHeights, rowPadding, width=100, height=100) ->
+          c = {
             table:
               rows: [
                 [@gen.graphic()]
                 [@gen.graphic()]
               ]
               rowHeights: rowHeights
-          }, width, height
+          }
+          c.table.innerRowPadding = rowPadding if rowPadding?
+          @setup c, width, height
 
       describe 'invalid values:', ->
         it 'not array: triggers error', ->
@@ -156,52 +174,33 @@ describe 'Pictograph class', ->
           expect(=> @withRowHeights [1]).to.throw(new RegExp 'length must match')
 
         it 'too big with 0 padding:', ->
-          expect(=> @withRowHeights [91, 10], 100, 100).to.throw(new RegExp 'sum.*exceeds table height')
+          expect(=> @withRowHeights [91, 10]).to.throw(new RegExp 'sum.*exceeds table height')
 
-        it 'too big with padding=10:', ->
-          expect(=> @setup {
-            table:
-              rows: [
-                [@gen.graphic()]
-                [@gen.graphic()]
-              ]
-              rowHeights: [90, 10]
-              innerRowPadding: 1
-          }, 100, 100).to.throw(new RegExp 'sum.*exceeds table height')
+        it 'too big with padding=1:', ->
+          expect(=> @withRowHeights [90,10], rowPadding=1).to.throw(new RegExp 'sum.*exceeds table height')
 
       describe 'auto calculated: ', ->
         it 'divides the height evenly', ->
-          @setup {
-            table:
-              rows: [
-                [@gen.graphic()]
-                [@gen.graphic()]
-              ]
-          }, 400, 200
+          @makeTable { height: 200, numRows: 2 }
           expect(@instance.config.table.rowHeights).to.deep.equal [100, 100]
 
         it 'rounds to lowest int', ->
-          @setup {
-            table:
-              rows: [
-                [@gen.graphic()]
-                [@gen.graphic()]
-                [@gen.graphic()]
-              ]
-          }, 400, 100
+          @makeTable { height: 100, numRows: 3 }
           expect(@instance.config.table.rowHeights).to.deep.equal [33, 33, 33]
 
     describe 'col widths:', ->
 
       beforeEach ->
-        @withColWidths = (colWidths, width=100, height=100) ->
-          @setup {
+        @withColWidths = (colWidths, colPadding=0, width=100, height=100) ->
+          c = {
             table:
               rows: [
                 [@gen.graphic(), @gen.graphic()]
               ]
               colWidths: colWidths
-          }, width, height
+          }
+          c.table.innerColumnPadding = colPadding if colPadding?
+          @setup c, width, height
 
       describe 'invalid values:', ->
         it 'not array: triggers error', ->
@@ -217,71 +216,48 @@ describe 'Pictograph class', ->
           expect(=> @withColWidths [1]).to.throw(new RegExp 'length must match')
 
         it 'too big with 0 padding:', ->
-          expect(=> @withColWidths [91, 10], 100, 100).to.throw(new RegExp 'sum.*exceeds table width')
+          expect(=> @withColWidths [91, 10]).to.throw(new RegExp 'sum.*exceeds table width')
 
-        it 'too big with padding=10:', ->
-          expect(=> @setup {
-            table:
-              rows: [
-                [@gen.graphic(), @gen.graphic()]
-              ]
-              colWidths: [90, 10]
-              innerColumnPadding: 1
-          }, 100, 100).to.throw(new RegExp 'sum.*exceeds table width')
+        it 'too big with padding=1:', ->
+          expect(=> @withColWidths [91, 10], 1).to.throw(new RegExp 'sum.*exceeds table width')
 
       describe 'auto calculated: ', ->
         it 'divides the width evenly', ->
-          @setup {
-            table:
-              rows: [
-                [@gen.graphic(), @gen.graphic()]
-              ]
-          }, 200, 400
+          @makeTable { width: 200, numCols: 2 }
           expect(@instance.config.table.colWidths).to.deep.equal [100, 100]
 
         it 'rounds to lowest int', ->
-          @setup {
-            table:
-              rows: [
-                [@gen.graphic(), @gen.graphic(), @gen.graphic()]
-              ]
-          }, 100, 400
+          @makeTable { width: 100, numCols: 3 }
           expect(@instance.config.table.colWidths).to.deep.equal [33, 33, 33]
 
     describe 'horizontal table lines:', ->
 
       beforeEach ->
-        @setup = (horizontalLines, rowPadding=0, linePadLeft=0, linePadRight=0, width=2000, height=2000) ->
-          @instance = new Pictograph '<div class="outer-container">', width, height
-          @instance.setConfig {
-            table:
-              rows: [
-                [@gen.graphic()]
-                [@gen.graphic()]
-                [@gen.graphic()]
-                [@gen.graphic()]
-              ]
-              rowHeights: [100,200,300,400]
-              innerRowPadding: rowPadding
-              lines:
-                'padding-left': linePadLeft
-                'padding-right': linePadRight
-                horizontal: horizontalLines
-          }, width, height
-          @instance._computeTableLayout()
+        @hLineWrapper = (horizontalLines, rowPadding=0, linePadLeft=0, linePadRight=0, width=2000, height=2000) ->
+          @makeTable {
+            width: width
+            height: height
+            numRows: 4
+            numCols: 1
+            rowHeights: [100,200,300,400]
+            innerRowPadding: rowPadding
+            hLines: horizontalLines
+            lPLeft: linePadLeft
+            lPRight: linePadRight
+          }
 
         @linePosition = (lineIndex, rowPadding=0) ->
-          @setup [lineIndex], rowPadding
+          @hLineWrapper [lineIndex], rowPadding
           return @instance.config.table.lines.horizontal[0].y1
 
       it 'line at -1', ->
-        expect(=> @setup [-1]).to.throw(new RegExp 'past end of table')
+        expect(=> @hLineWrapper [-1]).to.throw(new RegExp 'past end of table')
 
       it 'line at bottom of table + 1', ->
-        expect(=> @setup [5]).to.throw(new RegExp 'past end of table')
+        expect(=> @hLineWrapper [5]).to.throw(new RegExp 'past end of table')
 
       it 'non numeric in line config', ->
-        expect(=> @setup ['cats']).to.throw(new RegExp 'must be numeric')
+        expect(=> @hLineWrapper ['cats']).to.throw(new RegExp 'must be numeric')
 
       describe 'no row padding: ', ->
         it 'line at 0',      -> expect(@linePosition [0]).to.equal 0
@@ -301,41 +277,38 @@ describe 'Pictograph class', ->
 
       describe 'left/right padding', ->
         it 'adjusts the x1 and x2 line values based on the left/right padding values', ->
-          @setup [0], rowPadding=0, leftPad=20, rightPad=50, width=2000
+          @hLineWrapper [0], rowPadding=0, leftPad=20, rightPad=50, width=2000
           expect(@instance.config.table.lines.horizontal[0].x1).to.equal 0 + 20
           expect(@instance.config.table.lines.horizontal[0].x2).to.equal 2000 - 50
 
     describe 'vertical table lines:', ->
 
       beforeEach ->
-        @setup = (verticalLines, colPadding=0, linePadTop=0, linePadBottom=0, width=2000, height=2000) ->
-          @instance = new Pictograph '<div class="outer-container">', width, height
-          @instance.setConfig {
-            table:
-              rows: [
-                [ @gen.graphic(), @gen.graphic(), @gen.graphic(), @gen.graphic() ]
-              ]
-              colWidths: [100,200,300,400]
-              lines:
-                'padding-top': linePadTop
-                'padding-bottom': linePadBottom
-                vertical: verticalLines
-              innerColumnPadding: colPadding
-          }, width, height
-          @instance._computeTableLayout()
+        @vLineWrapper = (verticalLines, colPadding=0, linePadTop=0, linePadBottom=0, width=2000, height=2000) ->
+          @makeTable {
+            width: width
+            height: height
+            numRows: 1
+            numCols: 4
+            colWidths: [100,200,300,400]
+            innerColumnPadding: colPadding
+            vLines: verticalLines
+            lPTop: linePadTop
+            lPBottom: linePadBottom
+          }
 
         @linePosition = (lineIndex, colPadding=0) ->
-          @setup [lineIndex], colPadding
+          @vLineWrapper [lineIndex], colPadding
           return @instance.config.table.lines.vertical[0].x1
 
       it 'line at -1', ->
-        expect(=> @setup [-1]).to.throw(new RegExp 'past end of table')
+        expect(=> @vLineWrapper [-1]).to.throw(new RegExp 'past end of table')
 
       it 'line at bottom of table + 1', ->
-        expect(=> @setup [5]).to.throw(new RegExp 'past end of table')
+        expect(=> @vLineWrapper [5]).to.throw(new RegExp 'past end of table')
 
       it 'non numeric in line config', ->
-        expect(=> @setup ['cats']).to.throw(new RegExp 'must be numeric')
+        expect(=> @vLineWrapper ['cats']).to.throw(new RegExp 'must be numeric')
 
       describe 'no row padding: ', ->
         it 'line at 0',      -> expect(@linePosition [0]).to.equal 0
@@ -355,30 +328,12 @@ describe 'Pictograph class', ->
 
       describe 'left/right padding', ->
         it 'adjusts the y1 and y2 line values based on the top/bottom padding values', ->
-          @setup [0], rowPadding=0, topPad=20, bottomPad=50, width=2000, height=2000
+          @vLineWrapper [0], rowPadding=0, topPad=20, bottomPad=50, width=2000, height=2000
           expect(@instance.config.table.lines.vertical[0].y1).to.equal 0 + 20
           expect(@instance.config.table.lines.vertical[0].y2).to.equal 2000 - 50
 
     describe 'cell placement', ->
       beforeEach ->
-        @makeTable = (c) ->
-          tableConfig =
-            table:
-              rows: []
-
-          for key in ['rowHeights', 'colWidths', 'innerRowPadding', 'innerColumnPadding']
-            tableConfig.table[key] = c[key] if c[key]?
-
-          for i in _.range(0, c.numRows || 2)
-            tableConfig.table.rows.push([])
-            for j in _.range(0, c.numCols || 2)
-              tableConfig.table.rows[i].push @gen.graphic()
-
-          # console.log "tableConfig"
-          # console.log JSON.stringify tableConfig, {}, 2
-
-          @setup tableConfig, c.width || 1000, c.height || 1000
-
         @placement = (rowIndex,colIndex) ->
           return [
             @instance.config.table.rows[rowIndex][colIndex].x
@@ -389,7 +344,7 @@ describe 'Pictograph class', ->
 
       describe 'simple table', ->
         beforeEach ->
-          @makeTable {}
+          @makeTable { numRows: 2, numCols: 2, width: 1000, height: 1000 }
 
         it 'places cell 0,0 correctly', -> expect(@placement(0,0)).to.deep.equal [0  ,  0,500,500]
         it 'places cell 0,1 correctly', -> expect(@placement(0,1)).to.deep.equal [500,  0,500,500]
@@ -398,7 +353,7 @@ describe 'Pictograph class', ->
 
       describe 'specify rowHeight and ColWidth', ->
         beforeEach ->
-          @makeTable { colWidths: [200,100], rowHeights: [50,25] }
+          @makeTable { numRows: 2, numCols: 2, width: 1000, height: 1000, colWidths: [200,100], rowHeights: [50,25] }
 
         it 'places cell 0,0 correctly', -> expect(@placement(0,0)).to.deep.equal [0  ,  0,200,50]
         it 'places cell 0,1 correctly', -> expect(@placement(0,1)).to.deep.equal [200,  0,100,50]
@@ -410,7 +365,7 @@ describe 'Pictograph class', ->
       # but we generated a grpahic of 1010/1010 because of padding
       describe 'specify innerRowPadding and innerColumnPadding', ->
         beforeEach ->
-          @makeTable { height: 1000, width: 1000, innerRowPadding: 10, innerColumnPadding: 10 }
+          @makeTable { numRows: 2, numCols: 2, height: 1000, width: 1000, innerRowPadding: 10, innerColumnPadding: 10 }
 
         it 'places cell 0,0 correctly', -> expect(@placement(0,0)).to.deep.equal [0  ,  0,500,500]
         it 'places cell 0,1 correctly', -> expect(@placement(0,1)).to.deep.equal [510,  0,500,500]

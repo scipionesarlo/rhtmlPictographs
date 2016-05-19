@@ -37,6 +37,9 @@ class Pictograph extends RhtmlSvgWidget
         _.forEach cssBlock, (cssValue, cssAttribute) =>
           @cssCollector.setCss cssLocationString, cssAttribute, cssValue
 
+
+    ColorFactory.processNewConfig(@config.table.colors) if @config.table.colors
+
   #@TODO I am a beast of a 100 line function. Could create a custom layout function, could combine with d3-grid
   _computeTableLayout: () ->
 

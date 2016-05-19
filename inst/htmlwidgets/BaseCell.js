@@ -12,6 +12,10 @@ BaseCell = (function() {
     return this.defaults[k];
   };
 
+  BaseCell.resetDefaults = function() {
+    return this.defaults = {};
+  };
+
   function BaseCell(parentSvg, myCssSelector, width, height) {
     this.parentSvg = parentSvg;
     this.width = parseInt(width);
@@ -148,6 +152,16 @@ BaseCell = (function() {
       throw new Error("invalid '" + key + "': " + input[key] + ". " + message + ".");
     }
     input[key] = parseInt(input[key]);
+  };
+
+  BaseCell.prototype._verifyKeyIsPositiveInt = function(input, key, defaultValue, message) {
+    if (message == null) {
+      message = 'Must be positive integer';
+    }
+    this._verifyKeyIsInt.apply(this, arguments);
+    if (input[key] < 1) {
+      throw new Error("invalid '" + key + "': " + input[key] + ". " + message + ".");
+    }
   };
 
   BaseCell.prototype._verifyKeyIsRatio = function(input, key) {

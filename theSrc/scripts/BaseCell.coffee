@@ -4,6 +4,7 @@ class BaseCell
   @defaults = {}
   @setDefault = (k,v) -> @defaults[k] = v
   @getDefault = (k) -> @defaults[k]
+  @resetDefaults = () -> @defaults = {}
 
   #@TODO I want to pull all the CssCollector bits into a seperate module and have BaseCell Extend that class
 
@@ -114,6 +115,12 @@ class BaseCell
 
     input[key] = parseInt input[key]
     return
+
+  _verifyKeyIsPositiveInt: (input, key, defaultValue, message='Must be positive integer') ->
+    @_verifyKeyIsInt.apply(this, arguments)
+
+    if input[key] < 1
+      throw new Error "invalid '#{key}': #{input[key]}. #{message}."
 
   _verifyKeyIsRatio: (input, key) ->
     throw new Error "#{key} must be >= 0" unless input[key] >= 0

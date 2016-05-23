@@ -13,8 +13,8 @@ GraphicCell = (function(_super) {
   GraphicCell.prototype.setConfig = function(config) {
     var _ref;
     this.config = _.cloneDeep(config);
-    if (this.config.variableImageUrl == null) {
-      throw new Error("Must specify 'variableImageUrl'");
+    if (this.config.variableImage == null) {
+      throw new Error("Must specify 'variableImage'");
     }
     if (_.isString(this.config['percentage']) && this.config['percentage'].startsWith('=')) {
       this.config['percentage'] = eval(this.config['percentage'].substring(1));
@@ -101,26 +101,16 @@ GraphicCell = (function(_super) {
     }).attr("transform", function(d) {
       return "translate(" + d.x + "," + d.y + ")";
     });
-    backgroundRect = enteringLeafNodes.append("svg:rect").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
+    imageWidth = gridLayout.nodeSize()[0];
+    imageHeight = gridLayout.nodeSize()[1];
+    backgroundRect = enteringLeafNodes.append("svg:rect").attr('width', imageWidth).attr('height', imageHeight).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
     if (this.config['debugBorder'] != null) {
       backgroundRect.attr('stroke', 'black').attr('stroke-width', '1');
     }
-    if (this.config.baseImageUrl != null) {
-      enteringLeafNodes.append("svg:image").attr('width', gridLayout.nodeSize()[0]).attr('height', gridLayout.nodeSize()[1]).attr('xlink:href', this.config.baseImageUrl).attr('class', 'base-image');
+    if (this.config.baseImage != null) {
+      enteringLeafNodes.each(_.partial(ImageFactory.addImageTo, this.config.baseImage, imageWidth, imageHeight));
     }
-    imageWidth = gridLayout.nodeSize()[0];
-    imageHeight = gridLayout.nodeSize()[1];
-    if (this.config.direction === 'horizontal') {
-      enteringLeafNodes.each(_.partial(this._appendHorizontalClipPathToD3Collection, imageWidth, imageHeight));
-      enteringLeafNodes.each(_.partial(this._appendClippedImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
-    }
-    if (this.config.direction === 'vertical') {
-      enteringLeafNodes.each(_.partial(this._appendVerticalClipPathToD3Collection, imageWidth, imageHeight));
-      enteringLeafNodes.each(_.partial(this._appendClippedImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
-    }
-    if (this.config.direction === 'scale') {
-      enteringLeafNodes.each(_.partial(this._appendScaledImageToD3Collection, imageWidth, imageHeight, this.config.variableImageUrl));
-    }
+    enteringLeafNodes.each(_.partial(ImageFactory.addImageTo, this.config.variableImage, imageWidth, imageHeight));
     if (this.config['tooltip']) {
       enteringLeafNodes.append("svg:title").text(this.config['tooltip']);
     }
@@ -142,36 +132,6 @@ GraphicCell = (function(_super) {
 
   GraphicCell.prototype._addTextTo = function(parent, text, myClass, x, y) {
     return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
-  };
-
-  GraphicCell.prototype._appendClippedImageToD3Collection = function(width, height, imageUrl) {
-    return d3.select(this).append("svg:image").attr('width', width).attr('height', height).attr('clip-path', 'url(#my-clip)').attr('xlink:href', imageUrl).attr('class', 'variable-image');
-  };
-
-  GraphicCell.prototype._appendVerticalClipPathToD3Collection = function(width, height) {
-    return d3.select(this).append('clipPath').attr('id', 'my-clip').append('rect').attr('x', 0).attr('y', function(d) {
-      return height * (1 - d.percentage);
-    }).attr('width', width).attr('height', function(d) {
-      return height * d.percentage;
-    });
-  };
-
-  GraphicCell.prototype._appendHorizontalClipPathToD3Collection = function(width, height) {
-    return d3.select(this).append('clipPath').attr('id', 'my-clip').append('rect').attr('x', 0).attr('y', 0).attr('width', function(d) {
-      return width * d.percentage;
-    }).attr('height', height);
-  };
-
-  GraphicCell.prototype._appendScaledImageToD3Collection = function(width, height, imageUrl) {
-    return d3.select(this).append("svg:image").attr('x', function(d) {
-      return width * (1 - d.percentage) / 2;
-    }).attr('y', function(d) {
-      return height * (1 - d.percentage) / 2;
-    }).attr('width', function(d) {
-      return width * d.percentage;
-    }).attr('height', function(d) {
-      return height * d.percentage;
-    }).attr('xlink:href', imageUrl).attr('class', 'variable-image');
   };
 
   GraphicCell.prototype._generateDataArray = function(percentage, numImages) {

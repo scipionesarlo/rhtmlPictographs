@@ -56,13 +56,16 @@ Pictograph = (function(_super) {
       };
     })(this));
     if (this.config['css']) {
-      return _.forEach(this.config['css'], (function(_this) {
+      _.forEach(this.config['css'], (function(_this) {
         return function(cssBlock, cssLocationString) {
           return _.forEach(cssBlock, function(cssValue, cssAttribute) {
             return _this.cssCollector.setCss(cssLocationString, cssAttribute, cssValue);
           });
         };
       })(this));
+    }
+    if (this.config.table.colors) {
+      return ColorFactory.processNewConfig(this.config.table.colors);
     }
   };
 

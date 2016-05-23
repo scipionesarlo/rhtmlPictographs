@@ -3,7 +3,7 @@ class GraphicCell extends BaseCell
 
   setConfig: (config) ->
     @config = _.cloneDeep config
-    throw new Error "Must specify 'variableImageUrl'" unless @config.variableImageUrl?
+    throw new Error "Must specify 'variableImage'" unless @config.variableImage?
 
     #@TODO document and demonstrate
     if _.isString(@config['percentage']) and @config['percentage'].startsWith('=')
@@ -86,12 +86,14 @@ class GraphicCell extends BaseCell
         .attr "class", (d) ->
           cssLocation = "node-index-#{d.i} node-xy-#{d.row}-#{d.col}"
           "node #{cssLocation}"
-
         .attr "transform", (d) -> return "translate(#{d.x},#{d.y})"
 
+    imageWidth = gridLayout.nodeSize()[0]
+    imageHeight = gridLayout.nodeSize()[1]
+
     backgroundRect = enteringLeafNodes.append("svg:rect")
-      .attr 'width', gridLayout.nodeSize()[0]
-      .attr 'height', gridLayout.nodeSize()[1]
+      .attr 'width', imageWidth
+      .attr 'height', imageHeight
       .attr 'class', 'background-rect'
       .attr 'fill', @config['background-color'] || 'none'
 
@@ -100,23 +102,13 @@ class GraphicCell extends BaseCell
         .attr 'stroke', 'black'
         .attr 'stroke-width', '1'
 
-    if @config.baseImageUrl?
-      enteringLeafNodes.append("svg:image")
-        .attr 'width', gridLayout.nodeSize()[0]
-        .attr 'height', gridLayout.nodeSize()[1]
-        .attr 'xlink:href', @config.baseImageUrl
-        .attr 'class', 'base-image'
+    if @config.baseImage?
+      enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.baseImage, imageWidth, imageHeight)
 
-    imageWidth = gridLayout.nodeSize()[0]
-    imageHeight = gridLayout.nodeSize()[1]
-    if @config.direction is 'horizontal'
-      enteringLeafNodes.each _.partial(@_appendHorizontalClipPathToD3Collection, imageWidth, imageHeight)
-      enteringLeafNodes.each _.partial(@_appendClippedImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
-    if @config.direction is 'vertical'
-      enteringLeafNodes.each _.partial(@_appendVerticalClipPathToD3Collection, imageWidth, imageHeight)
-      enteringLeafNodes.each _.partial(@_appendClippedImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
-    if @config.direction is 'scale'
-      enteringLeafNodes.each _.partial(@_appendScaledImageToD3Collection, imageWidth, imageHeight, @config.variableImageUrl)
+    #@TODO by using ImageFactory for both I've lost the base-image vs variable-image class markers
+    #.attr 'class', 'base-image'
+
+    enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.variableImage, imageWidth, imageHeight)
 
     if @config['tooltip']
       enteringLeafNodes.append("svg:title")
@@ -149,41 +141,6 @@ class GraphicCell extends BaseCell
       .style 'alignment-baseline', 'central'
       .style 'dominant-baseline', 'central'
       .text text
-
-  _appendClippedImageToD3Collection: (width, height, imageUrl) ->
-    d3.select(this).append("svg:image")
-      .attr 'width', width
-      .attr 'height', height
-      .attr 'clip-path', 'url(#my-clip)'
-      .attr 'xlink:href', imageUrl
-      .attr 'class', 'variable-image'
-
-  _appendVerticalClipPathToD3Collection: (width, height) ->
-    d3.select(this).append('clipPath')
-      .attr 'id', 'my-clip'
-      .append 'rect'
-        .attr 'x', 0
-        .attr 'y', (d) -> height * (1 - d.percentage)
-        .attr 'width', width
-        .attr 'height', (d) -> height * d.percentage
-
-  _appendHorizontalClipPathToD3Collection: (width, height) ->
-    d3.select(this).append('clipPath')
-      .attr 'id', 'my-clip'
-      .append 'rect'
-        .attr 'x', 0
-        .attr 'y', 0
-        .attr 'width', (d) -> width * d.percentage
-        .attr 'height', height
-
-  _appendScaledImageToD3Collection: (width, height, imageUrl) ->
-    d3.select(this).append("svg:image")
-      .attr 'x', (d) -> width * (1 - d.percentage) / 2
-      .attr 'y', (d) -> height * (1 - d.percentage) / 2
-      .attr 'width', (d) -> width * d.percentage
-      .attr 'height', (d) -> height * d.percentage
-      .attr 'xlink:href', imageUrl
-      .attr 'class', 'variable-image'
 
   #@TODO the math here is non-intuitive, clean up
   _generateDataArray: (percentage, numImages) ->

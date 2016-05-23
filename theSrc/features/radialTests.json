@@ -1,0 +1,25 @@
+{
+  "features": [
+    {
+      "name": "Radial Testing",
+      "scenarios": [
+        { "name": "radial", "description" : ["0.0625"], "settings": { "percentage": 0.0625, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.125"], "settings": { "percentage": 0.125, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.1875"], "settings": { "percentage": 0.1875, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.25"], "settings": { "percentage": 0.25, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.3125"], "settings": { "percentage": 0.3125, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.375"], "settings": { "percentage": 0.375, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.4375"], "settings": { "percentage": 0.4375, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.5"], "settings": { "percentage": 0.5, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.5625"], "settings": { "percentage": 0.5625, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.625"], "settings": { "percentage": 0.625, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.6875"], "settings": { "percentage": 0.6875, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.75"], "settings": { "percentage": 0.75, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.8125"], "settings": { "percentage": 0.8125, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.875"], "settings": { "percentage": 0.875, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["0.9375"], "settings": { "percentage": 0.9375, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400},
+        { "name": "radial", "description" : ["1"], "settings": { "percentage": 1, "text-footer": "percentage", "variableImage": "circle:radial:blue"}, "width": 400, "height": 400}
+      ]
+    }
+  ]
+}

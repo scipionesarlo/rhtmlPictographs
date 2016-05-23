@@ -112,6 +112,7 @@
 
             if (thereIsMoreScenarios()) {
               return {
+                featureFile: featureFile,
                 feature: featureIndex,
                 scenario: scenarioIndex + 1
               }
@@ -119,6 +120,7 @@
 
             else if (thereIsMoreFeatures()) {
               return {
+                featureFile: featureFile,
                 feature: featureIndex + 1,
                 scenario: 0
               }
@@ -126,6 +128,7 @@
 
             // NB wrap around case
             return {
+              featureFile: featureFile,
               feature: 0,
               scenario: 0
             };
@@ -146,6 +149,7 @@
 
             if (thereIsPreviousScenarios()) {
               return {
+                featureFile: featureFile,
                 feature: featureIndex,
                 scenario: scenarioIndex - 1
               }
@@ -153,6 +157,7 @@
 
             else if (thereIsPreviousFeatures()) {
               return {
+                featureFile: featureFile,
                 feature: featureIndex - 1,
                 scenario: previousScenarioLength()
               }
@@ -163,6 +168,7 @@
             lastFeature = response.features[lastFeatureIndex]
             lastScenarioIndex = lastFeature.scenarios.length - 1
             return {
+              featureFile: featureFile,
               feature: lastFeatureIndex,
               scenario: lastScenarioIndex
             };
@@ -170,7 +176,7 @@
 
           makeLink = function(args) {
             if (!args) { return null; }
-            return 'render.html?featureIndex=' + args.feature + '&scenarioIndex=' + args.scenario;
+            return 'render.html?featureIndex=' + args.feature + '&scenarioIndex=' + args.scenario + '&featureFile=' + args.featureFile;
           }
 
           prevLink = makeLink(getPrev());
@@ -224,6 +230,8 @@
       });
     </script>
 
+    <script src="scripts/ColorFactory.js"></script>
+    <script src="scripts/ImageFactory.js"></script>
     <script src="scripts/DisplayError.js"></script>
     <script src="scripts/BaseCell.js"></script>
     <script src="scripts/GraphicCell.js"></script>

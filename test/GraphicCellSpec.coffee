@@ -80,26 +80,26 @@ describe 'GraphicCell class', ->
     @withConfig = (config, width=100, height=100) ->
       @instance = new GraphicCell 'dummySvg', ['parentSelector'], width, height
 
-      config.variableImageUrl ?= 'image1'
+      config.variableImage ?= 'image1'
       @instance.setConfig config
 
   describe 'setConfig():', ->
 
-    it 'clones config so cannot be manip from outside', ->
-      @outerConfig = { variableImageUrl: 'image1' }
+    it 'clones config so cannot be manipulated from outside', ->
+      @outerConfig = { variableImage: 'image1' }
       @withConfig @outerConfig
       @outerConfig.mittens = 'foo'
 
       expect(@instance.config).not.to.have.property 'mittens'
 
-    describe 'variableImageUrl:', ->
+    describe 'variableImage:', ->
       it 'is required', ->
         thrower = () =>
           @instance = new GraphicCell 'dummySvg', ['parentSelector'], 100, 100
           @instance.setConfig {}
-        expect(thrower).to.throw new RegExp "Must specify 'variableImageUrl'"
+        expect(thrower).to.throw new RegExp "Must specify 'variableImage'"
 
-    describe 'baseImageUrl:', ->
+    describe 'baseImage:', ->
       it 'is optional', ->
         expect( => @withConfig {}).not.to.throw()
 
@@ -247,8 +247,7 @@ describe 'GraphicCell class', ->
         @uniqueClass = @makeGraphic {
           'percentage': 0.875
           'numImages': 4
-          #@TODO: This is hitting Kyle S3 account !
-          'variableImageUrl': 'https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png'
+          'variableImage': 'circle:blue'
         }
 
         it 'generates correct node classes', ->
@@ -264,37 +263,49 @@ describe 'GraphicCell class', ->
           expect($(".#{@uniqueClass} .node-xy-1-1").length).to.equal 1
           expect($(".#{@uniqueClass} .node-xy-2-0").length).to.equal 0
 
-    describe 'multi image horizontal scaled graphic:', ->
+    describe 'multi image horizontal clipped graphic:', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
           'percentage': 0.875
           'numImages': 4
-          #@TODO: This is hitting Kyle S3 account !
-          'variableImageUrl': 'https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png'
+          'variableImage': 'circle:horizontalclip:blue'
         }
 
-      it 'applies a clip path to hide part of the fourth image', ->
+      it 'applies a clip path to hide part of the fourth graphic', ->
         firstImageClipWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('width'))
         fourthImageClipWidth = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('width'))
 
         expect(fourthImageClipWidth / firstImageClipWidth).to.be.closeTo(0.5, 0.001);
 
-    describe 'multi image vertical scaled graphic:', ->
+    describe 'multi image vertical clipped graphic:', ->
       beforeEach ->
         @uniqueClass = @makeGraphic {
           'percentage': 0.875
-          'direction': 'vertical'
           'numImages': 4
-          #@TODO: This is hitting Kyle S3 account !
-          'variableImageUrl': 'https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png'
+          'variableImage': 'circle:verticalclip:blue'
         }
 
-      it 'applies a clip path to hide part of the fourth image', ->
+      it 'applies a clip path to hide part of the fourth graphic', ->
         firstImageClipHeight = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('height'))
         fourthImageClipHeight = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('height'))
 
         expect(fourthImageClipHeight / firstImageClipHeight).to.be.closeTo(0.5, 0.001);
+
+    describe 'multi circle percentage scaled graphic:', ->
+
+      beforeEach ->
+        @uniqueClass = @makeGraphic {
+          'percentage': 0.875
+          'numImages': 4
+          'variableImage': 'circle:scale:blue'
+        }
+
+      it 'shrinks the circle', ->
+        firstImageRadius = parseFloat($(".#{@uniqueClass} .node-xy-0-0 circle").attr('r'))
+        fourthImageRadius = parseFloat($(".#{@uniqueClass} .node-xy-1-1 circle").attr('r'))
+
+        expect(fourthImageRadius / firstImageRadius).to.be.closeTo(0.5, 0.001);
 
     describe 'multi image percentage scaled graphic:', ->
 
@@ -302,9 +313,7 @@ describe 'GraphicCell class', ->
         @uniqueClass = @makeGraphic {
           'percentage': 0.875
           'numImages': 4
-          'direction': 'scale'
-          #@TODO: This is hitting Kyle S3 account !
-          'variableImageUrl': 'https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png'
+          'variableImage': 'url:scale:/image1.jpg'
         }
 
       it 'applies a clip path to hide part of the fourth image', ->

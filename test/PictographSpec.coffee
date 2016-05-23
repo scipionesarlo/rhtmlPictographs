@@ -3,7 +3,7 @@ describe 'Pictograph class:', ->
 
   beforeEach ->
     @gen =
-      graphic: (config={ variableImageUrl: '/image/foo' }) =>
+      graphic: (config={ variableImage: '/image/foo' }) =>
         return { type: 'graphic', value: config }
       label: (config='label') =>
         return { type: 'label', value: config }
@@ -18,7 +18,7 @@ describe 'Pictograph class:', ->
     describe 'without "table" field:', ->
 
       beforeEach ->
-        @instantiateAndSetConfigTo { variableImageUrl: 'images/foo' }
+        @instantiateAndSetConfigTo { variableImage: 'images/foo' }
 
       it 'creates a top level "table" config field', ->
         expect(@instance.config).to.have.property 'table'
@@ -37,7 +37,7 @@ describe 'Pictograph class:', ->
         @baseCellSetDefaultSpy = sinon.spy BaseCell, 'setDefault'
         @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
 
-        @instantiateAndSetConfigTo { variableImageUrl: 'images/foo' }
+        @instantiateAndSetConfigTo { variableImage: 'images/foo' }
 
         @wasSet = (param) ->
           defaultsThatWereSet = @baseCellSetDefaultSpy.args.map (callValues) -> callValues[0]
@@ -61,7 +61,7 @@ describe 'Pictograph class:', ->
         @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
 
         @instantiateAndSetConfigTo
-          variableImageUrl: 'images/foo'
+          variableImage: 'images/foo'
           css: {
             "cssLocation1" : { "cssAttr1" : "cssValue1", "cssAttr2" : "cssValue2" }
             "cssLocation2" : { "cssAttr3" : "cssValue3", "cssAttr4" : "cssValue4" }
@@ -387,8 +387,8 @@ describe 'Pictograph class:', ->
         @instance.setConfig {
           table:
             rows: [
-              [@gen.label('label1'), @gen.graphic({ 'variableImageUrl': '/image1' })]
-              [@gen.graphic({ 'variableImageUrl': '/image2' }), @gen.label('label2')]
+              [@gen.label('label1'), @gen.graphic({ 'variableImage': 'circle:red' })]
+              [@gen.graphic({ 'variableImage': 'circle:blue' }), @gen.label('label2')]
             ]
         }
 
@@ -418,8 +418,8 @@ describe 'Pictograph class:', ->
         expect(document.querySelector('.table-cell-1-0')).to.have.class 'graphic'
 
       it 'passes config to GraphicCell.setConfig', ->
-        expect(@graphicSetConfigSpy.firstCall.args[0].variableImageUrl).to.equal '/image1'
-        expect(@graphicSetConfigSpy.secondCall.args[0].variableImageUrl).to.equal '/image2'
+        expect(@graphicSetConfigSpy.firstCall.args[0].variableImage).to.equal 'circle:red'
+        expect(@graphicSetConfigSpy.secondCall.args[0].variableImage).to.equal 'circle:blue'
 
       it 'passes config to LabelCell.setConfig', ->
         expect(@labelSetConfigSpy.firstCall.args[0]).to.equal 'label1'

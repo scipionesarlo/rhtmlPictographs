@@ -167,6 +167,19 @@ describe 'GraphicCell class', ->
         makeRatioTestsFor 'interRowPadding'
         makeRatioTestsFor 'interColumnPadding'
 
+    describe '"fixedgrid" handling:', ->
+      beforeEach ->
+        @getValueUsingConfig = (config={}) ->
+          @withConfig config
+          @instance.config.fixedgrid
+
+      it 'defaults to false', -> expect(@getValueUsingConfig()).to.equal false
+      it 'accepts the "false" string', -> expect(@getValueUsingConfig { fixedgrid: "false" }).to.equal false
+      it 'accepts the "true" string', -> expect(@getValueUsingConfig { fixedgrid: "true" }).to.equal true
+      it 'accepts the false boolean', -> expect(@getValueUsingConfig { fixedgrid: false }).to.equal false
+      it 'accepts the true boolean', -> expect(@getValueUsingConfig { fixedgrid: true }).to.equal true
+      it 'rejects everything else', -> expect( => @withConfig { fixedgrid: 'y' }).to.throw(/invalid 'fixedgrid'/)
+
     describe 'text handling:', ->
 
       describe 'text-header', ->
@@ -245,9 +258,9 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          'percentage': 0.875
-          'numImages': 4
-          'variableImage': 'circle:blue'
+          percentage: 0.875
+          numImages: 4
+          variableImage: 'circle:blue'
         }
 
         it 'generates correct node classes', ->
@@ -267,9 +280,9 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          'percentage': 0.875
-          'numImages': 4
-          'variableImage': 'circle:horizontalclip:blue'
+          percentage: 0.875
+          numImages: 4
+          variableImage: 'circle:horizontalclip:blue'
         }
 
       it 'applies a clip path to hide part of the fourth graphic', ->
@@ -281,9 +294,9 @@ describe 'GraphicCell class', ->
     describe 'multi image vertical clipped graphic:', ->
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          'percentage': 0.875
-          'numImages': 4
-          'variableImage': 'circle:verticalclip:blue'
+          percentage: 0.875
+          numImages: 4
+          variableImage: 'circle:verticalclip:blue'
         }
 
       it 'applies a clip path to hide part of the fourth graphic', ->
@@ -296,9 +309,9 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          'percentage': 0.875
-          'numImages': 4
-          'variableImage': 'circle:scale:blue'
+          percentage: 0.875
+          numImages: 4
+          variableImage: 'circle:scale:blue'
         }
 
       it 'shrinks the circle', ->
@@ -311,9 +324,9 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          'percentage': 0.875
-          'numImages': 4
-          'variableImage': 'url:scale:/image1.jpg'
+          percentage: 0.875
+          numImages: 4
+          variableImage: 'url:scale:/image1.jpg'
         }
 
       it 'applies a clip path to hide part of the fourth image', ->
@@ -324,3 +337,27 @@ describe 'GraphicCell class', ->
 
         expect(fourthImageWidth / firstImageWidth).to.be.closeTo(0.5, 0.001);
         expect(fourthImageHeight / firstImageHeight).to.be.closeTo(0.5, 0.001);
+
+    describe 'multi image fixed grid graphic:', ->
+
+      #@TODO: I dont like the fact that I must remember to set horizontal or vertical for this to work ...
+      #@TODO: Its also inefficient given i am drawing a bunch of hidden grpahics
+
+      beforeEach ->
+        @uniqueClass = @makeGraphic {
+          percentage: 0.25
+          numImages: 4
+          fixedGrid: true
+          variableImage: 'url:horizontal:/image1.jpg'
+        }
+
+      it 'applies a clip path to hide all of the 2nd 3rd and 4th image', ->
+        firstImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('width'))
+        secondImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-1 clippath rect").attr('width'))
+        thirdImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-1-0 clippath rect").attr('width'))
+        fourthImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('width'))
+
+        expect(firstImageWidth).to.be.above 0
+        expect(secondImageWidth).to.equal 0
+        expect(thirdImageWidth).to.equal 0
+        expect(fourthImageWidth).to.equal 0

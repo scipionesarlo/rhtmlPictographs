@@ -173,6 +173,27 @@ BaseCell = (function() {
     }
   };
 
+  BaseCell.prototype._verifyKeyIsBoolean = function(input, key, defaultValue, message) {
+    if (message == null) {
+      message = 'Must be boolean';
+    }
+    if (!_.isUndefined(defaultValue)) {
+      if (!_.has(input, key)) {
+        input[key] = defaultValue;
+        return;
+      }
+    }
+    if (input[key] === 'true') {
+      input[key] = true;
+    }
+    if (input[key] === 'false') {
+      input[key] = false;
+    }
+    if (!_.isBoolean(input[key])) {
+      throw new Error("invalid '" + key + "': " + input[key] + ". " + message + ".");
+    }
+  };
+
   return BaseCell;
 
 })();

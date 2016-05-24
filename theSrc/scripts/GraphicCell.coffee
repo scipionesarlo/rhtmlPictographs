@@ -157,12 +157,15 @@ class GraphicCell extends BaseCell
       d3Data.push { percentage: percentage, i: num - 1 }
     return d3Data
 
+  #@TODO: on _generateFixesDataArray:
+  #@TODO: I dont like the fact that I must remember to set horizontal or vertical for this to work ...
+  #@TODO: Its also inefficient given i am drawing a bunch of hidden graphics (even if percentage=0 the graphic is drawn)
+
   _generateFixedDataArray: (percentage, numImages) ->
-    console.log "In new logic"
     d3Data = []
-    fullImages = Math.ceil(percentage * numImages)
+    numFullImages = Math.ceil(percentage * numImages)
     for num in [1..numImages]
-      percentage = if num <= fullImages then 1 else 0
+      percentage = if num <= numFullImages then 1 else 0
       d3Data.push { percentage: percentage, i: num - 1 }
     console.log d3Data
     return d3Data

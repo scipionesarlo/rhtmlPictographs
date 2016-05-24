@@ -36,14 +36,10 @@
                 $('.pre-content').append($('<br>'));
               });
 
-              percentage = _.has(scenario.settings, 'percentage') ? scenario.settings.percentage : 'NULL';
 
               rCommand = 'rhtmlPictographs::graphic(' +
-                percentage + ',' +
-                scenario.width + ',' +
-                scenario.height + ',' +
                 "'" + (scenario.settingsString || JSON.stringify(scenario.settings)) + "'" +
-                ')';
+              ')';
 
               $('.pre-content').append($('<span>').html(rCommand));
               $('.pre-content').append($('<br>'));

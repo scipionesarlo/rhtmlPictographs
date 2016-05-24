@@ -6,6 +6,10 @@ class Pictograph extends RhtmlSvgWidget
 
   _processConfig: () ->
 
+    #do not accept width and height from config, they were passed to constructor
+    delete @config.width
+    delete @config.height
+
     unless @config['table']?
       tableOfOneGraphic =
         rows: [[{type: 'graphic', value: _.clone(@config) }]]

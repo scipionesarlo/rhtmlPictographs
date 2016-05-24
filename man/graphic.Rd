@@ -7,16 +7,9 @@
 https://github.com/NumbersInternational/rhtmlPictographs
 }
 \usage{
-graphic(percentage, width = NULL, height = NULL,
-  settingsJsonString = "{}")
+graphic(settingsJsonString = "{}")
 }
 \arguments{
-\item{percentage}{Numeric between 0 and 1. Default 1.}
-
-\item{width}{Positive numeric representing desired width of graphic}
-
-\item{height}{Positive numeric representing desired height of graphic. Note that specified height will be total height including header and footer text banners.}
-
 \item{settingsJsonString}{A valid JSON string containing the following params:
 \itemize{
   \item direction: ("horizontal"|"vertical"|"scale") - default horizontal. Indicates direction of cropping. Scale will cause image to shrink based on percentage provided
@@ -39,6 +32,12 @@ graphic(percentage, width = NULL, height = NULL,
   \item interRowPadding: number between 0 and 1. default 0.05. Set the ratio of the padding between rows to the image size. Note that at 0.5 the padding is equal to the width of the image. For more info, this parameter sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
   \item debugBorder: existence - optional. default unset. Set this key to anything, and then debug borders will be drawn
 }}
+
+\item{percentage}{Numeric between 0 and 1. Default 1.}
+
+\item{width}{Positive numeric representing desired width of graphic}
+
+\item{height}{Positive numeric representing desired height of graphic. Note that specified height will be total height including header and footer text banners.}
 }
 \description{
 A HTMLWidget that can generate single image graphics, mutli image graphics, or a table of single/multi image graphics. See scenarios and examples below for different use cases.
@@ -56,23 +55,13 @@ A text header, text overlay, and/or text header can be provided to annotate the 
 By default the widget will fill attempt to fill 100% of the containing DOM element, and can be resized by resizing the outer container.
 In displayr this resizing can be done simply by dragging the graphic to make it smaller or larger
 If the resizable param is set to 'false', the resizing is disabled.
+
+TODO : These docs need updating !
 }
 \examples{
 
 single horizontally cropped image - minimal settings
-rhtmlPictographs::graphic(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
-
-single horizontally cropped image - fully customized
-rhtmlPictographs::graphic(0.66, 400, 400, '{"direction": "vertical", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": "Heaps customizable!", "background-color": "green", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "32px", "font-color": "magenta", "tooltip": "hover text!"}')
-
-single horizontally cropped image - minimal settings
-rhtmlPictographs::graphic(0.66, 400, 400, '{"numImages": 3, "text-overlay": false, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
-
-multiple cropped image graphic
-rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 3, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
-
-multiple cropped image , fixed row number graphic
-rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 22, "numRows": 6, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
+rhtmlPictographs::graphic('{"variableImage":"circle:horizontal:blue","percentage":"0.4","width":400,"height":400}')
 
 }
 \author{

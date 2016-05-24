@@ -12,6 +12,8 @@ Pictograph = (function(_super) {
 
   Pictograph.prototype._processConfig = function() {
     var pictographDefaults, tableOfOneGraphic;
+    delete this.config.width;
+    delete this.config.height;
     if (this.config['table'] == null) {
       tableOfOneGraphic = {
         rows: [

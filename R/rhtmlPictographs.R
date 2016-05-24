@@ -15,6 +15,8 @@
 #' In displayr this resizing can be done simply by dragging the graphic to make it smaller or larger
 #' If the resizable param is set to 'false', the resizing is disabled.
 #'
+#' TODO : These docs need updating !
+#'
 #' @param percentage Numeric between 0 and 1. Default 1.
 #' @param width Positive numeric representing desired width of graphic
 #' @param height Positive numeric representing desired height of graphic. Note that specified height will be total height including header and footer text banners.
@@ -44,19 +46,7 @@
 #' @examples
 #'
 #' single horizontally cropped image - minimal settings
-#' rhtmlPictographs::graphic(0.66, 400, 400, '{"direction": "horizontal", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
-#'
-#' single horizontally cropped image - fully customized
-#' rhtmlPictographs::graphic(0.66, 400, 400, '{"direction": "vertical", "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-overlay": "Heaps customizable!", "background-color": "green", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "32px", "font-color": "magenta", "tooltip": "hover text!"}')
-#'
-#' single horizontally cropped image - minimal settings
-#' rhtmlPictographs::graphic(0.66, 400, 400, '{"numImages": 3, "text-overlay": false, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
-#'
-#' multiple cropped image graphic
-#' rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 3, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
-#'
-#' multiple cropped image , fixed row number graphic
-#' rhtmlPictographs::graphic(0.8, 400, 400, '{"numImages": 22, "numRows": 6, "baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png", "text-header": "Big header", "text-footer": "Big footer", "font-family": "verdana", "font-weight": "900", "font-size": "24px", "font-color": "blue"}')
+#' rhtmlPictographs::graphic('{"variableImage":"circle:horizontal:blue","percentage":"0.4","width":400,"height":400}')
 #'
 #' @author Kyle Zeeuwen <kyle.zeeuwen@gmail.com>
 #'
@@ -67,17 +57,37 @@
 #' @export
 #'
 
-graphic <- function(percentage, width = NULL, height = NULL, settingsJsonString = '{}') {
+graphic <- function(settingsJsonString = '{}') {
 
-  input = list(
-    percentage = percentage,
-    settingsJsonString = settingsJsonString
-  )
+  DEFAULT_WIDGET_WIDTH <- 600
+  DEFAULT_WIDGET_HEIGHT <- 600
 
-  # create widget
+  parsedInput <- NULL
+  parsedInput = tryCatch({
+    jsonlite::fromJSON(settingsJsonString)
+  }, warning = function(w) {
+    print("warning while parsing JSON:")
+    print(w)
+  }, error = function(e) {
+    print("error while parsing JSON:")
+    print(e)
+    stop(e)
+  }, finally = {})
+
+  width <- DEFAULT_WIDGET_WIDTH
+  height <- DEFAULT_WIDGET_HEIGHT
+
+  if('width' %in% names(parsedInput)) {
+    width <- as.numeric(unlist(parsedInput['width']))
+  }
+
+  if('height' %in% names(parsedInput)) {
+    height <- as.numeric(unlist(parsedInput['height']))
+  }
+
   htmlwidgets::createWidget(
     name = 'rhtmlPictographs',
-    input,
+    settingsJsonString,
     width = width,
     height = height,
     sizingPolicy = htmlwidgets::sizingPolicy(

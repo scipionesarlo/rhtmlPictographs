@@ -155,12 +155,11 @@ GraphicCell = (function(_super) {
   };
 
   GraphicCell.prototype._generateFixedDataArray = function(percentage, numImages) {
-    var d3Data, fullImages, num, _i;
-    console.log("In new logic");
+    var d3Data, num, numFullImages, _i;
     d3Data = [];
-    fullImages = Math.ceil(percentage * numImages);
+    numFullImages = Math.ceil(percentage * numImages);
     for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
-      percentage = num <= fullImages ? 1 : 0;
+      percentage = num <= numFullImages ? 1 : 0;
       d3Data.push({
         percentage: percentage,
         i: num - 1

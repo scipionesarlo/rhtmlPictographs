@@ -10,18 +10,14 @@ HTMLWidgets.widget
   initialize: (el, width, height) ->
     return new Pictograph el, width, height
 
-  renderValue: (el, params, instance) ->
+  renderValue: (el, inputConfig, instance) ->
 
     config = null
     try
-      if _.isString params.settingsJsonString
-        config = JSON.parse params.settingsJsonString
+      if _.isString inputConfig
+        config = JSON.parse inputConfig
       else
-        config = params.settingsJsonString
-
-      #@TODO: update docs so that percentage is not a top level param any more
-      if params.percentage?
-        config.percentage = params.percentage
+        config = inputConfig
 
     catch err
       readableError = new Error "Pictograph error : Cannot parse 'settingsJsonString': #{err}"

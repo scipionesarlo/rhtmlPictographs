@@ -10,10 +10,10 @@
             "As such it may change as the defaults change."
           ],
           "settings": {
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "No Base Image",
@@ -22,10 +22,10 @@
           ],
           "settings": {
             "percentage": 0.4,
-            "variableImage": "horizontal:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "horizontal:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Auto text: Specify 'percentage' and graphic will display the percentage",
@@ -38,10 +38,10 @@
             "font-color": "white",
             "font-size": "96px",
             "baseImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-            "variableImage": "horizontal:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "horizontal:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Vertical cropping",
@@ -52,10 +52,10 @@
           "settings": {
             "percentage": 0.66,
             "baseImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-            "variableImage": "verticalclip:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "verticalclip:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Radial cropping",
@@ -64,10 +64,10 @@
             "percentage": 0.2,
             "text-footer": "percentage",
             "baseImage": "circle:grey",
-            "variableImage": "circle:radial:blue"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "circle:radial:blue",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "fully customized",
@@ -86,10 +86,10 @@
             "font-weight": "900",
             "font-size": "24px",
             "font-color": "magenta",
-            "tooltip": "hover text!"
-          },
-          "width": 600,
-          "height": 600
+            "tooltip": "hover text!",
+            "width": 600,
+            "height": 600
+          }
         },
         {
           "name": "arbitrary css can be added",
@@ -108,10 +108,10 @@
             "css": {
               ".node-index-2 .text-overlay" : { "stroke" : "yellow", "fill": "brown" },
               ".node-xy-1-2 .text-overlay" : { "stroke" : "#ffffff" }
-            }
-          },
-          "width": 600,
-          "height": 600
+            },
+            "width": 600,
+            "height": 600
+          }
         },
         {
           "name": "Really small",
@@ -119,10 +119,10 @@
             "percentage": 0.23,
             "font-size": "10px",
             "baseImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 50,
-          "height": 50
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 50,
+            "height": 50
+          }
         }
       ]
     },
@@ -138,10 +138,10 @@
             "percentage": 0.4,
             "resizable": "false",
             "baseImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         }
       ]
     },
@@ -157,10 +157,10 @@
             "percentage": 0.8,
             "numImages": 3,
             "text-overlay": "foo",
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Squares Example - Scale image based on percentage",
@@ -174,10 +174,10 @@
             "percentage": 0.8,
             "numImages": 3,
             "text-overlay": "foo",
-            "variableImage": "scale:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"
-          },
-          "width": 400,
-          "height": 400
+            "variableImage": "scale:https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Squares Example - Text Header and Footer",
@@ -190,10 +190,10 @@
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
-            "text-footer": "Big footer"
-          },
-          "width": 400,
-          "height": 400
+            "text-footer": "Big footer",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Squares Example - Set DebugBorder to see whats up",
@@ -207,10 +207,10 @@
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
             "text-footer": "Big footer",
-            "debugBorder": "anything"
-          },
-          "width": 400,
-          "height": 400
+            "debugBorder": "anything",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Squares Example - Add 2x font-size to the height and everything is good",
@@ -223,10 +223,10 @@
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "text-header": "Big header",
             "text-footer": "Big footer",
-            "debugBorder": "anything"
-          },
-          "width": 400,
-          "height": 448
+            "debugBorder": "anything",
+            "width": 400,
+            "height": 448
+          }
         }
       ]
     },
@@ -242,10 +242,10 @@
             "percentage": 0.8,
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/perl_248_128.jpg",
-            "debugBorder": "anything"
-          },
-          "width": 600,
-          "height": 300
+            "debugBorder": "anything",
+            "width": 600,
+            "height": 300
+          }
         },
         {
           "name": "Multiple Rectangles Example - Text Header and Footer",
@@ -259,10 +259,10 @@
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/perl_248_128.jpg",
             "text-header": "Big header",
             "text-footer": "Big footer",
-            "debugBorder": "anything"
-          },
-          "width": 600,
-          "height": 348
+            "debugBorder": "anything",
+            "width": 600,
+            "height": 348
+          }
         }
       ]
     },
@@ -285,10 +285,10 @@
             "font-family": "verdana",
             "font-weight": "900",
             "font-size": "32px",
-            "font-color": "blue"
-          },
-          "width": 400,
-          "height": 100
+            "font-color": "blue",
+            "width": 400,
+            "height": 100
+          }
         },
         {
           "name": "Multiple Image Example - Force 1 Column",
@@ -304,10 +304,10 @@
             "font-family": "verdana",
             "font-weight": "900",
             "font-size": "24px",
-            "font-color": "blue"
-          },
-          "width": 100,
-          "height": 400
+            "font-color": "blue",
+            "width": 100,
+            "height": 400
+          }
         }
       ]
     },
@@ -325,10 +325,10 @@
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "interColumnPadding": "0.5",
-            "interRowPadding": "0.5"
-          },
-          "width": 400,
-          "height": 400
+            "interRowPadding": "0.5",
+            "width": 400,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Image Example - set the inner padding to 0",
@@ -341,10 +341,10 @@
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
             "interColumnPadding": "0",
-            "interRowPadding": "0"
-          },
-          "width": 400,
-          "height": 400
+            "interRowPadding": "0",
+            "width": 400,
+            "height": 400
+          }
         }
       ]
     },
@@ -361,10 +361,10 @@
             "percentage": 1,
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-            "preserveAspectRatio": "xMidYMid"
-          },
-          "width": 600,
-          "height": 400
+            "preserveAspectRatio": "xMidYMid",
+            "width": 600,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Image Example - preserveAspectRatio = 'none'",
@@ -376,10 +376,10 @@
             "percentage": 1,
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-            "preserveAspectRatio": "none"
-          },
-          "width": 600,
-          "height": 400
+            "preserveAspectRatio": "none",
+            "width": 600,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Image Example - preserveAspectRatio = 'xMinYMin'",
@@ -391,10 +391,10 @@
             "percentage": 1,
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-            "preserveAspectRatio": "xMinYMin"
-          },
-          "width": 600,
-          "height": 400
+            "preserveAspectRatio": "xMinYMin",
+            "width": 600,
+            "height": 400
+          }
         },
         {
           "name": "Multiple Image Example - preserveAspectRatio = 'xMaxYMax'",
@@ -406,10 +406,10 @@
             "percentage": 1,
             "numImages": 3,
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",
-            "preserveAspectRatio": "xMaxYMax"
-          },
-          "width": 600,
-          "height": 400
+            "preserveAspectRatio": "xMaxYMax",
+            "width": 600,
+            "height": 400
+          }
         }
       ]
     },
@@ -425,10 +425,10 @@
             "percentage": 1,
             "numImages": 100,
             "numRows": 2,
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png"
-          },
-          "width": 800,
-          "height": 100
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman-large.png",
+            "width": 800,
+            "height": 100
+          }
         },
         {
           "name": "2 x 50 Stickmans - svg",
@@ -439,10 +439,10 @@
             "percentage": 1,
             "numImages": 100,
             "numRows": 2,
-            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg"
-          },
-          "width": 800,
-          "height": 100
+            "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/stickman.svg",
+            "width": 800,
+            "height": 100
+          }
         }
       ]
     },
@@ -452,9 +452,9 @@
         {
           "name": "Font customization",
           "description" : [],
-          "width": 500,
-          "height": 220,
           "settings" : {
+            "width": 500,
+            "height": 220,
             "font-size" : "32px",
             "font-weight" : "900",
             "font-family" : "Verdana",
@@ -495,11 +495,11 @@
           }
         },
         {
-          "name": "Table with confiurable row/cell heights",
+          "name": "Table with configurable row/cell heights",
           "description" : [],
-          "width": 940,
-          "height": 840,
           "settings" : {
+            "width": 940,
+            "height": 840,
             "table": {
 
               "rowHeights": [ 400, 200, 200 ],
@@ -580,9 +580,9 @@
         {
           "name": "Circle infographic work in progress",
           "description" : [],
-          "width": 610,
-          "height": 500,
           "settings" : {
+            "width": 610,
+            "height": 500,
             "font-color": "grey",
             "font-family": "arial",
             "font-weight": "200",
@@ -652,9 +652,9 @@
         {
           "name": "Circle infographic V2 w/ pallettes and shape support",
           "description" : [],
-          "width": 1100,
-          "height": 400,
           "settings" : {
+            "width": 1100,
+            "height": 400,
             "font-color": "grey",
             "font-family": "arial",
             "font-weight": "200",
@@ -871,9 +871,9 @@
         {
           "name": "Super power showdown",
           "description" : [],
-          "width": 688,
-          "height": 1200,
           "settings" : {
+            "width": 688,
+            "height": 1200,
             "font-color": "black",
             "font-family": "arial",
             "font-weight": "200",
@@ -985,18 +985,15 @@
         {
           "name": "Bad JSON",
           "description" : [ "EXPECTED: visually displayed, human readable error. Caused by Bad JSON." ],
-          "width": 400,
-          "height": 400,
-          "settingsString" : "{ json is fun? }",
-          "settings" : {}
+          "settingsString" : "{ json is fun? }"
         },
         {
           "name": "Col and Row specified at same time",
           "description" : [ "EXPECTED: visually displayed, human readable error. Caused by Setting numRows and numCols at same time (currently a nono)." ],
           "percentage" : 1,
-          "width": 400,
-          "height": 400,
           "settings" : {
+            "width": 400,
+            "height": 400,
             "percentage": 0.4,
             "baseImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png",
             "variableImage": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png",

@@ -22,9 +22,8 @@
       <div class="content-window"></div>
     </div>
 
-    <h3 style="font-family:verdana">Settings:</h2>
+    <h3 style="font-family:verdana">Settings:</h3>
     <div class="settings-container">
-      <div style="padding-left:20px">Percentage: <span class="percentage"></span></div>
       <div style="padding-left:20px">Width: <span class="width"></span></div>
       <div style="padding-left:20px">Height: <span class="height"></span></div>
       <pre style="padding-left:20px" class="settings"></pre>
@@ -33,9 +32,9 @@
 
     <form id="resize-form" style="padding-top:10px" >
       <label for="width-input">New Width:</label>
-      <input type="text" id="width-input" class="width-input" value="200"></input>
+      <input type="text" id="width-input" class="width-input" value="200"/>
       <label for="height-input">New Height:</label>
-      <input type="text" id="height-input" class="height-input" value="200"></input>
+      <input type="text" id="height-input" class="height-input" value="200"/>
       <button class="resize-button">Resize</button>
     </form>
 
@@ -100,6 +99,23 @@
           var scenarioIndex = parseInt(getQueryVariable('scenarioIndex'));
           var scenarioLength = feature.scenarios.length;
           var scenario = feature.scenarios[scenarioIndex];
+          
+          var width = 600; // defaults from htmlwidget.R (dont have to match though);
+          var height = 600; // defaults from htmlwidget.R (dont have to match though);
+          var settings = null;
+
+          //NB all of the settings vs settingsString handling is just to enable testing of bad JSON - see error cases in features.json
+          if (scenario.settings) {
+            settings = scenario.settings;
+            if (settings.width) { width = settings.width }
+            if (settings.height) { height = settings.height }
+          }
+          else if (scenario.settingsString) {
+            settings = scenario.settingsString;
+          }
+          else {
+            throw new Error("Testing error: scenario must have either settings or settingsString");
+          }
 
           getNext = function() {
             thereIsMoreScenarios = function () {
@@ -197,30 +213,25 @@
           });
 
           $('.name').text(scenario.name);
-          $('.percentage').text(scenario.percentage);
-          $('.width').text(scenario.width);
-          $('.height').text(scenario.height);
+          $('.width').text(width); // defaults from htmlwidget.R (dont have to match though)
+          $('.height').text(height); // defaults from htmlwidget.R (dont have to match though)
           _.forEach(scenario.description, function(descriptionLine) {
             textLine = $('<p>').text(descriptionLine);
             $('.scenario').append(textLine);
           });
-          $('.settings').text(JSON.stringify(scenario.settings, {}, 2));
+          $('.settings').text(JSON.stringify(settings, {}, 2));
 
           outerWrapper = $('.outer-wrapper')
           container = $('.content-window')
 
-          myWidgetInstance = myWidgetDefinition.initialize(container,scenario.width,scenario.height);
-          params = {
-            percentage: scenario.percentage,
-            // favour the json string if specified (used primarily for error testing)
-            settingsJsonString: scenario.settingsString || scenario.settings
-          };
+          myWidgetInstance = myWidgetDefinition.initialize(container,width,height);
+
 
           outerWrapper
-            .css('width', scenario.width)
-            .css('height', scenario.height)
+            .css('width', width)
+            .css('height', height)
 
-          myWidgetDefinition.renderValue(container, params, myWidgetInstance);
+          myWidgetDefinition.renderValue(container, settings, myWidgetInstance);
 
         }).fail( function(error) {
           console.error("Download of ./theSrc/features/features.json failed. Probably invalid JSON.");

@@ -340,9 +340,6 @@ describe 'GraphicCell class', ->
 
     describe 'multi image fixed grid graphic:', ->
 
-      #@TODO: I dont like the fact that I must remember to set horizontal or vertical for this to work ...
-      #@TODO: Its also inefficient given i am drawing a bunch of hidden grpahics
-
       beforeEach ->
         @uniqueClass = @makeGraphic {
           percentage: 0.25

@@ -9,17 +9,14 @@ HTMLWidgets.widget({
   initialize: function(el, width, height) {
     return new Pictograph(el, width, height);
   },
-  renderValue: function(el, params, instance) {
+  renderValue: function(el, inputConfig, instance) {
     var config, err, errorHandler, readableError;
     config = null;
     try {
-      if (_.isString(params.settingsJsonString)) {
-        config = JSON.parse(params.settingsJsonString);
+      if (_.isString(inputConfig)) {
+        config = JSON.parse(inputConfig);
       } else {
-        config = params.settingsJsonString;
-      }
-      if (params.percentage != null) {
-        config.percentage = params.percentage;
+        config = inputConfig;
       }
     } catch (_error) {
       err = _error;

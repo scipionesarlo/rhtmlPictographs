@@ -18,12 +18,7 @@ module.exports = function (parsedFileContents) {
         });
         content += "\n";
 
-        var percentage = _.has(scenario.settings, 'percentage') ? scenario.settings.percentage : 'NULL';
-
         var rCommand = 'rhtmlPictographs::graphic(' +
-          percentage + ',' +
-          scenario.width + ',' +
-          scenario.height + ',' +
           "'" + (scenario.settingsString || JSON.stringify(scenario.settings)) + "'" +
           ')';
 

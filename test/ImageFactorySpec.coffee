@@ -19,7 +19,14 @@ describe 'ImageFactory class:', ->
       it 'is good', -> @run 'url:horizontalclip:http://example.com/foo', { type: 'url', url: 'http://example.com/foo', horizontalclip: true }
       it 'is good', -> @run 'url:/local/image.jpg', { type: 'url', url: '/local/image.jpg' }
 
-    describe 'circles:', ->
+    describe 'shapes brief:', ->
+      # config parsing of shapes is currently identical, so detailed testing is in circle, this block just tests existence
+      it 'is good', -> @run 'circle', { type: 'circle' }
+      it 'is good', -> @run 'ellipse', { type: 'ellipse' }
+      it 'is good', -> @run 'square', { type: 'square' }
+      it 'is good', -> @run 'rect', { type: 'rect' }
+
+    describe 'circles detailed:', ->
       it 'is good', -> @run 'circle', { type: 'circle' }
       it 'is good', -> @run 'circle:scale', { type: 'circle', scale: true }
       it 'is good', -> @run 'circle:scale:redcoat', { type: 'circle', scale: true, color: 'redcoat' }

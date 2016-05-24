@@ -76,14 +76,56 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addCircleTo = function(d3Node, config, width, height) {
-    var color;
+    var color, ratio;
+    ratio = function(p) {
+      if (config.scale) {
+        return p;
+      } else {
+        return 1;
+      }
+    };
     color = ColorFactory.getColor(config.color);
     return d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
-      var ratio;
-      ratio = config.scale ? d.percentage : 1;
-      return ratio * Math.min(width, height) / 2;
+      return ratio(d.percentage) * Math.min(width, height) / 2;
     }).style('fill', color);
-    return null;
+  };
+
+  ImageFactory.addEllipseTo = function(d3Node, config, width, height) {
+    var color, ratio;
+    ratio = function(p) {
+      if (config.scale) {
+        return p;
+      } else {
+        return 1;
+      }
+    };
+    color = ColorFactory.getColor(config.color);
+    return d3Node.append("svg:ellipse").classed('ellipse', true).attr('cx', width / 2).attr('cy', height / 2).attr('rx', function(d) {
+      return width * ratio(d.percentage) / 2;
+    }).attr('ry', function(d) {
+      return height * ratio(d.percentage) / 2;
+    }).style('fill', color);
+  };
+
+  ImageFactory.addRectTo = function(d3Node, config, width, height) {
+    var color, ratio;
+    ratio = function(p) {
+      if (config.scale) {
+        return p;
+      } else {
+        return 1;
+      }
+    };
+    color = ColorFactory.getColor(config.color);
+    return d3Node.append("svg:rect").classed('rect', true).attr('x', function(d) {
+      return width * (1 - ratio(d.percentage)) / 2;
+    }).attr('y', function(d) {
+      return height * (1 - ratio(d.percentage)) / 2;
+    }).attr('width', function(d) {
+      return width * ratio(d.percentage);
+    }).attr('height', function(d) {
+      return height * ratio(d.percentage);
+    }).style('fill', color);
   };
 
   ImageFactory._addImageTo = function(d3Node, config, width, height) {
@@ -183,19 +225,22 @@ ImageFactory = (function() {
   };
 
   ImageFactory.types = {
-    'circle': ImageFactory.addCircleTo,
-    'url': ImageFactory._addImageTo
+    circle: ImageFactory.addCircleTo,
+    ellipse: ImageFactory.addEllipseTo,
+    square: ImageFactory.addRectTo,
+    rect: ImageFactory.addRectTo,
+    url: ImageFactory._addImageTo
   };
 
   ImageFactory.keywordHandlers = {
-    'scale': 'scale',
-    'verticalclip': 'verticalclip',
-    'vertical': 'verticalclip',
-    'radialclip': 'radialclip',
-    'radial': 'radialclip',
-    'pie': 'radialclip',
-    'horizontalclip': 'horizontalclip',
-    'horizontal': 'horizontalclip'
+    scale: 'scale',
+    verticalclip: 'verticalclip',
+    vertical: 'verticalclip',
+    radialclip: 'radialclip',
+    radial: 'radialclip',
+    pie: 'radialclip',
+    horizontalclip: 'horizontalclip',
+    horizontal: 'horizontalclip'
   };
 
   ImageFactory.regexes = {

@@ -27,6 +27,8 @@ class GraphicCell extends BaseCell
     @_verifyKeyIsFloat @config, 'interRowPadding', 0.05, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'interRowPadding'
 
+    @_verifyKeyIsBoolean @config, 'fixedgrid', false
+
     @_processTextConfig 'text-header'
     @_processTextConfig 'text-overlay'
     @_processTextConfig 'text-footer'
@@ -67,7 +69,11 @@ class GraphicCell extends BaseCell
       y = @dimensions.footerOffset + @dimensions.footerHeight / 2
       @_addTextTo @parentSvg, @config['text-footer']['text'], 'text-footer', x, y
 
-    d3Data = @_generateDataArray @config.percentage, @config.numImages
+    d3Data = null
+    if @config.fixedgrid
+      d3Data = @_generateFixedDataArray(@config.percentage, @config.numImages)
+    else
+      d3Data = @_generateDataArray(@config.percentage, @config.numImages)
 
     #d3.grid is added to d3 via github.com/NumbersInternational/d3-grid
     gridLayout = d3.layout.grid()
@@ -149,4 +155,14 @@ class GraphicCell extends BaseCell
     for num in [1..numImages]
       percentage = Math.min(1, Math.max(0, 1 + totalArea - num))
       d3Data.push { percentage: percentage, i: num - 1 }
+    return d3Data
+
+  _generateFixedDataArray: (percentage, numImages) ->
+    console.log "In new logic"
+    d3Data = []
+    fullImages = Math.ceil(percentage * numImages)
+    for num in [1..numImages]
+      percentage = if num <= fullImages then 1 else 0
+      d3Data.push { percentage: percentage, i: num - 1 }
+    console.log d3Data
     return d3Data

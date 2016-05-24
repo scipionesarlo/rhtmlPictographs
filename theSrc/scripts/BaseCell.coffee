@@ -125,3 +125,15 @@ class BaseCell
   _verifyKeyIsRatio: (input, key) ->
     throw new Error "#{key} must be >= 0" unless input[key] >= 0
     throw new Error "#{key} must be <= 1" unless input[key] <= 1
+
+  _verifyKeyIsBoolean: (input, key, defaultValue, message='Must be boolean') ->
+    if !_.isUndefined defaultValue
+      unless _.has input, key
+        input[key] = defaultValue
+        return
+
+    input[key] = true if input[key] is 'true'
+    input[key] = false if input[key] is 'false'
+
+    unless _.isBoolean(input[key])
+      throw new Error "invalid '#{key}': #{input[key]}. #{message}."

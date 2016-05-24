@@ -72,18 +72,45 @@ class ImageFactory
     return config
 
   @addCircleTo: (d3Node, config, width, height) ->
+    ratio = (p) ->
+      return if config.scale then p else 1
+
     color = ColorFactory.getColor config.color
 
     return d3Node.append("svg:circle")
       .classed('circle', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'r', (d) ->
-        ratio = if config.scale then d.percentage else 1
-        return ratio * Math.min(width,height)/2
+      .attr 'r', (d) -> ratio(d.percentage) * Math.min(width,height) / 2
       .style 'fill', color
 
-    return null
+  @addEllipseTo: (d3Node, config, width, height) ->
+    ratio = (p) ->
+      return if config.scale then p else 1
+
+    color = ColorFactory.getColor config.color
+
+    return d3Node.append("svg:ellipse")
+      .classed('ellipse', true)
+      .attr 'cx', width/2
+      .attr 'cy', height/2
+      .attr 'rx', (d) -> width * ratio(d.percentage) / 2
+      .attr 'ry', (d) -> height * ratio(d.percentage) / 2
+      .style 'fill', color
+
+  @addRectTo: (d3Node, config, width, height) ->
+    ratio = (p) ->
+      return if config.scale then p else 1
+
+    color = ColorFactory.getColor config.color
+
+    return d3Node.append("svg:rect")
+      .classed('rect', true)
+      .attr 'x', (d) -> width * (1 - ratio(d.percentage)) / 2
+      .attr 'y', (d) -> height * (1 - ratio(d.percentage)) / 2
+      .attr 'width', (d) -> width * ratio(d.percentage)
+      .attr 'height', (d) -> height * ratio(d.percentage)
+      .style 'fill', color
 
   @_addImageTo: (d3Node, config, width, height) ->
     ratio = (p) ->
@@ -184,19 +211,22 @@ class ImageFactory
     return uniqueId
 
   @types = {
-    'circle': ImageFactory.addCircleTo
-    'url' : ImageFactory._addImageTo
+    circle: ImageFactory.addCircleTo
+    ellipse: ImageFactory.addEllipseTo
+    square: ImageFactory.addRectTo
+    rect: ImageFactory.addRectTo
+    url : ImageFactory._addImageTo
   }
 
   @keywordHandlers = {
-    'scale': 'scale'
-    'verticalclip': 'verticalclip'
-    'vertical': 'verticalclip'
-    'radialclip': 'radialclip'
-    'radial': 'radialclip'
-    'pie': 'radialclip'
-    'horizontalclip': 'horizontalclip'
-    'horizontal': 'horizontalclip'
+    scale: 'scale'
+    verticalclip: 'verticalclip'
+    vertical: 'verticalclip'
+    radialclip: 'radialclip'
+    radial: 'radialclip'
+    pie: 'radialclip'
+    horizontalclip: 'horizontalclip'
+    horizontal: 'horizontalclip'
   }
 
   @regexes = {

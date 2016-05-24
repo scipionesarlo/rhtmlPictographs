@@ -880,7 +880,7 @@
             "font-size": "24px",
             "table": {
               "colWidths": [240, 100, 100, 100, 100],
-              "rowHeights": [26, 150, 150, 75, 150, 150, 125, 125, 40],
+              "rowHeights": [26, 150, 150, 75, 100, 100, 125, 125, 40],
               "innerColumnPadding": 12,
               "lines": {
                 "horizontal": [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
@@ -929,17 +929,17 @@
                     "Active Troops",
                     { "text": "Per 1,000,000 People", "font-size": "14px", "font-color": "#cccccc" }
                   ] } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/stickman_grey.svg", "text-footer": "169", "numImages": "17", "numRows": "2" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/stickman_grey.svg", "text-footer": "318", "numImages": "32", "numRows": "4" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/stickman_grey.svg", "text-footer": "107", "numImages": "11", "numRows": "2" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/stickman_green.svg", "text-footer": "448", "numImages": "45", "numRows": "5" } }
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "169", "percentage": "=169/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "318", "percentage": "=318/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "107", "percentage": "=107/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "448", "percentage": "=448/600", "numImages": 45, "numRows": "3" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [ "Nuclear Warheads"] } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/rocket_grey.svg", "text-footer": "245", "numImages": "2", "numRows": "1" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/rocket_grey.svg", "text-footer": "65", "numImages": "2", "numRows": "1" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/rocket_grey.svg", "text-footer": "100", "numImages": "2", "numRows": "1" } },
-                  {"type": "graphic", "value": { "variableImage": "url:/images/rocket_green.svg", "text-footer": "7700", "numImages": "77", "numRows": "4" } }
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "245",  "percentage": "=245/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "65",   "percentage": "=65/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "100",  "percentage": "=100/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "7700", "percentage": "=7700/7800", "numImages": "75", "numRows": "5" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [
@@ -950,7 +950,7 @@
                     ]
                   } },
                   {"type": "graphic", "value": { "variableImage": "url:vertical:/images/rocket_green.svg", "baseImage": "url:/images/rocket_grey.svg", "text-overlay": "7%", "percentage": "=22/85" } },
-                  {"type": "label", "value": { "text": "NO DATA", "font-size": "25", "padding-top": 75 } },
+                  {"type": "label", "value": { "text": "NO DATA", "font-size": "25", "padding-top": 50 } },
                   {"type": "graphic", "value": { "variableImage": "url:vertical:/images/rocket_green.svg", "baseImage": "url:/images/rocket_grey.svg", "text-overlay": "5%", "percentage": "=15/85" } },
                   {"type": "graphic", "value": { "variableImage": "url:vertical:/images/rocket_green.svg", "baseImage": "url:/images/rocket_grey.svg", "text-overlay": "58%", "percentage": "=58/85" } }
                 ],

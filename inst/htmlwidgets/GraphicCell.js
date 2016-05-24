@@ -41,6 +41,7 @@ GraphicCell = (function(_super) {
     this._verifyKeyIsRatio(this.config, 'interColumnPadding');
     this._verifyKeyIsFloat(this.config, 'interRowPadding', 0.05, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'interRowPadding');
+    this._verifyKeyIsBoolean(this.config, 'fixedgrid', false);
     this._processTextConfig('text-header');
     this._processTextConfig('text-overlay');
     return this._processTextConfig('text-footer');
@@ -86,7 +87,12 @@ GraphicCell = (function(_super) {
       y = this.dimensions.footerOffset + this.dimensions.footerHeight / 2;
       this._addTextTo(this.parentSvg, this.config['text-footer']['text'], 'text-footer', x, y);
     }
-    d3Data = this._generateDataArray(this.config.percentage, this.config.numImages);
+    d3Data = null;
+    if (this.config.fixedgrid) {
+      d3Data = this._generateFixedDataArray(this.config.percentage, this.config.numImages);
+    } else {
+      d3Data = this._generateDataArray(this.config.percentage, this.config.numImages);
+    }
     gridLayout = d3.layout.grid().bands().size([this.width, this.dimensions.graphicHeight]).padding([0.05, 0.05]).padding([this.config['interColumnPadding'], this.config['interRowPadding']]);
     if (this.config['numRows'] != null) {
       gridLayout.rows(this.config['numRows']);
@@ -145,6 +151,22 @@ GraphicCell = (function(_super) {
         i: num - 1
       });
     }
+    return d3Data;
+  };
+
+  GraphicCell.prototype._generateFixedDataArray = function(percentage, numImages) {
+    var d3Data, fullImages, num, _i;
+    console.log("In new logic");
+    d3Data = [];
+    fullImages = Math.ceil(percentage * numImages);
+    for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
+      percentage = num <= fullImages ? 1 : 0;
+      d3Data.push({
+        percentage: percentage,
+        i: num - 1
+      });
+    }
+    console.log(d3Data);
     return d3Data;
   };
 

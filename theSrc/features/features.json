@@ -654,14 +654,14 @@
           "description" : [],
           "settings" : {
             "width": 1100,
-            "height": 400,
+            "height": 460,
             "font-color": "grey",
             "font-family": "arial",
             "font-weight": "200",
             "font-size": "12px",
             "table": {
               "colWidths": [80, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
-              "rowHeights": [60, 60, 60, 60, 60, 60, 30],
+              "rowHeights": [60, 60, 60, 60, 60, 60, 60, 30],
               "colors": {
                 "palettes": {
                   "displayr1": [ "red", "green", "blue" ]
@@ -671,10 +671,37 @@
               "lines": {
                 "padding-left": 80,
                 "padding-right": 20,
-                "horizontal": [ 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6 ],
+                "horizontal": [ 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7 ],
                 "style": "stroke:grey;stroke-width:2"
               },
               "rows": [
+                [
+                  {"type": "label", "value": { "padding-top": 23, "labels": ["displayr"] } },
+                  {"type": "graphic", "value": { "percentage": 0.8, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.75, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.9, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.98, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.75, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.9, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.73, "variableImage": "circle:scale:displayr" } },
+                  {"type": "graphic", "value": { "percentage": 0.98, "variableImage": "circle:scale:displayr" } }
+                ],
                 [
                   {"type": "label", "value": { "padding-top": 23, "labels": ["google10"] } },
                   {"type": "graphic", "value": { "percentage": 0.8, "variableImage": "circle:scale:google10" } },
@@ -880,7 +907,7 @@
             "font-size": "24px",
             "table": {
               "colWidths": [240, 100, 100, 100, 100],
-              "rowHeights": [26, 150, 150, 75, 100, 100, 125, 125, 40],
+              "rowHeights": [26, 100, 150, 75, 100, 100, 125, 125, 40],
               "innerColumnPadding": 12,
               "lines": {
                 "horizontal": [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
@@ -919,27 +946,27 @@
                     "Active Troops",
                     { "text": "Millions", "font-size": "14px", "font-color": "#cccccc" }
                   ] } },
-                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_green.svg", "text-footer": "2.2", "percentage": "=22/25" } },
-                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.6", "percentage": "=16/25" } },
-                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.3", "percentage": "=13/25" } },
-                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.4", "percentage": "=14/25" } }
+                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_green.svg", "text-footer": "2.2", "percentage": "=22/30" } },
+                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.6", "percentage": "=16/30" } },
+                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.3", "percentage": "=13/30" } },
+                  {"type": "graphic", "value": { "variableImage": "url:scale:/images/stickman_grey.svg", "text-footer": "1.4", "percentage": "=14/30" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [
                     "Active Troops",
                     { "text": "Per 1,000,000 People", "font-size": "14px", "font-color": "#cccccc" }
                   ] } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "169", "percentage": "=169/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "318", "percentage": "=318/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "107", "percentage": "=107/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "448", "percentage": "=448/600", "numImages": 45, "numRows": "3" } }
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "169", "percentage": "=169/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "318", "percentage": "=318/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "107", "percentage": "=107/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "448", "percentage": "=448/600", "numImages": 45, "numRows": "3" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [ "Nuclear Warheads"] } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "245",  "percentage": "=245/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "65",   "percentage": "=65/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "100",  "percentage": "=100/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "7700", "percentage": "=7700/7800", "numImages": "75", "numRows": "5" } }
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "245",  "percentage": "=245/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "65",   "percentage": "=65/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "100",  "percentage": "=100/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "interColumnPadding": 0, "interRowPadding": 0,  "fixedgrid": true, "text-footer": "7700", "percentage": "=7700/7800", "numImages": "75", "numRows": "5" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [
@@ -957,14 +984,14 @@
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [
                     "Donations to UN",
-                    { "text": "% of Total (Annual UN)??", "font-size": "14px", "font-color": "#cccccc" },
+                    { "text": "% of Total Annual UN", "font-size": "14px", "font-color": "#cccccc" },
                     { "text": "Contribution", "font-size": "14px", "font-color": "#cccccc" }
                   ]
                   } },
-                  {"type": "graphic", "value": { "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=3/100" } },
-                  {"type": "graphic", "value": { "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=43/100" } },
-                  {"type": "graphic", "value": { "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=1/100" } },
-                  {"type": "graphic", "value": { "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=24/100" } }
+                  {"type": "graphic", "value": { "padding": "10 0 0 0", "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=3/100" } },
+                  {"type": "graphic", "value": { "padding": "10 0 0 0", "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=43/100" } },
+                  {"type": "graphic", "value": { "padding": "10 0 0 0", "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=1/100" } },
+                  {"type": "graphic", "value": { "padding": "10 0 0 0", "variableImage": "circle:radial:#006400", "baseImage": "circle:grey", "text-footer": "percentage", "percentage": "=24/100" } }
                 ],
                 [
                   {"type": "label", "value": { "text": "SCORE", "font-size": "30", "padding-top": 5 } },

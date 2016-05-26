@@ -11,7 +11,7 @@ GraphicCell = (function(_super) {
   }
 
   GraphicCell.prototype.setConfig = function(config) {
-    var _ref;
+    var key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _ref1, _results;
     this.config = _.cloneDeep(config);
     if (this.config.variableImage == null) {
       throw new Error("Must specify 'variableImage'");
@@ -44,7 +44,32 @@ GraphicCell = (function(_super) {
     this._verifyKeyIsBoolean(this.config, 'fixedgrid', false);
     this._processTextConfig('text-header');
     this._processTextConfig('text-overlay');
-    return this._processTextConfig('text-footer');
+    this._processTextConfig('text-footer');
+    if (this.config.padding) {
+      _ref1 = this.config.padding.split(" "), paddingTop = _ref1[0], paddingRight = _ref1[1], paddingBottom = _ref1[2], paddingLeft = _ref1[3];
+      this.config.padding = {
+        top: parseInt(paddingTop.replace(/(px|em)/, '')),
+        right: parseInt(paddingRight.replace(/(px|em)/, '')),
+        bottom: parseInt(paddingBottom.replace(/(px|em)/, '')),
+        left: parseInt(paddingLeft.replace(/(px|em)/, ''))
+      };
+      _results = [];
+      for (key in this.config.padding) {
+        if (_.isNaN(this.config.padding[key])) {
+          throw new Error("Invalid padding " + this.config.padding + ": " + key + " must be Integer");
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    } else {
+      return this.config.padding = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      };
+    }
   };
 
   GraphicCell.prototype._processTextConfig = function(key) {
@@ -77,14 +102,14 @@ GraphicCell = (function(_super) {
     var backgroundRect, d3Data, enteringLeafNodes, graphicContainer, gridLayout, imageHeight, imageWidth, x, y;
     this._computeDimensions();
     if (this.config['text-header'] != null) {
-      x = this.width / 2;
-      y = this.dimensions.headerHeight / 2;
+      x = this.dimensions.headerXOffset + this.dimensions.headerWidth / 2;
+      y = this.dimensions.headerYOffset + this.dimensions.headerHeight / 2;
       this._addTextTo(this.parentSvg, this.config['text-header']['text'], 'text-header', x, y);
     }
-    graphicContainer = this.parentSvg.append('g').attr('class', 'graphic-container').attr('transform', "translate(0," + this.dimensions.graphicOffset + ")");
+    graphicContainer = this.parentSvg.append('g').attr('class', 'graphic-container').attr('transform', "translate(" + this.dimensions.graphicXOffset + "," + this.dimensions.graphicYOffset + ")");
     if (this.config['text-footer'] != null) {
-      x = this.width / 2;
-      y = this.dimensions.footerOffset + this.dimensions.footerHeight / 2;
+      x = this.dimensions.footerXOffset + this.dimensions.footerWidth / 2;
+      y = this.dimensions.footerYOffset + this.dimensions.footerHeight / 2;
       this._addTextTo(this.parentSvg, this.config['text-footer']['text'], 'text-footer', x, y);
     }
     d3Data = null;
@@ -93,7 +118,7 @@ GraphicCell = (function(_super) {
     } else {
       d3Data = this._generateDataArray(this.config.percentage, this.config.numImages);
     }
-    gridLayout = d3.layout.grid().bands().size([this.width, this.dimensions.graphicHeight]).padding([0.05, 0.05]).padding([this.config['interColumnPadding'], this.config['interRowPadding']]);
+    gridLayout = d3.layout.grid().bands().size([this.dimensions.graphicWidth, this.dimensions.graphicHeight]).padding([this.config['interColumnPadding'], this.config['interRowPadding']]);
     if (this.config['numRows'] != null) {
       gridLayout.rows(this.config['numRows']);
     }
@@ -131,9 +156,16 @@ GraphicCell = (function(_super) {
     this.dimensions = {};
     this.dimensions.headerHeight = 0 + (this.config['text-header'] != null ? parseInt(this.config['text-header']['font-size'].replace(/(px|em)/, '')) : 0);
     this.dimensions.footerHeight = 0 + (this.config['text-footer'] != null ? parseInt(this.config['text-footer']['font-size'].replace(/(px|em)/, '')) : 0);
-    this.dimensions.graphicHeight = this.height - this.dimensions.headerHeight - this.dimensions.footerHeight;
-    this.dimensions.graphicOffset = 0 + this.dimensions.headerHeight;
-    return this.dimensions.footerOffset = 0 + this.dimensions.headerHeight + this.dimensions.graphicHeight;
+    this.dimensions.headerWidth = this.width - this.config.padding.left - this.config.padding.right;
+    this.dimensions.headerXOffset = 0 + this.config.padding.left;
+    this.dimensions.headerYOffset = 0 + this.config.padding.top;
+    this.dimensions.graphicWidth = this.width - this.config.padding.left - this.config.padding.right;
+    this.dimensions.graphicHeight = this.height - this.dimensions.headerHeight - this.dimensions.footerHeight - this.config.padding.top - this.config.padding.bottom;
+    this.dimensions.graphicXOffset = 0 + this.config.padding.left;
+    this.dimensions.graphicYOffset = 0 + this.dimensions.headerYOffset + this.dimensions.headerHeight;
+    this.dimensions.footerWidth = this.width - this.config.padding.left - this.config.padding.right;
+    this.dimensions.footerXOffset = 0 + this.config.padding.left;
+    return this.dimensions.footerYOffset = 0 + this.dimensions.graphicYOffset + this.dimensions.graphicHeight;
   };
 
   GraphicCell.prototype._addTextTo = function(parent, text, myClass, x, y) {
@@ -165,7 +197,6 @@ GraphicCell = (function(_super) {
         i: num - 1
       });
     }
-    console.log(d3Data);
     return d3Data;
   };
 

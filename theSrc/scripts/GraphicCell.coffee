@@ -33,6 +33,22 @@ class GraphicCell extends BaseCell
     @_processTextConfig 'text-overlay'
     @_processTextConfig 'text-footer'
 
+    if (@config.padding)
+      [paddingTop, paddingRight, paddingBottom, paddingLeft] = @config.padding.split(" ")
+
+      @config.padding = {
+        top: parseInt paddingTop.replace(/(px|em)/, '')
+        right: parseInt paddingRight.replace(/(px|em)/, '')
+        bottom: parseInt paddingBottom.replace(/(px|em)/, '')
+        left: parseInt paddingLeft.replace(/(px|em)/, '')
+      }
+      for key of @config.padding
+        if _.isNaN @config.padding[key]
+          throw new Error "Invalid padding #{@config.padding}: #{key} must be Integer"
+
+    else
+      @config.padding = { top: 0, right: 0, bottom: 0, left: 0 }
+
   _processTextConfig: (key) ->
     if @config[key]?
       textConfig = if _.isString(@config[key]) then { text : @config[key] } else @config[key]
@@ -54,19 +70,18 @@ class GraphicCell extends BaseCell
   _draw: () ->
     @_computeDimensions()
 
-    #@TODO remove duplicated text-header and text-footer handling
     if @config['text-header']?
-      x = @width / 2
-      y = @dimensions.headerHeight / 2
+      x = @dimensions.headerXOffset + @dimensions.headerWidth / 2
+      y = @dimensions.headerYOffset + @dimensions.headerHeight / 2
       @_addTextTo @parentSvg, @config['text-header']['text'], 'text-header', x, y
 
     graphicContainer = @parentSvg.append('g')
       .attr('class', 'graphic-container')
-      .attr 'transform', "translate(0,#{@dimensions.graphicOffset})"
+      .attr 'transform', "translate(#{@dimensions.graphicXOffset},#{@dimensions.graphicYOffset})"
 
     if @config['text-footer']?
-      x = @width / 2
-      y = @dimensions.footerOffset + @dimensions.footerHeight / 2
+      x = @dimensions.footerXOffset + @dimensions.footerWidth / 2
+      y = @dimensions.footerYOffset + @dimensions.footerHeight / 2
       @_addTextTo @parentSvg, @config['text-footer']['text'], 'text-footer', x, y
 
     d3Data = null
@@ -78,8 +93,7 @@ class GraphicCell extends BaseCell
     #d3.grid is added to d3 via github.com/NumbersInternational/d3-grid
     gridLayout = d3.layout.grid()
       .bands()
-      .size [@width, @dimensions.graphicHeight]
-      .padding([0.05, 0.05])
+      .size [@dimensions.graphicWidth, @dimensions.graphicHeight]
       .padding([@config['interColumnPadding'], @config['interRowPadding']])
 
     gridLayout.rows(@config['numRows']) if @config['numRows']?
@@ -129,13 +143,22 @@ class GraphicCell extends BaseCell
 
     @dimensions = {}
 
+    #need these first to calc graphicHeight
     @dimensions.headerHeight = 0 + (if @config['text-header']? then parseInt(@config['text-header']['font-size'].replace(/(px|em)/, '')) else 0)
     @dimensions.footerHeight = 0 + (if @config['text-footer']? then parseInt(@config['text-footer']['font-size'].replace(/(px|em)/, '')) else 0)
 
-    @dimensions.graphicHeight = @height - @dimensions.headerHeight - @dimensions.footerHeight
-    @dimensions.graphicOffset = 0 + @dimensions.headerHeight
+    @dimensions.headerWidth = @width - @config.padding.left - @config.padding.right
+    @dimensions.headerXOffset = 0 + @config.padding.left
+    @dimensions.headerYOffset = 0 + @config.padding.top
 
-    @dimensions.footerOffset = 0 + @dimensions.headerHeight + @dimensions.graphicHeight
+    @dimensions.graphicWidth = @width - @config.padding.left - @config.padding.right
+    @dimensions.graphicHeight = @height - @dimensions.headerHeight - @dimensions.footerHeight - @config.padding.top - @config.padding.bottom
+    @dimensions.graphicXOffset = 0 + @config.padding.left
+    @dimensions.graphicYOffset = 0 + @dimensions.headerYOffset + @dimensions.headerHeight
+
+    @dimensions.footerWidth = @width - @config.padding.left - @config.padding.right
+    @dimensions.footerXOffset = 0 + @config.padding.left
+    @dimensions.footerYOffset = 0 + @dimensions.graphicYOffset + @dimensions.graphicHeight
 
   _addTextTo: (parent, text, myClass, x, y) ->
     parent.append('svg:text')
@@ -167,5 +190,4 @@ class GraphicCell extends BaseCell
     for num in [1..numImages]
       percentage = if num <= numFullImages then 1 else 0
       d3Data.push { percentage: percentage, i: num - 1 }
-    console.log d3Data
     return d3Data

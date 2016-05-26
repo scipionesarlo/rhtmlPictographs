@@ -38,7 +38,7 @@ ColorFactory.processNewConfig
   palettes:
     google10: googleColors.slice(0,10)
     google20: googleColors.slice(0,20)
-
+    displayr: ['#5b9bd5', '#ed7d31', '#a5a5a5', '#1ec000', '#4472c4', '#70ad47', '#255e91', '#9e480e', '#636363', '#997300', '#264478', '#43682b', '#000000', '#ff2323']
 
 if (d3)
 

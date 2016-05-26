@@ -162,10 +162,18 @@ describe 'GraphicCell class', ->
         beforeEach -> @withConfig {}
         it 'interRowPadding set to 0.05', -> expect(@instance.config.interRowPadding).to.equal 0.05
         it 'interColumnPadding set to 0.05', -> expect(@instance.config.interColumnPadding).to.equal 0.05
+        it 'sets padding to all zeros', -> expect(@instance.config.padding).to.deep.equal { top: 0, right: 0, bottom: 0, left: 0 }
 
       describe 'must be an float between 0 and 1 inclusive:', ->
         makeRatioTestsFor 'interRowPadding'
         makeRatioTestsFor 'interColumnPadding'
+
+      it 'parses the padding string', ->
+        @withConfig { padding: '10 15 20 25' }
+        expect(@instance.config.padding).to.deep.equal { top: 10, right: 15, bottom: 20, left: 25 }
+
+      it 'rejects non Integer padding values', ->
+        expect( => @withConfig { padding: 'twelve 15 20 25' }).to.throw()
 
     describe '"fixedgrid" handling:', ->
       beforeEach ->
@@ -193,23 +201,40 @@ describe 'GraphicCell class', ->
 
   describe '_computeDimensions():', ->
     beforeEach ->
+      @width = 500
+      @height = 500
       @textHeader = 18
       @textFooter = 36
-      @graphicHeight = 500
+      @paddingTop = 4
+      @paddingRight = 6
+      @paddingBottom = 8
+      @paddingLeft = 10
 
       @withConfig {
         'text-header': { 'font-size': "#{@textHeader}px", text: 'foo' }
         'text-footer': { 'font-size': "#{@textFooter}px", text: 'foo' }
-      }, 500, @graphicHeight
+        'padding' : "#{@paddingTop} #{@paddingRight} #{@paddingBottom} #{@paddingLeft}"
+      }, @width, @height
       @instance._computeDimensions()
 
       @d = (k) -> @instance.dimensions[k]
 
+      @expectedGraphicHeight = @height - @textHeader - @textFooter - @paddingTop - @paddingBottom
+
+    it 'calculate headerWidth correctly', -> expect(@d 'headerWidth').to.equal @width - @paddingLeft - @paddingRight
     it 'calculates headerHeight correctly', -> expect(@d 'headerHeight').to.equal @textHeader
+    it 'calculate headerXOffset correctly', -> expect(@d 'headerXOffset').to.equal @paddingLeft
+    it 'calculate headerYOffset correctly', -> expect(@d 'headerYOffset').to.equal @paddingTop
+
+    it 'calculates graphicWidth correctly', -> expect(@d 'graphicWidth').to.equal @width - @paddingLeft - @paddingRight
+    it 'calculates graphicHeight correctly', -> expect(@d 'graphicHeight').to.equal @expectedGraphicHeight
+    it 'calculate graphicXOffset correctly', -> expect(@d 'graphicXOffset').to.equal @paddingLeft
+    it 'calculates graphicYOffset correctly', -> expect(@d 'graphicYOffset').to.equal @textHeader + @paddingTop
+
+    it 'calculates footerWidth correctly', -> expect(@d 'footerWidth').to.equal @width - @paddingLeft - @paddingRight
     it 'calculates footerHeight correctly', -> expect(@d 'footerHeight').to.equal @textFooter
-    it 'calculates graphicHeight correctly', -> expect(@d 'graphicHeight').to.equal @graphicHeight - @textHeader - @textFooter
-    it 'calculates graphicOffset correctly', -> expect(@d 'graphicOffset').to.equal @textHeader
-    it 'calculates footerOffset correctly', -> expect(@d 'footerOffset').to.equal @textHeader + (@graphicHeight - @textHeader - @textFooter)
+    it 'calculates footerXOffset correctly', -> expect(@d 'footerXOffset').to.equal @paddingLeft
+    it 'calculates footerYOffset correctly', -> expect(@d 'footerYOffset').to.equal @paddingTop + @textHeader + @expectedGraphicHeight
 
   describe '_generateDataArray():', ->
 

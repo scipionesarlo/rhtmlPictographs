@@ -47,21 +47,23 @@ describe 'Pictograph class:', ->
 
         @instantiateAndSetConfigTo { variableImage: 'images/foo' }
 
-        @wasSet = (param) ->
+        @defaultsSet = (param) ->
           defaultsThatWereSet = @baseCellSetDefaultSpy.args.map (callValues) -> callValues[0]
-          cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
-
           expect(defaultsThatWereSet).to.include param
+
+        @cssSet = (param) ->
+          cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
           expect(cssThatWasSet).to.include param
 
       afterEach ->
         BaseCell.setDefault.restore()
         BaseCell.prototype.setCss.restore()
 
-      it 'sets font-family to something', -> @wasSet 'font-family'
-      it 'sets font-weight to something', -> @wasSet 'font-weight'
-      it 'sets font-size to something', -> @wasSet 'font-size'
-      it 'sets font-color to something', -> @wasSet 'font-color'
+      it 'sets font-family to something', -> @cssSet 'font-family'
+      it 'sets font-weight to something', -> @cssSet 'font-weight'
+      it 'sets font-size to something', -> @cssSet 'font-size'
+      it 'sets font-size to something', -> @defaultsSet 'font-size'
+      it 'sets font-color to something', -> @cssSet 'font-color'
 
     describe 'setting custom css:', ->
 

@@ -64,7 +64,9 @@ Pictograph = (function(_super) {
         var cssValue;
         cssValue = _this.config[cssAttribute] ? _this.config[cssAttribute] : defaultValue;
         _this.cssCollector.setCss('', cssAttribute, cssValue);
-        return BaseCell.setDefault(cssAttribute, cssValue);
+        if (cssAttribute === 'font-size') {
+          return BaseCell.setDefault(cssAttribute, "" + cssValue);
+        }
       };
     })(this));
     if (this.config['css']) {

@@ -39,13 +39,17 @@ class Pictograph extends RhtmlSvgWidget
     _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
       cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
       @cssCollector.setCss '', cssAttribute, cssValue
-      BaseCell.setDefault cssAttribute, cssValue # currently this is only necessary for 'font-size'
+
+      #NB font-size must be explicitly provided to child cells, because it is required for calculating height offsets
+      # whereas other css values we can leave them implicitly set via CSS inheritance
+      # also font-size must be a string, so cast it to string
+      if cssAttribute is 'font-size'
+        BaseCell.setDefault cssAttribute, "#{cssValue}"
 
     if @config['css']
       _.forEach @config['css'], (cssBlock, cssLocationString) =>
         _.forEach cssBlock, (cssValue, cssAttribute) =>
           @cssCollector.setCss cssLocationString, cssAttribute, cssValue
-
 
     ColorFactory.processNewConfig(@config.table.colors) if @config.table.colors
 

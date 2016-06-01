@@ -4,6 +4,12 @@ class Pictograph extends RhtmlSvgWidget
   constructor: (el, width, height) ->
     super el, width, height
 
+  # NB I am overriding this method from the baseclass so I can support string input
+  setConfig: (@config) ->
+    if _.isString @config
+      @config = variableImage: @config
+    super(@config)
+
   _processConfig: () ->
 
     #do not accept width and height from config, they were passed to constructor
@@ -12,7 +18,7 @@ class Pictograph extends RhtmlSvgWidget
 
     unless @config['table']?
       tableOfOneGraphic =
-        rows: [[{type: 'graphic', value: _.clone(@config) }]]
+        rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
       @config['table'] = tableOfOneGraphic
 
     #@TODO: resizable string vs boolean handling needs work

@@ -15,6 +15,14 @@ describe 'Pictograph class:', ->
         @instance = new Pictograph '<div class="outer-container">', width, height
         @instance.setConfig config
 
+    describe 'non-json string config', ->
+
+      beforeEach ->
+        @instantiateAndSetConfigTo 'circle'
+
+      it 'creates a single image graphic in a one row table', ->
+        expect(@instance.config.table.rows[0][0]).to.deep.equal { type: 'graphic', value: { variableImage: 'circle' } }
+
     describe 'without "table" field:', ->
 
       beforeEach ->

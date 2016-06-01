@@ -10,6 +10,16 @@ Pictograph = (function(_super) {
     Pictograph.__super__.constructor.call(this, el, width, height);
   }
 
+  Pictograph.prototype.setConfig = function(config) {
+    this.config = config;
+    if (_.isString(this.config)) {
+      this.config = {
+        variableImage: this.config
+      };
+    }
+    return Pictograph.__super__.setConfig.call(this, this.config);
+  };
+
   Pictograph.prototype._processConfig = function() {
     var pictographDefaults, tableOfOneGraphic;
     delete this.config.width;
@@ -20,7 +30,7 @@ Pictograph = (function(_super) {
           [
             {
               type: 'graphic',
-              value: _.clone(this.config)
+              value: _.omit(this.config, ['table-id'])
             }
           ]
         ]

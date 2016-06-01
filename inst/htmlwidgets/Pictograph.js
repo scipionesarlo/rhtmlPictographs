@@ -47,9 +47,9 @@ Pictograph = (function(_super) {
       this.config['resizable'] = true;
     }
     if (!_.isBoolean(this.config['resizable'])) {
-      throw new Error('resizable must be string [true|false]');
+      throw new Error('resizable must be [true|false]');
     }
-    this.cssCollector = new BaseCell(null, "" + this.config['table-id']);
+    this.cssCollector = new BaseCell(null, "" + this.config['table-id'], 1, 1);
     this.cssCollector._draw = function() {
       return _.noop;
     };

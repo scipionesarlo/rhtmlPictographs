@@ -103,6 +103,16 @@ describe 'GraphicCell class', ->
       it 'is optional', ->
         expect( => @withConfig {}).not.to.throw()
 
+    describe 'width/height:', ->
+      it 'are required', ->
+        expect( => new GraphicCell 'dummySvg', ['parentSelector']).to.throw new RegExp /width/
+        expect( => new GraphicCell 'dummySvg', ['parentSelector'], width=4).to.throw new RegExp /height/
+
+      it 'must be positive', ->
+        expect( => @withConfig {}, 0, 1).to.throw new RegExp /width/
+        expect( => @withConfig {}, 1, 0).to.throw new RegExp /height/
+
+
     describe 'numRows/numCols/numImages:', ->
 
       describe 'defaults:', ->

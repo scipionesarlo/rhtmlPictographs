@@ -21,13 +21,12 @@ class Pictograph extends RhtmlSvgWidget
         rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
       @config['table'] = tableOfOneGraphic
 
-    #@TODO: resizable string vs boolean handling needs work
     @config['resizable'] = true if @config['resizable'] is 'true'
     @config['resizable'] = false if @config['resizable'] is 'false'
     @config['resizable'] = true unless @config['resizable']?
-    throw new Error 'resizable must be string [true|false]' unless _.isBoolean(@config['resizable'])
+    throw new Error 'resizable must be [true|false]' unless _.isBoolean(@config['resizable'])
 
-    @cssCollector = new BaseCell(null, "#{@config['table-id']}") #hacky, @TODO extract CssCollector from BaseCell
+    @cssCollector = new BaseCell(null, "#{@config['table-id']}",1,1) #hacky, @TODO extract CssCollector from BaseCell
     @cssCollector._draw = () -> _.noop
 
     pictographDefaults = {

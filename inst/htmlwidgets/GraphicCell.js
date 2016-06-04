@@ -16,11 +16,11 @@ GraphicCell = (function(_super) {
     if (this.config.variableImage == null) {
       throw new Error("Must specify 'variableImage'");
     }
-    if (_.isString(this.config['percentage']) && this.config['percentage'].startsWith('=')) {
-      this.config['percentage'] = eval(this.config['percentage'].substring(1));
+    if (_.isString(this.config['proportion']) && this.config['proportion'].startsWith('=')) {
+      this.config['proportion'] = eval(this.config['proportion'].substring(1));
     }
-    this._verifyKeyIsFloat(this.config, 'percentage', 1, 'Must be number between 0 and 1');
-    this._verifyKeyIsRatio(this.config, 'percentage');
+    this._verifyKeyIsFloat(this.config, 'proportion', 1, 'Must be number between 0 and 1');
+    this._verifyKeyIsRatio(this.config, 'proportion');
     this._verifyKeyIsPositiveInt(this.config, 'numImages', 1);
     if (this.config['numRows'] != null) {
       this._verifyKeyIsPositiveInt(this.config, 'numRows', 1);
@@ -82,7 +82,10 @@ GraphicCell = (function(_super) {
         throw new Error("Invalid " + key + " config: must have text field");
       }
       if ((textConfig != null) && textConfig['text'].match(/^percentage$/)) {
-        textConfig['text'] = "" + ((100 * this.config.percentage).toFixed(0)) + "%";
+        textConfig['text'] = "" + ((100 * this.config.proportion).toFixed(1)) + "%";
+      }
+      if ((textConfig != null) && textConfig['text'].match(/^proportion$/)) {
+        textConfig['text'] = "" + (this.config.proportion.toFixed(3).replace(/0+$/, ''));
       }
       if (textConfig['font-size'] == null) {
         textConfig['font-size'] = BaseCell.getDefault('font-size');
@@ -114,9 +117,9 @@ GraphicCell = (function(_super) {
     }
     d3Data = null;
     if (this.config.fixedgrid) {
-      d3Data = this._generateFixedDataArray(this.config.percentage, this.config.numImages);
+      d3Data = this._generateFixedDataArray(this.config.proportion, this.config.numImages);
     } else {
-      d3Data = this._generateDataArray(this.config.percentage, this.config.numImages);
+      d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
     }
     gridLayout = d3.layout.grid().bands().size([this.dimensions.graphicWidth, this.dimensions.graphicHeight]).padding([this.config['interColumnPadding'], this.config['interRowPadding']]);
     if (this.config['numRows'] != null) {
@@ -172,28 +175,28 @@ GraphicCell = (function(_super) {
     return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
   };
 
-  GraphicCell.prototype._generateDataArray = function(percentage, numImages) {
+  GraphicCell.prototype._generateDataArray = function(proportion, numImages) {
     var d3Data, num, totalArea, _i;
     d3Data = [];
-    totalArea = percentage * numImages;
+    totalArea = proportion * numImages;
     for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
-      percentage = Math.min(1, Math.max(0, 1 + totalArea - num));
+      proportion = Math.min(1, Math.max(0, 1 + totalArea - num));
       d3Data.push({
-        percentage: percentage,
+        proportion: proportion,
         i: num - 1
       });
     }
     return d3Data;
   };
 
-  GraphicCell.prototype._generateFixedDataArray = function(percentage, numImages) {
+  GraphicCell.prototype._generateFixedDataArray = function(proportion, numImages) {
     var d3Data, num, numFullImages, _i;
     d3Data = [];
-    numFullImages = Math.ceil(percentage * numImages);
+    numFullImages = Math.ceil(proportion * numImages);
     for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
-      percentage = num <= numFullImages ? 1 : 0;
+      proportion = num <= numFullImages ? 1 : 0;
       d3Data.push({
-        percentage: percentage,
+        proportion: proportion,
         i: num - 1
       });
     }

@@ -6,11 +6,11 @@ class GraphicCell extends BaseCell
     throw new Error "Must specify 'variableImage'" unless @config.variableImage?
 
     #@TODO document and demonstrate
-    if _.isString(@config['percentage']) and @config['percentage'].startsWith('=')
-      @config['percentage'] = eval(@config['percentage'].substring(1))
+    if _.isString(@config['proportion']) and @config['proportion'].startsWith('=')
+      @config['proportion'] = eval(@config['proportion'].substring(1))
 
-    @_verifyKeyIsFloat @config, 'percentage', 1, 'Must be number between 0 and 1'
-    @_verifyKeyIsRatio @config, 'percentage'
+    @_verifyKeyIsFloat @config, 'proportion', 1, 'Must be number between 0 and 1'
+    @_verifyKeyIsRatio @config, 'proportion'
 
     @_verifyKeyIsPositiveInt @config, 'numImages', 1
     @_verifyKeyIsPositiveInt(@config, 'numRows', 1) if @config['numRows']?
@@ -56,7 +56,10 @@ class GraphicCell extends BaseCell
       throw new Error "Invalid #{key} config: must have text field" unless textConfig['text']?
 
       if textConfig? and textConfig['text'].match(/^percentage$/)
-        textConfig['text'] = "#{(100 * @config.percentage).toFixed(0)}%"
+        textConfig['text'] = "#{(100 * @config.proportion).toFixed(1).replace(/\.0$/,'')}%"
+
+      if textConfig? and textConfig['text'].match(/^proportion$/)
+        textConfig['text'] = "#{(@config.proportion).toFixed(3).replace(/0+$/, '')}"
 
       #font-size must be present to compute dimensions
       textConfig['font-size'] ?= BaseCell.getDefault('font-size')
@@ -86,9 +89,9 @@ class GraphicCell extends BaseCell
 
     d3Data = null
     if @config.fixedgrid
-      d3Data = @_generateFixedDataArray(@config.percentage, @config.numImages)
+      d3Data = @_generateFixedDataArray(@config.proportion, @config.numImages)
     else
-      d3Data = @_generateDataArray(@config.percentage, @config.numImages)
+      d3Data = @_generateDataArray(@config.proportion, @config.numImages)
 
     #d3.grid is added to d3 via github.com/NumbersInternational/d3-grid
     gridLayout = d3.layout.grid()
@@ -172,22 +175,22 @@ class GraphicCell extends BaseCell
       .text text
 
   #@TODO the math here is non-intuitive, clean up
-  _generateDataArray: (percentage, numImages) ->
+  _generateDataArray: (proportion, numImages) ->
     d3Data = []
-    totalArea = percentage * numImages
+    totalArea = proportion * numImages
     for num in [1..numImages]
-      percentage = Math.min(1, Math.max(0, 1 + totalArea - num))
-      d3Data.push { percentage: percentage, i: num - 1 }
+      proportion = Math.min(1, Math.max(0, 1 + totalArea - num))
+      d3Data.push { proportion: proportion, i: num - 1 }
     return d3Data
 
   #@TODO: on _generateFixesDataArray:
   #@TODO: I dont like the fact that I must remember to set horizontal or vertical for this to work ...
-  #@TODO: Its also inefficient given i am drawing a bunch of hidden graphics (even if percentage=0 the graphic is drawn)
+  #@TODO: Its also inefficient given i am drawing a bunch of hidden graphics (even if proportion=0 the graphic is drawn)
 
-  _generateFixedDataArray: (percentage, numImages) ->
+  _generateFixedDataArray: (proportion, numImages) ->
     d3Data = []
-    numFullImages = Math.ceil(percentage * numImages)
+    numFullImages = Math.ceil(proportion * numImages)
     for num in [1..numImages]
-      percentage = if num <= numFullImages then 1 else 0
-      d3Data.push { percentage: percentage, i: num - 1 }
+      proportion = if num <= numFullImages then 1 else 0
+      d3Data.push { proportion: proportion, i: num - 1 }
     return d3Data

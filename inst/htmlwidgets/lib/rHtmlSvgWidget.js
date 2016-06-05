@@ -54,9 +54,9 @@ RhtmlSvgWidget = (function(_super) {
     anonSvg = $('<svg class="rhtmlwidget-outer-svg">').addClass(this.config['table-id']).attr('id', this.config['table-id']).attr('width', '100%').attr('height', '100%');
     $(this.rootElement).append(anonSvg);
     this.outerSvg = d3.select(anonSvg[0]);
-    document.getElementsByClassName("rhtmlwidget-outer-svg")[0].setAttribute('viewBox', "0 0 " + this.initialWidth + " " + this.initialHeight);
+    document.getElementsByClassName("" + this.config['table-id'] + " rhtmlwidget-outer-svg")[0].setAttribute('viewBox', "0 0 " + this.initialWidth + " " + this.initialHeight);
     if (this.config['preserveAspectRatio'] != null) {
-      document.getElementsByClassName("rhtmlwidget-outer-svg")[0].setAttribute('preserveAspectRatio', this.config['preserveAspectRatio']);
+      document.getElementsByClassName("" + this.config['table-id'] + " rhtmlwidget-outer-svg")[0].setAttribute('preserveAspectRatio', this.config['preserveAspectRatio']);
     }
     return null;
   };

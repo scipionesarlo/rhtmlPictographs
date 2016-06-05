@@ -34,6 +34,11 @@ rhtmlPictographs::graphic('{"proportion":0.66,"baseImage":"https://s3-ap-southea
 
 rhtmlPictographs::graphic('{"proportion":0.2,"text-overlay":{"text":"percentage","font-color":"white"},"baseImage":"circle:grey","variableImage":"circle:radial:blue","width":400,"height":400}')
 
+##Specifying a fraction as a proportion
+### it is valid to specify the proportion as a simple fraction : =2/3
+
+rhtmlPictographs::graphic('{"proportion":"=2/3","text-overlay":{"text":"percentage","font-color":"white"},"baseImage":"circle:displayr","variableImage":"circle:radial:displayr","width":400,"height":400}')
+
 ##fully customized
 ###This demonstrates all of the available customizations.
 

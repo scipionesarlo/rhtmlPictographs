@@ -82,7 +82,7 @@ GraphicCell = (function(_super) {
         throw new Error("Invalid " + key + " config: must have text field");
       }
       if ((textConfig != null) && textConfig['text'].match(/^percentage$/)) {
-        textConfig['text'] = "" + ((100 * this.config.proportion).toFixed(1)) + "%";
+        textConfig['text'] = "" + ((100 * this.config.proportion).toFixed(1).replace(/\.0$/, '')) + "%";
       }
       if ((textConfig != null) && textConfig['text'].match(/^proportion$/)) {
         textConfig['text'] = "" + (this.config.proportion.toFixed(3).replace(/0+$/, ''));

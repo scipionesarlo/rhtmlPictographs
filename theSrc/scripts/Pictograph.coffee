@@ -36,13 +36,42 @@ class Pictograph extends RhtmlSvgWidget
       'font-color': 'black'
     }
 
+    @numTableRows = @config.table.rows.length
+    @numTableCols = null
+    @config.table.rows.forEach (row, rowIndex) =>
+
+      unless _.isArray row
+        throw new Error "Invalid rows spec: row #{rowIndex} must be array of cell definitions"
+
+      if _.isNull @numTableCols
+        @numTableCols = row.length
+
+      if @numTableCols != row.length
+        throw new Error "Table is 'jagged' : contains rows with varying column length"
+
+      #TODO Test this
+      @config.table.rows[rowIndex] = row.map (cellDefinition) ->
+        if _.isString cellDefinition
+          if cellDefinition.startsWith "label:"
+            return {
+              type: 'label'
+              value: cellDefinition.replace(/^label:/,'')
+            }
+
+          return {
+            type: 'graphic'
+            value: { variableImage: cellDefinition }
+          }
+        else
+          return cellDefinition
+
     _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
       cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
       @cssCollector.setCss '', cssAttribute, cssValue
 
       #NB font-size must be explicitly provided to child cells, because it is required for calculating height offsets
       # whereas other css values we can leave them implicitly set via CSS inheritance
-      # also font-size must be a string, so cast it to string
+      # also font-size must be a string (containing a number), so cast it to string
       if cssAttribute is 'font-size'
         BaseCell.setDefault cssAttribute, "#{cssValue}"
 
@@ -57,19 +86,6 @@ class Pictograph extends RhtmlSvgWidget
   _computeTableLayout: () ->
 
     numGuttersAtIndex = (index) -> index
-
-    @numTableRows = @config.table.rows.length
-    @numTableCols = null
-    @config.table.rows.forEach (row, rowIndex) =>
-
-      unless _.isArray row
-        throw new Error "Invalid rows spec: row #{rowIndex} must be array of cell definitions"
-
-      if _.isNull @numTableCols
-        @numTableCols = row.length
-
-      if @numTableCols != row.length
-        throw new Error "Table is 'jagged' : contains rows with varying column length"
 
     @_verifyKeyIsInt @config.table, 'innerRowPadding', 0
     @_verifyKeyIsInt @config.table, 'innerColumnPadding', 0
@@ -112,7 +128,6 @@ class Pictograph extends RhtmlSvgWidget
       sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.innerColumnPadding
       unless sumSpecified <= @initialWidth
         throw new Error "Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
-
 
     else
       @config.table.colWidths = [1..@numTableCols].map ( => parseInt(@initialWidth / @numTableCols) )
@@ -232,11 +247,16 @@ class Pictograph extends RhtmlSvgWidget
         graphic.setConfig d.value
         graphic.draw()
 
-      if d.type is 'label'
+      else if d.type is 'label'
         d3.select(this).classed 'label', true
         label = new LabelCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
         label.setConfig d.value
         label.draw()
+
+      else
+        throw new Error "Invalid cell definition: #{JSON.stringify(d)} : missing or invalid type"
+
+      #TODO add empty type
 
     return null
 

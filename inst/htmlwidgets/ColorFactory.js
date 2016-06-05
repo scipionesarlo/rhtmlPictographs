@@ -4,24 +4,45 @@ var ColorFactory, googleColors;
 ColorFactory = (function() {
   ColorFactory.palettes = {};
 
+  ColorFactory.aliases = {};
+
   ColorFactory.processNewConfig = function(config) {
-    var newPalette, _results;
-    _results = [];
-    for (newPalette in config.palettes) {
-      if (_.has(ColorFactory.palettes, newPalette)) {
-        throw new Error("cannot define same palette twice");
+    var alias, newPalette, _results;
+    if (config.palettes) {
+      for (newPalette in config.palettes) {
+        if (_.has(ColorFactory.palettes, newPalette)) {
+          throw new Error("cannot define " + newPalette + " palette twice");
+        }
+        if (_.has(ColorFactory.aliases, newPalette)) {
+          throw new Error("cannot define " + newPalette + " palette, an alias with same name already exists");
+        }
+        ColorFactory.palettes[newPalette] = {
+          colors: config.palettes[newPalette],
+          index: 0
+        };
       }
-      _results.push(ColorFactory.palettes[newPalette] = {
-        colors: config.palettes[newPalette],
-        index: 0
-      });
     }
-    return _results;
+    if (config.aliases) {
+      _results = [];
+      for (alias in config.aliases) {
+        if (_.has(ColorFactory.palettes, alias)) {
+          throw new Error("cannot define " + alias + " alias, a palette with same name already exists");
+        }
+        if (_.has(ColorFactory.aliases, alias)) {
+          throw new Error("cannot define " + alias + " alias twice");
+        }
+        _results.push(ColorFactory.aliases[alias] = config.aliases[alias]);
+      }
+      return _results;
+    }
   };
 
   ColorFactory.getColor = function(color) {
     if (_.has(ColorFactory.palettes, color)) {
       return ColorFactory.getColorFromPalette(color);
+    }
+    if (_.has(ColorFactory.aliases, color)) {
+      return ColorFactory.aliases[color];
     }
     return color;
   };

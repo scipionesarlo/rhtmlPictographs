@@ -71,6 +71,10 @@ gulp.task('compile-coffee', function () {
     .pipe(gulp_coffee({ bare: true, header: true }))
     .pipe(gulp.dest('browser/scripts'))
     .pipe(gulp.dest('inst/htmlwidgets/'));
+
+  gulp.src('theSrc/tutorial/**/*.coffee')
+    .pipe(gulp_coffee({ bare: true, header: true }))
+    .pipe(gulp.dest('browser/tutorial'));
 });
 
 gulp.task('copy', function () {
@@ -130,5 +134,5 @@ gulp.task('watch', ['connect'], function () {
   gulp.watch('theSrc/**/*.html', ['copy']);
   gulp.watch('theSrc/images/**/*', ['copy']);
   gulp.watch('theSrc/styles/**/*.less', ['less']);
-  gulp.watch('theSrc/scripts/**/*.coffee', ['compile-coffee']);
+  gulp.watch('theSrc/**/*.coffee', ['compile-coffee']);
 });

@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+
+    h2 {
+      margin: 10px;
+    }
+
+    pre.config {
+      margin: 5px;
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .for-consideration .inner-example {
+      border: 4px dashed red;
+    }
+
+    .example {
+      align-self: flex-end;
+      flex: 0 0 auto;
+      margin: 10px;
+      /*border: 1px dashed dimgrey;*/
+    }
+
+    .inner-example {
+      border: 1px dashed dimgrey;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+<a href="/index.html">Back to Index</a>
+<h1>Single Graphic Cell Usage Tutorial</h1>
+
+<h2>Shapes</h2>
+<div class="row" data-example-height="100" data-example-width="150">
+  <div class="example">circle</div>
+  <div class="example">ellipse</div>
+  <div class="example">rect</div>
+  <div class="example">square</div>
+  <div class="example">url:/images/black_circle_512.svg</div>
+</div>
+
+<h2>Add colors to shapes</h2>
+<div class="row">
+  <div class="example">circle</div>
+  <div class="example">circle:red</div>
+  <div class="example">circle:#336699</div>
+</div>
+
+<h2>Use a color scheme</h2>
+<div class="row">
+  <div class="example">circle:displayr</div>
+  <div class="example">circle:displayr</div>
+  <div class="example">circle:displayr</div>
+  <div class="example">circle:displayr</div>
+  <div class="example">circle:displayr</div>
+</div>
+
+<h2>Original SVGs</h2>
+<div class="row" data-example-height="100" data-example-width="100">
+  <div class="example">url:/images/blue_circle_512.svg</div>
+  <div class="example">url:/images/soyuz_rocket.svg</div>
+  <div class="example">url:/images/dollar_sign_green.svg</div>
+  <div class="example">url:/images/rocket_black.svg</div>
+  <div class="example">url:/images/stickman_green.svg</div>
+</div>
+
+<h2>Recolored SVGs</h2>
+<div class="row" data-example-height="100" data-example-width="100">
+  <div class="example">url:red:/images/blue_circle_512.svg</div>
+  <div class="example">url:red:/images/soyuz_rocket.svg</div>
+  <div class="example">url:red:/images/dollar_sign_green.svg</div>
+  <div class="example">url:red:/images/rocket_black.svg</div>
+  <div class="example">url:red:/images/stickman_green.svg</div>
+</div>
+
+
+<h2>Use a proportion</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle", "proportion": "0.5" }</div>
+  <div class="example">{ "variableImage": "circle:scale", "proportion": "0.5" }</div>
+  <div class="example">{ "variableImage": "circle:radial", "proportion": "0.3" }</div>
+  <div class="example">{ "variableImage": "circle:horizontal", "proportion": "0.7" }</div>
+  <div class="example">{ "variableImage": "circle:vertical", "proportion": "0.2" }</div>
+</div>
+
+<h2>Use a fraction in the proportion field</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle:radial", "proportion": "=7/8" }</div>
+</div>
+
+<h2>Add text</h2>
+<div class="row" data-example-height="200" data-example-width="200">
+  <div class="example">{ "variableImage": "circle:lightblue", "text-header": "top", "text-overlay": "overlay", "text-footer": "bottom" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "font-color": "orange", "font-size": "16px", "font-family": "Arial", "font-weight": "900", "text-header": "top", "text-overlay": "overlay", "text-footer": "bottom" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "text-header" : { "text":"top", "font-color": "orange", "font-size": "16px", "font-family": "Arial", "font-weight": "900" }, "text-overlay": "overlay", "text-footer": "bottom" }</div>
+</div>
+
+<h2>Use Text Presets</h2>
+<div class="row" data-example-height="200" data-example-width="200">
+  <div class="example">{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "proportion", "text-overlay" : "proportion", "text-footer" : "proportion" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "percentage", "text-overlay" : "percentage", "text-footer" : "percentage" }</div>
+</div>
+
+<h2>Background Color</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle:lightblue", "background-color":"green" }</div>
+</div>
+
+<h2>BaseImage</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "rect:green" }</div>
+</div>
+
+<h2>ImageGrids Basics</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "3" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "3" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "1" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "3", "numCols": "3" }</div>
+</div>
+
+<h2>ImageGrids With Proportion Set</h2>
+<div class="row" data-example-height="50">
+  <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.25" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.75" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "1" }</div>
+</div>
+
+<h2>ImageGrids With Padding (Top Right Bottom Left)</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "interRowPadding": "0", "interColumnPadding":"0" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</div>
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</div>
+  <div class="example for-consideration">{ "variableImage": "circle:lightblue", "numImages": "4", "interRowPadding": "0.5" }</div>
+  <div class="example for-consideration">{ "variableImage": "circle:lightblue", "numImages": "4", "interColumnPadding": "0.5" }</div>
+</div>
+
+<h2>Customization via CSS</h2>
+<div class="row">
+  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "css": { ".node-xy-1-1 circle" : { "stroke" : "black" } } }</div>
+</div>
+
+<h2>Bug - Clip doesn't follow outer space, just inner ...</h2>
+<div class="row" data-example-width="200">
+  <div class="example">{ "variableImage": "rect:radial", "proportion": "=7/8" }</div>
+  <div class="example">{ "variableImage": "circle:radial", "proportion": "=7/8" }</div>
+</div>
+
+<script src="/external/lodash.min.js"></script>
+<script src="/external/jquery.min.js"></script>
+<script src="/external/d3.min.js"></script>
+<script src="/external/d3-grid.js"></script>
+<script src="/external/rHtmlStatefulWidget.js"></script>
+<script src="/external/rHtmlSvgWidget.js"></script>
+
+<script src="/scripts/RecolorSvg.js"></script>
+<script src="/scripts/ColorFactory.js"></script>
+<script src="/scripts/ImageFactory.js"></script>
+<script src="/scripts/DisplayError.js"></script>
+<script src="/scripts/BaseCell.js"></script>
+<script src="/scripts/GraphicCell.js"></script>
+<script src="/scripts/LabelCell.js"></script>
+<script src="/scripts/Pictograph.js"></script>
+
+<script src="/tutorial/js/graphicCellTutorial.js"></script>
+</body>
+</html>

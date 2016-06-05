@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+
+    h2 {
+      margin: 10px;
+    }
+
+    pre.config {
+      margin: 5px;
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .for-consideration .inner-example {
+      border: 4px dashed red;
+    }
+
+    .example {
+      align-self: flex-end;
+      flex: 0 0 auto;
+      margin: 10px;
+      /*border: 1px dashed dimgrey;*/
+    }
+
+    .inner-example {
+      border: 1px dashed dimgrey;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+<a href="/index.html">Back to Index</a>
+<h1>Label Cell Usage Tutorial</h1>
+
+<h2>Simplest Label, Multiple Label, Object as Label</h2>
+<div class="row">
+  <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": "A label" } ] ] } }</div>
+  <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": [ "Line 1", "Line2" ] } ] ] } }</div>
+  <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": { "text": "A label", "font-color" : "red", "font-size": "20px", "font-family": "impact", "font-weight" : "100" } } ] ] } }</div>
+</div>
+
+<h2>Multi Label, With Padding, With Different Fonts on Each Line</h2>
+<div class="row">
+  <div class="example">{ "table": {
+    "rows": [ [ {
+      "type": "label",
+      "value": {
+        "padding-top": 10,
+        "padding-inner": 5,
+        "labels": [
+          "Line1",
+          { "text": "Line 2", "font-size": "14px", "font-color": "#cccccc" }
+        ]
+      }
+    } ] ] } }</div>
+</div>
+
+<script src="/external/lodash.min.js"></script>
+<script src="/external/jquery.min.js"></script>
+<script src="/external/d3.min.js"></script>
+<script src="/external/d3-grid.js"></script>
+<script src="/external/rHtmlStatefulWidget.js"></script>
+<script src="/external/rHtmlSvgWidget.js"></script>
+
+<script src="/scripts/RecolorSvg.js"></script>
+<script src="/scripts/ColorFactory.js"></script>
+<script src="/scripts/ImageFactory.js"></script>
+<script src="/scripts/DisplayError.js"></script>
+<script src="/scripts/BaseCell.js"></script>
+<script src="/scripts/GraphicCell.js"></script>
+<script src="/scripts/LabelCell.js"></script>
+<script src="/scripts/Pictograph.js"></script>
+
+<script src="/tutorial/js/graphicCellTutorial.js"></script>
+</body>
+</html>

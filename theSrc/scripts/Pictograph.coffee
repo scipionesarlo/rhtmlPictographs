@@ -26,7 +26,8 @@ class Pictograph extends RhtmlSvgWidget
     @config['resizable'] = true unless @config['resizable']?
     throw new Error 'resizable must be [true|false]' unless _.isBoolean(@config['resizable'])
 
-    @cssCollector = new BaseCell(null, "#{@config['table-id']}",1,1) #hacky, @TODO extract CssCollector from BaseCell
+    #@TODO extract CssCollector from BaseCell. This is hacky
+    @cssCollector = new BaseCell(null, "#{@config['table-id']}",fakeWidth=1,fakeHeight=1)
     @cssCollector._draw = () -> _.noop
 
     pictographDefaults = {

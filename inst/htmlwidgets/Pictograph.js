@@ -21,7 +21,7 @@ Pictograph = (function(_super) {
   };
 
   Pictograph.prototype._processConfig = function() {
-    var pictographDefaults, tableOfOneGraphic;
+    var fakeHeight, fakeWidth, pictographDefaults, tableOfOneGraphic;
     delete this.config.width;
     delete this.config.height;
     if (this.config['table'] == null) {
@@ -49,7 +49,7 @@ Pictograph = (function(_super) {
     if (!_.isBoolean(this.config['resizable'])) {
       throw new Error('resizable must be [true|false]');
     }
-    this.cssCollector = new BaseCell(null, "" + this.config['table-id'], 1, 1);
+    this.cssCollector = new BaseCell(null, "" + this.config['table-id'], fakeWidth = 1, fakeHeight = 1);
     this.cssCollector._draw = function() {
       return _.noop;
     };

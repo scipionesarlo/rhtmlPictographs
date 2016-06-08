@@ -62,7 +62,7 @@
   "dependencies": {
     "d3": "3.5.16",
     "d3-grid": "git+https://github.com/NumbersInternational/d3-grid.git",
-    "rhtmlBaseClasses": "git+https://github.com/NumbersInternational/rhtmlBaseClasses.git",
+    "rhtmlBaseClasses": "git+https://github.com/NumbersInternational/rhtmlBaseClasses.git#v1.0.2",
     "jquery": "2.2.2",
     "lodash": "4.6.1"
   }

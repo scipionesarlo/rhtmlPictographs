@@ -38,6 +38,11 @@
 <a href="/index.html">Back to Index</a>
 <h1>Table of Cells Tutorial</h1>
 
+<p>Everything demonstrated in the <a href="tutorial/graphicCell.html">Graphic Cell Tutorial</a> and <a href="tutorial/labelCell.html">Label Cell Tutorial</a> applies to table building.</p>
+<p>In the table config, there is a rows array, where each element in the rows array defines a row. Each row is also an array, where each element is the config for the cell in that row.</p>
+<p>Take any example config from the cell tutorials, and simply reuse that config inside the table config by placing it in a row.</p>
+<p>The rest of this tutorial focuses specifically on structuring the table itself, specifically row and column sizes, gutter sizes, line placement, color pallettes, and global font configuration.</p>
+
 <h2>Simple Table</h2>
 <div class="row" data-example-width="220">
   <div class="example">{ "table": { "rows": [ [ "label:a circle", "circle:lightblue" ] ] } }</div>
@@ -177,6 +182,6 @@
 <script src="/scripts/LabelCell.js"></script>
 <script src="/scripts/Pictograph.js"></script>
 
-<script src="/tutorial/js/graphicCellTutorial.js"></script>
+<script src="/tutorial/js/interpretExamples.js"></script>
 </body>
 </html>

@@ -39,6 +39,17 @@ describe 'Pictograph class:', ->
         expect(@instance.config.table.rows[0].length).to.equal 1
         expect(@instance.config.table.rows[0][0].type).to.equal 'graphic'
 
+    describe 'using strings for row definitions:', ->
+
+      beforeEach ->
+        @instantiateAndSetConfigTo { table: { rows: [ [ "label:alabel", "circle" ] ] } }
+
+      it 'creates a label in the first cell', ->
+        expect(@instance.config.table.rows[0][0]).to.deep.equal { type: 'label', value: 'alabel' }
+
+      it 'creates a graphic in the second cell', ->
+        expect(@instance.config.table.rows[0][1]).to.deep.equal { type: 'graphic', value: { variableImage: 'circle' } }
+
     describe 'setting default css:', ->
 
       beforeEach ->

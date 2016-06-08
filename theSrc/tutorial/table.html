@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+
+    h2 {
+      margin: 10px;
+    }
+
+    pre.config {
+      margin: 5px;
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .for-consideration .inner-example {
+      border: 4px dashed red;
+    }
+
+    .example {
+      align-self: flex-end;
+      flex: 0 0 auto;
+      margin: 10px;
+      /*border: 1px dashed dimgrey;*/
+    }
+
+    .inner-example {
+      border: 1px dashed dimgrey;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+<a href="/index.html">Back to Index</a>
+<h1>Table of Cells Tutorial</h1>
+
+<h2>Simple Table</h2>
+<div class="row" data-example-width="220">
+  <div class="example">{ "table": { "rows": [ [ "label:a circle", "circle:lightblue" ] ] } }</div>
+</div>
+
+<h2>Row and Column Sizes are Evenly Distributed by Default, with Gutter = 0</h2>
+<div class="row" data-example-width="370" data-example-height="310">
+  <div class="example">{ "table": {
+    "rows": [
+      ["rect:displayr", "rect:displayr", "rect:displayr"],
+      ["rect:displayr", "rect:displayr", "rect:displayr"]
+    ]
+    } }
+  </div>
+</div>
+
+<h2>Row Heights, Column Heights, And Padding Can be Specified (Outer W=370, H=310)</h2>
+<div class="row" data-example-width="370" data-example-height="310">
+  <div class="example">{ "table": {
+    "rowHeights": [100, 200],
+    "colWidths": [50, 100, 200],
+    "rows": [
+      ["rect:displayr", "rect:displayr", "rect:displayr"],
+      ["rect:displayr", "rect:displayr", "rect:displayr"]
+    ]
+  } }
+  </div>
+
+  <div class="example">{ "table": {
+    "innerRowPadding": 10,
+    "innerColumnPadding": 10,
+    "rowHeights": [100, 200],
+    "colWidths": [50, 100, 200],
+    "rows": [
+      ["rect:displayr", "rect:displayr", "rect:displayr"],
+      ["rect:displayr", "rect:displayr", "rect:displayr"]
+    ]
+    } }
+  </div>
+</div>
+
+<h2>Lines</h2>
+<div class="row" data-example-width="370" data-example-height="310">
+  <div class="example">{ "table": {
+    "innerRowPadding": 10,
+    "innerColumnPadding": 10,
+    "rowHeights": [100, 200],
+    "colWidths": [50, 100, 200],
+    "lines": {
+      "horizontal": [ 0, 1, 2 ],
+      "vertical": [ 0, 1, 2, 3 ],
+      "style": "stroke:black;stroke-width:4"
+    },
+    "rows": [
+      ["circle:none", "circle:none", "circle:none"],
+      ["circle:none", "circle:none", "circle:none"]
+    ]
+    } }
+  </div>
+
+  <div class="example">{ "table": {
+    "innerRowPadding": 10,
+    "innerColumnPadding": 10,
+    "rowHeights": [100, 200],
+    "colWidths": [50, 100, 200],
+    "lines": {
+      "horizontal": [ 0.5, 1.5 ],
+      "vertical": [ 0.5, 1.5, 2.5 ],
+      "style": "stroke:black;stroke-width:4",
+      "padding-left": 50,
+      "padding-right": 50,
+      "padding-top": 30,
+      "padding-bottom": 30
+    },
+    "rows": [
+      ["circle:none", "circle:none", "circle:none"],
+      ["circle:none", "circle:none", "circle:none"]
+    ]
+    } }
+  </div>
+</div>
+
+<h2>Color Palettes and Color Aliases</h2>
+<div class="row" data-example-width="300" data-example-height="150">
+  <div class="example">{ "table": {
+  "colors": {
+    "palettes": {
+      "rainbow": [ "red", "orange", "yellow", "green", "blue", "indigo", "violet" ]
+    },
+    "aliases" : {
+      "primary": "brown",
+      "secondary":"black"
+    }
+  },
+  "rows": [
+    ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
+    ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
+    ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
+    ["circle:primary", "circle:secondary", "circle:primary", "circle:secondary", "circle:primary", "circle:secondary"]
+  ]
+  } }
+  </div>
+</div>
+
+<h2>Fonts</h2>
+<div class="row" data-example-width="250" data-example-height="50">
+  <div class="example">{
+    "font-color": "red",
+    "font-family": "impact",
+    "font-weight": "200",
+    "font-size": "24px",
+    "table": {
+      "rows": [
+        [
+          "label:same",
+          { "type": "label", "value" : { "text": "diff", "font-color": "blue", "font-family": "arial", "font-weight": "900", "font-size": "30px" } },
+          "label:same"
+        ]
+      ]
+    } }
+  </div>
+</div>
+
+<script src="/external/lodash.min.js"></script>
+<script src="/external/jquery.min.js"></script>
+<script src="/external/d3.min.js"></script>
+<script src="/external/d3-grid.js"></script>
+<script src="/external/rHtmlStatefulWidget.js"></script>
+<script src="/external/rHtmlSvgWidget.js"></script>
+
+<script src="/scripts/RecolorSvg.js"></script>
+<script src="/scripts/ColorFactory.js"></script>
+<script src="/scripts/ImageFactory.js"></script>
+<script src="/scripts/DisplayError.js"></script>
+<script src="/scripts/BaseCell.js"></script>
+<script src="/scripts/GraphicCell.js"></script>
+<script src="/scripts/LabelCell.js"></script>
+<script src="/scripts/Pictograph.js"></script>
+
+<script src="/tutorial/js/graphicCellTutorial.js"></script>
+</body>
+</html>

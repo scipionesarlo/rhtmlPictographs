@@ -14,7 +14,7 @@ HTMLWidgets.widget
 
     config = null
     try
-      if _.isString inputConfig
+      if _.isString(inputConfig) and inputConfig.match(/^{/)
         config = JSON.parse inputConfig
       else
         config = inputConfig

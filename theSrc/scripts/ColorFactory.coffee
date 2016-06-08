@@ -5,20 +5,39 @@
 class ColorFactory
 
   @palettes = {}
+  @aliases = {}
 
   @processNewConfig: (config) ->
-    for newPalette of config.palettes
-      if _.has ColorFactory.palettes, newPalette
-        throw new Error "cannot define same palette twice"
+    if config.palettes
+      for newPalette of config.palettes
+        if _.has ColorFactory.palettes, newPalette
+          throw new Error "cannot define #{newPalette} palette twice"
 
-      ColorFactory.palettes[newPalette] = {
-        colors: config.palettes[newPalette]
-        index: 0
-      }
+        if _.has ColorFactory.aliases, newPalette
+          throw new Error "cannot define #{newPalette} palette, an alias with same name already exists"
+
+        ColorFactory.palettes[newPalette] = {
+          colors: config.palettes[newPalette]
+          index: 0
+        }
+
+    if config.aliases
+      for alias of config.aliases
+        if _.has ColorFactory.palettes, alias
+          throw new Error "cannot define #{alias} alias, a palette with same name already exists"
+
+        if _.has ColorFactory.aliases, alias
+          throw new Error "cannot define #{alias} alias twice"
+
+        ColorFactory.aliases[alias] = config.aliases[alias]
 
   @getColor: (color) ->
     if _.has ColorFactory.palettes, color
       return ColorFactory.getColorFromPalette color
+
+    if _.has ColorFactory.aliases, color
+      return ColorFactory.aliases[color]
+
     return color
 
   @getColorFromPalette: (paletteName) ->

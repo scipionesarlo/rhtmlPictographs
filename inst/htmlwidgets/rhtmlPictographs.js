@@ -13,7 +13,7 @@ HTMLWidgets.widget({
     var config, err, errorHandler, readableError;
     config = null;
     try {
-      if (_.isString(inputConfig)) {
+      if (_.isString(inputConfig) && inputConfig.match(/^{/)) {
         config = JSON.parse(inputConfig);
       } else {
         config = inputConfig;

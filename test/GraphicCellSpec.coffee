@@ -66,14 +66,32 @@ describe 'GraphicCell class', ->
         @wasSet 'font-color'
         @wasSet 'font-weight'
 
+      describe '"proportion" keyword:', ->
+
+        it 'accepts proportion in string form and uses the proportion as text value', ->
+          @withConfig makeConfig 'proportion', { proportion: '0.123' }
+          expect(@instance.config[key].text).to.equal '0.123'
+
+        it 'accepts proportion in string form and uses the proportion as text value', ->
+          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.123' }
+          expect(@instance.config[key].text).to.equal '0.123'
+
+        it 'does not display insignificant 0 characters', ->
+          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.5' }
+          expect(@instance.config[key].text).to.equal '0.5'
+
       describe '"percentage" keyword:', ->
 
         it 'accepts percentage in string form and uses the percentage as text value', ->
-          @withConfig makeConfig 'percentage', { percentage: '0.5' }
-          expect(@instance.config[key].text).to.equal '50%'
+          @withConfig makeConfig 'percentage', { proportion: '=2/3' }
+          expect(@instance.config[key].text).to.equal '66.7%'
 
         it 'accepts percentage in string form and uses the percentage as text value', ->
-          @withConfig makeConfig { text: 'percentage' }, { percentage: '0.5' }
+          @withConfig makeConfig { text: 'percentage' }, { proportion: '=2/3' }
+          expect(@instance.config[key].text).to.equal '66.7%'
+
+        it 'does not display insignificant 0 characters', ->
+          @withConfig makeConfig { text: 'percentage' }, { proportion: '=1/2' }
           expect(@instance.config[key].text).to.equal '50%'
 
   beforeEach ->
@@ -103,6 +121,16 @@ describe 'GraphicCell class', ->
       it 'is optional', ->
         expect( => @withConfig {}).not.to.throw()
 
+    describe 'width/height:', ->
+      it 'are required', ->
+        expect( => new GraphicCell 'dummySvg', ['parentSelector']).to.throw new RegExp /width/
+        expect( => new GraphicCell 'dummySvg', ['parentSelector'], width=4).to.throw new RegExp /height/
+
+      it 'must be positive', ->
+        expect( => @withConfig {}, 0, 1).to.throw new RegExp /width/
+        expect( => @withConfig {}, 1, 0).to.throw new RegExp /height/
+
+
     describe 'numRows/numCols/numImages:', ->
 
       describe 'defaults:', ->
@@ -127,20 +155,20 @@ describe 'GraphicCell class', ->
       it 'throws error when both numRows and numCols is provided', ->
         expect(=> @withConfig { numRows: 2, numCols: 2 }).to.throw new RegExp 'Cannot specify both numRows and numCols'
 
-    describe '"percentage" handling:', ->
+    describe '"proportion" handling:', ->
 
       it 'defaults to 1', ->
         @withConfig {}
-        expect(@instance.config.percentage).to.equal 1
+        expect(@instance.config.proportion).to.equal 1
 
-      makeRatioTestsFor 'percentage'
+      makeRatioTestsFor 'proportion'
 
       describe 'interpret strings starting with "="', ->
-        it 'percentage="=3/4" will compute to 0.75', ->
-          @withConfig { percentage: '=3/4' }
-          expect(@instance.config.percentage).to.equal 0.75
+        it 'proportion="=3/4" will compute to 0.75', ->
+          @withConfig { proportion: '=3/4' }
+          expect(@instance.config.proportion).to.equal 0.75
 
-        it 'percentage="=5/4" will throw error (out of bounds)', -> expect(=> @withConfig { percentage: '=5/4' }).to.throw new RegExp 'percentage'
+        it 'proportion="=5/4" will throw error (out of bounds)', -> expect(=> @withConfig { proportion: '=5/4' }).to.throw new RegExp 'proportion'
 
     describe '"direction" handling:', ->
       beforeEach ->
@@ -240,21 +268,21 @@ describe 'GraphicCell class', ->
 
     beforeEach ->
       @withConfig {} #NB config doesnt matter just get me an @instance!
-      @calc = (percentage, numImages) -> @instance._generateDataArray percentage, numImages
+      @calc = (proportion, numImages) -> @instance._generateDataArray proportion, numImages
 
     it 'single image 100%', ->
-      expect(@calc percent=1, numImages=1).to.deep.equal [{ percentage: 1, i: 0 }]
+      expect(@calc percent=1, numImages=1).to.deep.equal [{ proportion: 1, i: 0 }]
 
     it 'single image 50%', ->
-      expect(@calc percent=0.5, numImages=1).to.deep.equal [{ percentage: 0.5, i: 0 }]
+      expect(@calc percent=0.5, numImages=1).to.deep.equal [{ proportion: 0.5, i: 0 }]
 
     it '5 image 85%', ->
       expect(@calc percent=0.85, numImages=5).to.deep.equal [
-        { percentage: 1, i: 0 }
-        { percentage: 1, i: 1 }
-        { percentage: 1, i: 2 }
-        { percentage: 1, i: 3 }
-        { percentage: 0.25, i: 4 } # woah 0.85 = 0.25?? 0.8 goes to first 4. 0.05 / 0.2 is 0.25. BAM
+        { proportion: 1, i: 0 }
+        { proportion: 1, i: 1 }
+        { proportion: 1, i: 2 }
+        { proportion: 1, i: 3 }
+        { proportion: 0.25, i: 4 } # woah 0.85 = 0.25?? 0.8 goes to first 4. 0.05 / 0.2 is 0.25. BAM
       ]
 
   describe 'e2e tests:', ->
@@ -283,7 +311,7 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.875
+          proportion: 0.875
           numImages: 4
           variableImage: 'circle:blue'
         }
@@ -305,7 +333,7 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.875
+          proportion: 0.875
           numImages: 4
           variableImage: 'circle:horizontalclip:blue'
         }
@@ -319,7 +347,7 @@ describe 'GraphicCell class', ->
     describe 'multi image vertical clipped graphic:', ->
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.875
+          proportion: 0.875
           numImages: 4
           variableImage: 'circle:verticalclip:blue'
         }
@@ -330,11 +358,11 @@ describe 'GraphicCell class', ->
 
         expect(fourthImageClipHeight / firstImageClipHeight).to.be.closeTo(0.5, 0.001);
 
-    describe 'multi circle percentage scaled graphic:', ->
+    describe 'multi circle proportion scaled graphic:', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.875
+          proportion: 0.875
           numImages: 4
           variableImage: 'circle:scale:blue'
         }
@@ -345,11 +373,11 @@ describe 'GraphicCell class', ->
 
         expect(fourthImageRadius / firstImageRadius).to.be.closeTo(0.5, 0.001);
 
-    describe 'multi image percentage scaled graphic:', ->
+    describe 'multi image proportion scaled graphic:', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.875
+          proportion: 0.875
           numImages: 4
           variableImage: 'url:scale:/image1.jpg'
         }
@@ -367,7 +395,7 @@ describe 'GraphicCell class', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
-          percentage: 0.25
+          proportion: 0.25
           numImages: 4
           fixedGrid: true
           variableImage: 'url:horizontal:/image1.jpg'

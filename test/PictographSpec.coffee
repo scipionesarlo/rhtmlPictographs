@@ -15,6 +15,14 @@ describe 'Pictograph class:', ->
         @instance = new Pictograph '<div class="outer-container">', width, height
         @instance.setConfig config
 
+    describe 'non-json string config', ->
+
+      beforeEach ->
+        @instantiateAndSetConfigTo 'circle'
+
+      it 'creates a single image graphic in a one row table', ->
+        expect(@instance.config.table.rows[0][0]).to.deep.equal { type: 'graphic', value: { variableImage: 'circle' } }
+
     describe 'without "table" field:', ->
 
       beforeEach ->
@@ -39,21 +47,23 @@ describe 'Pictograph class:', ->
 
         @instantiateAndSetConfigTo { variableImage: 'images/foo' }
 
-        @wasSet = (param) ->
+        @defaultWasSet = (param) ->
           defaultsThatWereSet = @baseCellSetDefaultSpy.args.map (callValues) -> callValues[0]
-          cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
-
           expect(defaultsThatWereSet).to.include param
+
+        @cssWasSet = (param) ->
+          cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
           expect(cssThatWasSet).to.include param
 
       afterEach ->
         BaseCell.setDefault.restore()
         BaseCell.prototype.setCss.restore()
 
-      it 'sets font-family to something', -> @wasSet 'font-family'
-      it 'sets font-weight to something', -> @wasSet 'font-weight'
-      it 'sets font-size to something', -> @wasSet 'font-size'
-      it 'sets font-color to something', -> @wasSet 'font-color'
+      it 'sets font-family to something', -> @cssWasSet 'font-family'
+      it 'sets font-weight to something', -> @cssWasSet 'font-weight'
+      it 'sets font-size to something', -> @cssWasSet 'font-size'
+      it 'sets font-size to something', -> @defaultWasSet 'font-size'
+      it 'sets font-color to something', -> @cssWasSet 'font-color'
 
     describe 'setting custom css:', ->
 

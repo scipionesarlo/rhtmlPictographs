@@ -18,8 +18,10 @@ BaseCell = (function() {
 
   function BaseCell(parentSvg, myCssSelector, width, height) {
     this.parentSvg = parentSvg;
-    this.width = parseInt(width);
-    this.height = parseInt(height);
+    this.width = width;
+    this.height = height;
+    this._verifyKeyIsPositiveInt(this, 'width');
+    this._verifyKeyIsPositiveInt(this, 'height');
     this.cssBucket = {};
     if (_.isString(myCssSelector)) {
       this.myCssSelector = [myCssSelector];

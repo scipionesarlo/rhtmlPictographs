@@ -87,7 +87,7 @@ ImageFactory = (function() {
     };
     color = ColorFactory.getColor(config.color);
     return d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
-      return ratio(d.percentage) * Math.min(width, height) / 2;
+      return ratio(d.proportion) * Math.min(width, height) / 2;
     }).style('fill', color);
   };
 
@@ -102,9 +102,9 @@ ImageFactory = (function() {
     };
     color = ColorFactory.getColor(config.color);
     return d3Node.append("svg:ellipse").classed('ellipse', true).attr('cx', width / 2).attr('cy', height / 2).attr('rx', function(d) {
-      return width * ratio(d.percentage) / 2;
+      return width * ratio(d.proportion) / 2;
     }).attr('ry', function(d) {
-      return height * ratio(d.percentage) / 2;
+      return height * ratio(d.proportion) / 2;
     }).style('fill', color);
   };
 
@@ -119,13 +119,13 @@ ImageFactory = (function() {
     };
     color = ColorFactory.getColor(config.color);
     return d3Node.append("svg:rect").classed('rect', true).attr('x', function(d) {
-      return width * (1 - ratio(d.percentage)) / 2;
+      return width * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
-      return height * (1 - ratio(d.percentage)) / 2;
+      return height * (1 - ratio(d.proportion)) / 2;
     }).attr('width', function(d) {
-      return width * ratio(d.percentage);
+      return width * ratio(d.proportion);
     }).attr('height', function(d) {
-      return height * ratio(d.percentage);
+      return height * ratio(d.proportion);
     }).style('fill', color);
   };
 
@@ -168,13 +168,13 @@ ImageFactory = (function() {
       }
     };
     return d3Node.append("svg:image").attr('x', function(d) {
-      return width * (1 - ratio(d.percentage)) / 2;
+      return width * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
-      return height * (1 - ratio(d.percentage)) / 2;
+      return height * (1 - ratio(d.proportion)) / 2;
     }).attr('width', function(d) {
-      return width * ratio(d.percentage);
+      return width * ratio(d.proportion);
     }).attr('height', function(d) {
-      return height * ratio(d.percentage);
+      return height * ratio(d.proportion);
     }).attr('xlink:href', config.url).attr('class', 'variable-image');
   };
 
@@ -182,9 +182,9 @@ ImageFactory = (function() {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
     d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', 0).attr('y', function(d) {
-      return height * (1 - d.percentage);
+      return height * (1 - d.proportion);
     }).attr('width', width).attr('height', function(d) {
-      return height * d.percentage;
+      return height * d.proportion;
     });
     return uniqueId;
   };
@@ -194,7 +194,7 @@ ImageFactory = (function() {
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
     d3Node.append('clipPath').attr('id', uniqueId).style('stroke', 'red').style('stroke-width', '3').append('path').attr('d', function(d) {
       var degrees, h2, p, pathParts, w2;
-      p = d.percentage;
+      p = d.proportion;
       degrees = p * 360;
       w2 = w / 2;
       h2 = h / 2;
@@ -249,7 +249,7 @@ ImageFactory = (function() {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
     d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', 0).attr('y', 0).attr('width', function(d) {
-      return width * d.percentage;
+      return width * d.proportion;
     }).attr('height', height);
     return uniqueId;
   };

@@ -4,6 +4,12 @@ class Pictograph extends RhtmlSvgWidget
   constructor: (el, width, height) ->
     super el, width, height
 
+  # NB I am overriding this method from the baseclass so I can support string input
+  setConfig: (@config) ->
+    if _.isString @config
+      @config = variableImage: @config
+    super(@config)
+
   _processConfig: () ->
 
     #do not accept width and height from config, they were passed to constructor
@@ -12,16 +18,16 @@ class Pictograph extends RhtmlSvgWidget
 
     unless @config['table']?
       tableOfOneGraphic =
-        rows: [[{type: 'graphic', value: _.clone(@config) }]]
+        rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
       @config['table'] = tableOfOneGraphic
 
-    #@TODO: resizable string vs boolean handling needs work
     @config['resizable'] = true if @config['resizable'] is 'true'
     @config['resizable'] = false if @config['resizable'] is 'false'
     @config['resizable'] = true unless @config['resizable']?
-    throw new Error 'resizable must be string [true|false]' unless _.isBoolean(@config['resizable'])
+    throw new Error 'resizable must be [true|false]' unless _.isBoolean(@config['resizable'])
 
-    @cssCollector = new BaseCell(null, "#{@config['table-id']}") #hacky, @TODO extract CssCollector from BaseCell
+    #@TODO extract CssCollector from BaseCell. This is hacky
+    @cssCollector = new BaseCell(null, "#{@config['table-id']}",fakeWidth=1,fakeHeight=1)
     @cssCollector._draw = () -> _.noop
 
     pictographDefaults = {
@@ -30,24 +36,6 @@ class Pictograph extends RhtmlSvgWidget
       'font-size': '24px'
       'font-color': 'black'
     }
-
-    _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
-      cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
-      @cssCollector.setCss '', cssAttribute, cssValue
-      BaseCell.setDefault cssAttribute, cssValue # currently this is only necessary for 'font-size'
-
-    if @config['css']
-      _.forEach @config['css'], (cssBlock, cssLocationString) =>
-        _.forEach cssBlock, (cssValue, cssAttribute) =>
-          @cssCollector.setCss cssLocationString, cssAttribute, cssValue
-
-
-    ColorFactory.processNewConfig(@config.table.colors) if @config.table.colors
-
-  #@TODO I am a beast of a 100 line function. Could create a custom layout function, could combine with d3-grid
-  _computeTableLayout: () ->
-
-    numGuttersAtIndex = (index) -> index
 
     @numTableRows = @config.table.rows.length
     @numTableCols = null
@@ -61,6 +49,44 @@ class Pictograph extends RhtmlSvgWidget
 
       if @numTableCols != row.length
         throw new Error "Table is 'jagged' : contains rows with varying column length"
+
+      #TODO Test this
+      @config.table.rows[rowIndex] = row.map (cellDefinition) ->
+        if _.isString cellDefinition
+          if cellDefinition.startsWith "label:"
+            return {
+              type: 'label'
+              value: cellDefinition.replace(/^label:/,'')
+            }
+
+          return {
+            type: 'graphic'
+            value: { variableImage: cellDefinition }
+          }
+        else
+          return cellDefinition
+
+    _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
+      cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
+      @cssCollector.setCss '', cssAttribute, cssValue
+
+      #NB font-size must be explicitly provided to child cells, because it is required for calculating height offsets
+      # whereas other css values we can leave them implicitly set via CSS inheritance
+      # also font-size must be a string (containing a number), so cast it to string
+      if cssAttribute is 'font-size'
+        BaseCell.setDefault cssAttribute, "#{cssValue}"
+
+    if @config['css']
+      _.forEach @config['css'], (cssBlock, cssLocationString) =>
+        _.forEach cssBlock, (cssValue, cssAttribute) =>
+          @cssCollector.setCss cssLocationString, cssAttribute, cssValue
+
+    ColorFactory.processNewConfig(@config.table.colors) if @config.table.colors
+
+  #@TODO I am a beast of a 100 line function. Could create a custom layout function, could combine with d3-grid
+  _computeTableLayout: () ->
+
+    numGuttersAtIndex = (index) -> index
 
     @_verifyKeyIsInt @config.table, 'innerRowPadding', 0
     @_verifyKeyIsInt @config.table, 'innerColumnPadding', 0
@@ -103,7 +129,6 @@ class Pictograph extends RhtmlSvgWidget
       sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.innerColumnPadding
       unless sumSpecified <= @initialWidth
         throw new Error "Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
-
 
     else
       @config.table.colWidths = [1..@numTableCols].map ( => parseInt(@initialWidth / @numTableCols) )
@@ -223,11 +248,16 @@ class Pictograph extends RhtmlSvgWidget
         graphic.setConfig d.value
         graphic.draw()
 
-      if d.type is 'label'
+      else if d.type is 'label'
         d3.select(this).classed 'label', true
         label = new LabelCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
         label.setConfig d.value
         label.draw()
+
+      else
+        throw new Error "Invalid cell definition: #{JSON.stringify(d)} : missing or invalid type"
+
+      #TODO add empty type
 
     return null
 

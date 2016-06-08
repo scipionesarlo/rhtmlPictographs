@@ -8,10 +8,10 @@ class BaseCell
 
   #@TODO I want to pull all the CssCollector bits into a seperate module and have BaseCell Extend that class
 
-  constructor: (@parentSvg, myCssSelector, width, height) ->
-    #@TODO validate width and height are numerics with no px pct etc.
-    @width = parseInt(width)
-    @height = parseInt(height)
+  constructor: (@parentSvg, myCssSelector, @width, @height) ->
+    @_verifyKeyIsPositiveInt @, 'width'
+    @_verifyKeyIsPositiveInt @, 'height'
+
     @cssBucket = {}
 
     if _.isString myCssSelector

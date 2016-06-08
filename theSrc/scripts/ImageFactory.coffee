@@ -82,7 +82,7 @@ class ImageFactory
       .classed('circle', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'r', (d) -> ratio(d.percentage) * Math.min(width,height) / 2
+      .attr 'r', (d) -> ratio(d.proportion) * Math.min(width,height) / 2
       .style 'fill', color
 
   @addEllipseTo: (d3Node, config, width, height) ->
@@ -95,8 +95,8 @@ class ImageFactory
       .classed('ellipse', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'rx', (d) -> width * ratio(d.percentage) / 2
-      .attr 'ry', (d) -> height * ratio(d.percentage) / 2
+      .attr 'rx', (d) -> width * ratio(d.proportion) / 2
+      .attr 'ry', (d) -> height * ratio(d.proportion) / 2
       .style 'fill', color
 
   @addRectTo: (d3Node, config, width, height) ->
@@ -107,10 +107,10 @@ class ImageFactory
 
     return d3Node.append("svg:rect")
       .classed('rect', true)
-      .attr 'x', (d) -> width * (1 - ratio(d.percentage)) / 2
-      .attr 'y', (d) -> height * (1 - ratio(d.percentage)) / 2
-      .attr 'width', (d) -> width * ratio(d.percentage)
-      .attr 'height', (d) -> height * ratio(d.percentage)
+      .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
+      .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
+      .attr 'width', (d) -> width * ratio(d.proportion)
+      .attr 'height', (d) -> height * ratio(d.proportion)
       .style 'fill', color
 
   @addRecoloredSvgTo: (d3Node, config, width, height) ->
@@ -141,10 +141,10 @@ class ImageFactory
       return if config.scale then p else 1
 
     return d3Node.append("svg:image")
-      .attr 'x', (d) -> width * (1 - ratio(d.percentage)) / 2
-      .attr 'y', (d) -> height * (1 - ratio(d.percentage)) / 2
-      .attr 'width', (d) -> width * ratio(d.percentage)
-      .attr 'height', (d) -> height * ratio(d.percentage)
+      .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
+      .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
+      .attr 'width', (d) -> width * ratio(d.proportion)
+      .attr 'height', (d) -> height * ratio(d.proportion)
       .attr 'xlink:href', config.url
       .attr 'class', 'variable-image'
 
@@ -154,9 +154,9 @@ class ImageFactory
       .attr 'id', uniqueId
       .append 'rect'
         .attr 'x', 0
-        .attr 'y', (d) -> height * (1 - d.percentage)
+        .attr 'y', (d) -> height * (1 - d.proportion)
         .attr 'width', width
-        .attr 'height', (d) -> height * d.percentage
+        .attr 'height', (d) -> height * d.proportion
     return uniqueId
 
   @addRadialClip: (d3Node, config, w, h) ->
@@ -167,14 +167,14 @@ class ImageFactory
     .style 'stroke-width', '3'
     .append 'path'
       .attr 'd', (d) ->
-        p = d.percentage
+        p = d.proportion
         degrees = p * 360
         w2 = w/2
         h2 = h/2
 
         pathParts = ["M#{w2},#{h2} l0,-#{h2}"]
 
-        #trace the edges of the rectangle, returning to the centre once we have "used up" all the percentage
+        #trace the edges of the rectangle, returning to the centre once we have "used up" all the proportion
         #probably can be optimized or expressed better ...
 
         if p > 1/8
@@ -230,7 +230,7 @@ class ImageFactory
       .append 'rect'
         .attr 'x', 0
         .attr 'y', 0
-        .attr 'width', (d) -> width * d.percentage
+        .attr 'width', (d) -> width * d.proportion
         .attr 'height', height
     return uniqueId
 

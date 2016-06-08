@@ -10,8 +10,18 @@ Pictograph = (function(_super) {
     Pictograph.__super__.constructor.call(this, el, width, height);
   }
 
+  Pictograph.prototype.setConfig = function(config) {
+    this.config = config;
+    if (_.isString(this.config)) {
+      this.config = {
+        variableImage: this.config
+      };
+    }
+    return Pictograph.__super__.setConfig.call(this, this.config);
+  };
+
   Pictograph.prototype._processConfig = function() {
-    var pictographDefaults, tableOfOneGraphic;
+    var fakeHeight, fakeWidth, pictographDefaults, tableOfOneGraphic;
     delete this.config.width;
     delete this.config.height;
     if (this.config['table'] == null) {
@@ -20,7 +30,7 @@ Pictograph = (function(_super) {
           [
             {
               type: 'graphic',
-              value: _.clone(this.config)
+              value: _.omit(this.config, ['table-id'])
             }
           ]
         ]
@@ -37,9 +47,9 @@ Pictograph = (function(_super) {
       this.config['resizable'] = true;
     }
     if (!_.isBoolean(this.config['resizable'])) {
-      throw new Error('resizable must be string [true|false]');
+      throw new Error('resizable must be [true|false]');
     }
-    this.cssCollector = new BaseCell(null, "" + this.config['table-id']);
+    this.cssCollector = new BaseCell(null, "" + this.config['table-id'], fakeWidth = 1, fakeHeight = 1);
     this.cssCollector._draw = function() {
       return _.noop;
     };
@@ -49,12 +59,47 @@ Pictograph = (function(_super) {
       'font-size': '24px',
       'font-color': 'black'
     };
+    this.numTableRows = this.config.table.rows.length;
+    this.numTableCols = null;
+    this.config.table.rows.forEach((function(_this) {
+      return function(row, rowIndex) {
+        if (!_.isArray(row)) {
+          throw new Error("Invalid rows spec: row " + rowIndex + " must be array of cell definitions");
+        }
+        if (_.isNull(_this.numTableCols)) {
+          _this.numTableCols = row.length;
+        }
+        if (_this.numTableCols !== row.length) {
+          throw new Error("Table is 'jagged' : contains rows with varying column length");
+        }
+        return _this.config.table.rows[rowIndex] = row.map(function(cellDefinition) {
+          if (_.isString(cellDefinition)) {
+            if (cellDefinition.startsWith("label:")) {
+              return {
+                type: 'label',
+                value: cellDefinition.replace(/^label:/, '')
+              };
+            }
+            return {
+              type: 'graphic',
+              value: {
+                variableImage: cellDefinition
+              }
+            };
+          } else {
+            return cellDefinition;
+          }
+        });
+      };
+    })(this));
     _.forEach(pictographDefaults, (function(_this) {
       return function(defaultValue, cssAttribute) {
         var cssValue;
         cssValue = _this.config[cssAttribute] ? _this.config[cssAttribute] : defaultValue;
         _this.cssCollector.setCss('', cssAttribute, cssValue);
-        return BaseCell.setDefault(cssAttribute, cssValue);
+        if (cssAttribute === 'font-size') {
+          return BaseCell.setDefault(cssAttribute, "" + cssValue);
+        }
       };
     })(this));
     if (this.config['css']) {
@@ -76,21 +121,6 @@ Pictograph = (function(_super) {
     numGuttersAtIndex = function(index) {
       return index;
     };
-    this.numTableRows = this.config.table.rows.length;
-    this.numTableCols = null;
-    this.config.table.rows.forEach((function(_this) {
-      return function(row, rowIndex) {
-        if (!_.isArray(row)) {
-          throw new Error("Invalid rows spec: row " + rowIndex + " must be array of cell definitions");
-        }
-        if (_.isNull(_this.numTableCols)) {
-          _this.numTableCols = row.length;
-        }
-        if (_this.numTableCols !== row.length) {
-          throw new Error("Table is 'jagged' : contains rows with varying column length");
-        }
-      };
-    })(this));
     this._verifyKeyIsInt(this.config.table, 'innerRowPadding', 0);
     this._verifyKeyIsInt(this.config.table, 'innerColumnPadding', 0);
     if (this.config.table.rowHeights) {
@@ -274,13 +304,14 @@ Pictograph = (function(_super) {
         d3.select(this).classed('graphic', true);
         graphic = new GraphicCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
         graphic.setConfig(d.value);
-        graphic.draw();
-      }
-      if (d.type === 'label') {
+        return graphic.draw();
+      } else if (d.type === 'label') {
         d3.select(this).classed('label', true);
         label = new LabelCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
         label.setConfig(d.value);
         return label.draw();
+      } else {
+        throw new Error("Invalid cell definition: " + (JSON.stringify(d)) + " : missing or invalid type");
       }
     });
     return null;

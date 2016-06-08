@@ -3,7 +3,7 @@ An R HTMLWidget that can generate single image graphics, mutli image graphics, o
 # Installation in R
 
 1. `library(devtools)`
-1. `install_github('NumbersInternational/rhtmlPictographs')`
+1. `install_github('NumbersInternational/rhtmlPictographs', auth_token='????????????????????')`
 
 Simplest Example to verify installation:
 

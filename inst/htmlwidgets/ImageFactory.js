@@ -130,11 +130,12 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addRecoloredSvgTo = function(d3Node, config, width, height) {
-    var onDownloadFail, onDownloadSuccess;
+    var newColor, onDownloadFail, onDownloadSuccess;
+    newColor = ColorFactory.getColor(config.color);
     onDownloadSuccess = function(data) {
       var cleanedSvgString, svg;
       svg = jQuery(data).find('svg');
-      cleanedSvgString = RecolorSvg.recolor(svg, config.color, width, height);
+      cleanedSvgString = RecolorSvg.recolor(svg, newColor, width, height);
       return d3Node.html(cleanedSvgString);
     };
     onDownloadFail = function(data) {

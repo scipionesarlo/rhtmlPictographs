@@ -202,20 +202,39 @@ Is the same as this table config:
   <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "1" }</div>
 </div>
 
-<h2>ImageGrids With Padding</h2>
-<p>Two types of padding is applied to the graphic cells:</p>
-<ul>
-  <li>Outer padding (specified using "padding"): this is the number of pixels around the outer edge of the graphic. It closely resembles the CSS padding attribute in that it is an array of <b><em>4 numbers: Top Right Bottom Left</b></em>.</li>
-  <li>Gutter Proportions (WIP): Gutter simply means the space between two images (think bowling). The gutter proportion specify the proportion of the total width/hieght to be used by the gutter vs the image itself. A gutter ratio of 0.5 means that the gutter should be as big as the image.</li>
+<h2>ImageGrids With Outer Padding</h2>
+<p>Two types of padding is applied to the graphic cells: outer padding and gutter proportions. This example covers outer padding.</p>
+<p>Outer padding (specified using "padding") is the number of pixels around the outer edge of the graphic.</p>
+<p>It closely resembles the CSS padding attribute in that it is an array of <b><em>4 numbers: Top Right Bottom Left</em></b>.
+
+<div class="row">
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</div>
+</div>
+
+<h2>ImageGrids With Gutter Proportions</h2>
+<p>Two types of padding is applied to the graphic cells: outer padding and gutter proportions. This example covers gutter proportions.</p>
+<p>Gutter simply means the space between two images (think bowling).</p>
+<p>Gutter Proportions (specified using rowGutter and columnGutter) specify the proportion of the total width/hieght to be used by the gutter vs the image itself.</p>
+<p>A gutter proportion of 0.5 means that the gutter should be as big as the image. A gutter proportion of 0 means no gutter. A gutter proportion of 1 means all gutter (you wouldn't use this).</p>
+<p><b><em>The default gutter proportions are rowGutter: 0.05 and columnGutter: 0.05.</em></b></p>
+<p>For more info, the two gutter params set the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands</p>
 </ul>
 
 <div class="row">
-  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4" }</div>
-  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "interRowPadding": "0", "interColumnPadding":"0" }</div>
-  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</div>
-  <div class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</div>
-  <div class="example for-consideration">{ "variableImage": "circle:lightblue", "numImages": "4", "interRowPadding": "0.5", "interColumnPadding": "0" }</div>
-  <div class="example for-consideration">{ "variableImage": "circle:lightblue", "numImages": "4", "interRowPadding": "0", "interColumnPadding": "0.5" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter":"0" }</div>
+</div>
+<div class="row">
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.1", "columnGutter": "0" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.5", "columnGutter": "0" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.9", "columnGutter": "0" }</div>
+</div>
+<div class="row">
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.1" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.5" }</div>
+  <div class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.9" }</div>
 </div>
 
 <h2>Customization via CSS</h2>

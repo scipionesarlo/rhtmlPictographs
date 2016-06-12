@@ -37,10 +37,10 @@ GraphicCell = (function(_super) {
     if ((_ref = this.config['direction']) !== 'horizontal' && _ref !== 'vertical' && _ref !== 'scale') {
       throw new Error("direction must be either (horizontal|vertical|scale)");
     }
-    this._verifyKeyIsFloat(this.config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1');
-    this._verifyKeyIsRatio(this.config, 'interColumnPadding');
-    this._verifyKeyIsFloat(this.config, 'interRowPadding', 0.05, 'Must be number between 0 and 1');
-    this._verifyKeyIsRatio(this.config, 'interRowPadding');
+    this._verifyKeyIsFloat(this.config, 'columnGutter', 0.05, 'Must be number between 0 and 1');
+    this._verifyKeyIsRatio(this.config, 'columnGutter');
+    this._verifyKeyIsFloat(this.config, 'rowGutter', 0.05, 'Must be number between 0 and 1');
+    this._verifyKeyIsRatio(this.config, 'rowGutter');
     this._verifyKeyIsBoolean(this.config, 'fixedgrid', false);
     this._processTextConfig('text-header');
     this._processTextConfig('text-overlay');
@@ -121,7 +121,7 @@ GraphicCell = (function(_super) {
     } else {
       d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
     }
-    gridLayout = d3.layout.grid().bands().size([this.dimensions.graphicWidth, this.dimensions.graphicHeight]).padding([this.config['interColumnPadding'], this.config['interRowPadding']]);
+    gridLayout = d3.layout.grid().bands().size([this.dimensions.graphicWidth, this.dimensions.graphicHeight]).padding([this.config['columnGutter'], this.config['rowGutter']]);
     if (this.config['numRows'] != null) {
       gridLayout.rows(this.config['numRows']);
     }

@@ -115,9 +115,11 @@ class ImageFactory
 
   @addRecoloredSvgTo: (d3Node, config, width, height) ->
 
+    newColor = ColorFactory.getColor config.color
+
     onDownloadSuccess = (data) ->
       svg = jQuery(data).find('svg');
-      cleanedSvgString = RecolorSvg.recolor(svg,config.color, width, height)
+      cleanedSvgString = RecolorSvg.recolor(svg,newColor, width, height)
       d3Node.html(cleanedSvgString)
 
     onDownloadFail = (data) ->

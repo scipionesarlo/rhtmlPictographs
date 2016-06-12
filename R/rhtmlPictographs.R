@@ -38,8 +38,8 @@
 #'   \item tooltip: string - optional. default unset. A string to display on mouse hover over the graphic
 #'   \item resizable: string - optional. default true. Options [true|false]. For now, make sure it is a string not a boolean. TODO: accept R booleans accross function boundary
 #'   \item preserveAspectRatio: string - optional. default unset. If set, the exact value will be used for the preserveAspectRatio property of the outer SVG. See here for docs: https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio
-#'   \item interColumnPadding: number between 0 and 1. default 0.05. Set the ratio of the padding between columns to the image size. Note that at 0.5 the padding is equal to the width of the image. For more info, this parameter sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
-#'   \item interRowPadding: number between 0 and 1. default 0.05. Set the ratio of the padding between rows to the image size. Note that at 0.5 the padding is equal to the width of the image. For more info, this parameter sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
+#'   \item columnGutter: number between 0 and 1. default 0.05. Set the ratio of the padding between columns to the image size. Note that at 0.5 the padding is equal to the width of the image. For more info, this parameter sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
+#'   \item rowGutter: number between 0 and 1. default 0.05. Set the ratio of the padding between rows to the image size. Note that at 0.5 the padding is equal to the width of the image. For more info, this parameter sets the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
 #'   \item debugBorder: existence - optional. default unset. Set this key to anything, and then debug borders will be drawn
 #' }
 #'

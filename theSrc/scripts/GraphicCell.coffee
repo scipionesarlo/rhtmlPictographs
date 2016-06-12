@@ -21,10 +21,10 @@ class GraphicCell extends BaseCell
     unless @config['direction'] in ['horizontal', 'vertical', 'scale']
       throw new Error "direction must be either (horizontal|vertical|scale)"
 
-    @_verifyKeyIsFloat @config, 'interColumnPadding', 0.05, 'Must be number between 0 and 1'
-    @_verifyKeyIsRatio @config, 'interColumnPadding'
-    @_verifyKeyIsFloat @config, 'interRowPadding', 0.05, 'Must be number between 0 and 1'
-    @_verifyKeyIsRatio @config, 'interRowPadding'
+    @_verifyKeyIsFloat @config, 'columnGutter', 0.05, 'Must be number between 0 and 1'
+    @_verifyKeyIsRatio @config, 'columnGutter'
+    @_verifyKeyIsFloat @config, 'rowGutter', 0.05, 'Must be number between 0 and 1'
+    @_verifyKeyIsRatio @config, 'rowGutter'
 
     @_verifyKeyIsBoolean @config, 'fixedgrid', false
 
@@ -96,7 +96,7 @@ class GraphicCell extends BaseCell
     gridLayout = d3.layout.grid()
       .bands()
       .size [@dimensions.graphicWidth, @dimensions.graphicHeight]
-      .padding([@config['interColumnPadding'], @config['interRowPadding']])
+      .padding([@config['columnGutter'], @config['rowGutter']])
 
     gridLayout.rows(@config['numRows']) if @config['numRows']?
     gridLayout.cols(@config['numCols']) if @config['numCols']?

@@ -188,13 +188,13 @@ describe 'GraphicCell class', ->
     describe '"padding" handling:', ->
       describe 'defaults:', ->
         beforeEach -> @withConfig {}
-        it 'interRowPadding set to 0.05', -> expect(@instance.config.interRowPadding).to.equal 0.05
-        it 'interColumnPadding set to 0.05', -> expect(@instance.config.interColumnPadding).to.equal 0.05
+        it 'rowGutter set to 0.05', -> expect(@instance.config.rowGutter).to.equal 0.05
+        it 'columnGutter set to 0.05', -> expect(@instance.config.columnGutter).to.equal 0.05
         it 'sets padding to all zeros', -> expect(@instance.config.padding).to.deep.equal { top: 0, right: 0, bottom: 0, left: 0 }
 
       describe 'must be an float between 0 and 1 inclusive:', ->
-        makeRatioTestsFor 'interRowPadding'
-        makeRatioTestsFor 'interColumnPadding'
+        makeRatioTestsFor 'rowGutter'
+        makeRatioTestsFor 'columnGutter'
 
       it 'parses the padding string', ->
         @withConfig { padding: '10 15 20 25' }

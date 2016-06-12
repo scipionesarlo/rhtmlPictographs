@@ -38,10 +38,15 @@
 <a href="/index.html">Back to Index</a>
 <h1>Label Cell Usage Tutorial</h1>
 
+<h2>Simplest Label Using shorthand "string syntax"</h2>
+<div class="row">
+  <div class="example">{ "table": { "rows": [ [ "label:A label" ] ] } }</div>
+</div>
+
 <h2>Simplest Label, Multiple Label, Object as Label</h2>
 <div class="row">
   <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": "A label" } ] ] } }</div>
-  <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": [ "Line 1", "Line2" ] } ] ] } }</div>
+  <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": [ "Line 1", "Line 2" ] } ] ] } }</div>
   <div class="example">{ "table": { "rows": [ [ { "type": "label", "value": { "text": "A label", "font-color" : "red", "font-size": "20px", "font-family": "impact", "font-weight" : "100" } } ] ] } }</div>
 </div>
 
@@ -51,11 +56,11 @@
     "rows": [ [ {
       "type": "label",
       "value": {
-        "padding-top": 10,
-        "padding-inner": 5,
+        "padding-top": 20,
+        "padding-inner": 25,
         "labels": [
-          "Line1",
-          { "text": "Line 2", "font-size": "14px", "font-color": "#cccccc" }
+          "Line 1",
+          { "text": "Line 2", "font-size": "14px", "font-color": "red" }
         ]
       }
     } ] ] } }</div>

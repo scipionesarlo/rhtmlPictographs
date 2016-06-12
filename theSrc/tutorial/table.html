@@ -49,6 +49,7 @@
 </div>
 
 <h2>Row and Column Sizes are Evenly Distributed by Default, with Gutter = 0</h2>
+<p>This example uses a total width of 370 and a height of 310. The rows and columns are evenly sized to fill the entire space.</p>
 <div class="row" data-example-width="370" data-example-height="310">
   <div class="example">{ "table": {
     "rows": [
@@ -60,6 +61,9 @@
 </div>
 
 <h2>Row Heights, Column Heights, And Padding Can be Specified (Outer W=370, H=310)</h2>
+<p>Each of these examples uses a total width of 370 and a height of 310.</p>
+<p>By gutter I refer to the space in between each row and column.</p>
+<p>When specifying the widths, heights, and columns, you must not exceed the total height and width of the table, or an error will be thrown and the table will not render.</p>
 <div class="row" data-example-width="370" data-example-height="310">
   <div class="example">{ "table": {
     "rowHeights": [100, 200],
@@ -85,6 +89,24 @@
 </div>
 
 <h2>Lines</h2>
+<p>Horizontal and vertical lines can be drawn across the entire span of the table, or (via padding) only accross portions of the table span.</p>
+<p>Line positioning is in units of rows/columns. Generally speaking whole numbers will follow the edges of cells (Example 1) and fractions will intersect cells (Example 2).</p>
+<p>Some examples:</p>
+<ul>
+  <li>A horizontal line at 0 will run left to right along the top of the first row.</li>
+  <li>A horizontal line at 0.5 will run left to right through the middle of the first row.</li>
+  <li>A vertical line at 1 will run top to bottom along the right side of the first column.</li>
+</ul>
+
+<p>If lines are specified beyond the table boundaries an error will be thrown and the table will not render.</p>
+<p>(Example 3) If the table includes gutters, then a line at 1,2, etc. will be drawn through the gutter.</p>
+
+<p>Example 2 shows the use of padding to shorten the lines. Using some logic it can be seen that padding left and right would affect horizontal lines, and padding top and bottom would affect vertical lines.</p>
+<p>Currently there is no way to apply padding to a single line, but this can be added in the future.</p>
+
+<p>Example 2 shows the use of a different line style. Any combination of SVG style that applies to SVG paths can be provided.</p>
+<p>Currently there is no way to apply unique styles to each line, only to all the lines. This can be added in the future.</p>
+
 <div class="row" data-example-width="370" data-example-height="310">
   <div class="example">{ "table": {
     "innerRowPadding": 10,
@@ -109,9 +131,8 @@
     "rowHeights": [100, 200],
     "colWidths": [50, 100, 200],
     "lines": {
-      "horizontal": [ 0.5, 1.5 ],
+      "horizontal": [ 0.25, 0.5, 1.5 ],
       "vertical": [ 0.5, 1.5, 2.5 ],
-      "style": "stroke:black;stroke-width:4",
       "padding-left": 50,
       "padding-right": 50,
       "padding-top": 30,
@@ -123,31 +144,65 @@
     ]
     } }
   </div>
+
+  <div class="example">{ "table": {
+    "innerRowPadding": 30,
+    "innerColumnPadding": 30,
+    "rowHeights": [85, 185],
+    "colWidths": [35, 70, 185],
+    "lines": {
+      "horizontal": [ 1 ],
+      "vertical": [ 1, 2 ],
+      "style": "stroke:red;stroke-width:6;stroke-linecap:round;stroke-dasharray:20 10",
+      "padding-left": 5,
+      "padding-right": 5,
+      "padding-top": 5,
+      "padding-bottom": 5
+    },
+    "rows": [
+      ["rect:lightblue", "rect:lightblue", "rect:lightblue"],
+      ["rect:lightblue", "rect:lightblue", "rect:lightblue"]
+    ]
+    } }
+  </div>
+
 </div>
 
 <h2>Color Palettes and Color Aliases</h2>
+<p>(Example 1) Users can define their own palettes and aliases. Graphics using a palette will rotate through the colors in that palette.</p>
+<p>(Example 2) There are also 7 predefined palettes: [google10, google20, displayr, d310, d320, d320b, d320c]</p>
 <div class="row" data-example-width="300" data-example-height="150">
   <div class="example">{ "table": {
   "colors": {
     "palettes": {
       "rainbow": [ "red", "orange", "yellow", "green", "blue", "indigo", "violet" ]
     },
-    "aliases" : {
-      "primary": "brown",
-      "secondary":"black"
-    }
+    "aliases" : { "primary": "brown", "secondary":"black" }
   },
   "rows": [
-    ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
-    ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
     ["circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow", "circle:rainbow"],
     ["circle:primary", "circle:secondary", "circle:primary", "circle:secondary", "circle:primary", "circle:secondary"]
   ]
   } }
   </div>
+
+  <div class="example">{ "table": {
+    "rows": [
+      ["circle:google10", "circle:google10", "circle:google10", "circle:google10", "circle:google10", "circle:google10"],
+      ["circle:google20", "circle:google20", "circle:google20", "circle:google20", "circle:google20", "circle:google20"],
+      ["circle:displayr", "circle:displayr", "circle:displayr", "circle:displayr", "circle:displayr", "circle:displayr"],
+      ["circle:d310", "circle:d310", "circle:d310", "circle:d310", "circle:d310", "circle:d310"],
+      ["circle:d320", "circle:d320", "circle:d320", "circle:d320", "circle:d320", "circle:d320"],
+      ["circle:d320b", "circle:d320b", "circle:d320b", "circle:d320b", "circle:d320b", "circle:d320b"],
+      ["circle:d320c", "circle:d320c", "circle:d320c", "circle:d320c", "circle:d320c", "circle:d320c"]
+    ]
+    } }
+  </div>
 </div>
 
+
 <h2>Fonts</h2>
+<p> 4 font settings can be controlled globally for the table, or set for each cell. Additionally, as demonstrated in the LabelCell and GraphicCell tutorials, font settings can be applied within the cell definition for further customization.</p>
 <div class="row" data-example-width="250" data-example-height="50">
   <div class="example">{
     "font-color": "red",

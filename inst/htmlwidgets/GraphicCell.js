@@ -41,7 +41,6 @@ GraphicCell = (function(_super) {
     this._verifyKeyIsRatio(this.config, 'columnGutter');
     this._verifyKeyIsFloat(this.config, 'rowGutter', 0.05, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'rowGutter');
-    this._verifyKeyIsBoolean(this.config, 'fixedgrid', false);
     this._processTextConfig('text-header');
     this._processTextConfig('text-overlay');
     this._processTextConfig('text-footer');
@@ -115,12 +114,7 @@ GraphicCell = (function(_super) {
       y = this.dimensions.footerYOffset + this.dimensions.footerHeight / 2;
       this._addTextTo(this.parentSvg, this.config['text-footer']['text'], 'text-footer', x, y);
     }
-    d3Data = null;
-    if (this.config.fixedgrid) {
-      d3Data = this._generateFixedDataArray(this.config.proportion, this.config.numImages);
-    } else {
-      d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
-    }
+    d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
     gridLayout = d3.layout.grid().bands().size([this.dimensions.graphicWidth, this.dimensions.graphicHeight]).padding([this.config['columnGutter'], this.config['rowGutter']]);
     if (this.config['numRows'] != null) {
       gridLayout.rows(this.config['numRows']);
@@ -176,28 +170,15 @@ GraphicCell = (function(_super) {
   };
 
   GraphicCell.prototype._generateDataArray = function(proportion, numImages) {
-    var d3Data, num, totalArea, _i;
+    var d3Data, i, proportionForImageI, remainingArea, _i;
     d3Data = [];
-    totalArea = proportion * numImages;
-    for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
-      proportion = Math.min(1, Math.max(0, 1 + totalArea - num));
+    remainingArea = proportion * numImages;
+    for (i = _i = 0; 0 <= numImages ? _i < numImages : _i > numImages; i = 0 <= numImages ? ++_i : --_i) {
+      proportionForImageI = remainingArea > 1 ? 1 : remainingArea;
+      remainingArea -= proportionForImageI;
       d3Data.push({
-        proportion: proportion,
-        i: num - 1
-      });
-    }
-    return d3Data;
-  };
-
-  GraphicCell.prototype._generateFixedDataArray = function(proportion, numImages) {
-    var d3Data, num, numFullImages, _i;
-    d3Data = [];
-    numFullImages = Math.ceil(proportion * numImages);
-    for (num = _i = 1; 1 <= numImages ? _i <= numImages : _i >= numImages; num = 1 <= numImages ? ++_i : --_i) {
-      proportion = num <= numFullImages ? 1 : 0;
-      d3Data.push({
-        proportion: proportion,
-        i: num - 1
+        proportion: proportionForImageI,
+        i: i
       });
     }
     return d3Data;

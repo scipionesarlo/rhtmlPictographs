@@ -26,8 +26,6 @@ class GraphicCell extends BaseCell
     @_verifyKeyIsFloat @config, 'rowGutter', 0.05, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'rowGutter'
 
-    @_verifyKeyIsBoolean @config, 'fixedgrid', false
-
     @_processTextConfig 'text-header'
     @_processTextConfig 'text-overlay'
     @_processTextConfig 'text-footer'
@@ -86,11 +84,7 @@ class GraphicCell extends BaseCell
       y = @dimensions.footerYOffset + @dimensions.footerHeight / 2
       @_addTextTo @parentSvg, @config['text-footer']['text'], 'text-footer', x, y
 
-    d3Data = null
-    if @config.fixedgrid
-      d3Data = @_generateFixedDataArray(@config.proportion, @config.numImages)
-    else
-      d3Data = @_generateDataArray(@config.proportion, @config.numImages)
+    d3Data = @_generateDataArray(@config.proportion, @config.numImages)
 
     #d3.grid is added to d3 via github.com/NumbersInternational/d3-grid
     gridLayout = d3.layout.grid()
@@ -173,23 +167,12 @@ class GraphicCell extends BaseCell
       .style 'dominant-baseline', 'central'
       .text text
 
-  #@TODO the math here is non-intuitive, clean up
   _generateDataArray: (proportion, numImages) ->
     d3Data = []
-    totalArea = proportion * numImages
-    for num in [1..numImages]
-      proportion = Math.min(1, Math.max(0, 1 + totalArea - num))
-      d3Data.push { proportion: proportion, i: num - 1 }
-    return d3Data
-
-  #@TODO: on _generateFixesDataArray:
-  #@TODO: I dont like the fact that I must remember to set horizontal or vertical for this to work ...
-  #@TODO: Its also inefficient given i am drawing a bunch of hidden graphics (even if proportion=0 the graphic is drawn)
-
-  _generateFixedDataArray: (proportion, numImages) ->
-    d3Data = []
-    numFullImages = Math.ceil(proportion * numImages)
-    for num in [1..numImages]
-      proportion = if num <= numFullImages then 1 else 0
-      d3Data.push { proportion: proportion, i: num - 1 }
+    #NB the alg uses terms based on assigning 2D area to an array of shapes
+    remainingArea = proportion * numImages
+    for i in [0...numImages]
+      proportionForImageI = if (remainingArea > 1) then 1 else remainingArea
+      remainingArea -= proportionForImageI
+      d3Data.push { proportion: proportionForImageI, i: i }
     return d3Data

@@ -984,17 +984,17 @@
                     "Active Troops",
                     { "text": "Per 1,000,000 People", "font-size": "14px", "font-color": "#cccccc" }
                   ] } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "169", "proportion": "=169/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "318", "proportion": "=318/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "107", "proportion": "=107/600", "numImages": 45, "numRows": "3" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "448", "proportion": "=448/600", "numImages": 45, "numRows": "3" } }
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "169", "proportion": "=169/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "318", "proportion": "=318/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "107", "proportion": "=107/600", "numImages": 45, "numRows": "3" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/stickman_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "448", "proportion": "=448/600", "numImages": 45, "numRows": "3" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [ "Nuclear Warheads"] } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "245",  "proportion": "=245/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "65",   "proportion": "=65/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "100",  "proportion": "=100/7800", "numImages": "75", "numRows": "5" } },
-                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "fixedgrid": true, "text-footer": "7700", "proportion": "=7700/7800", "numImages": "75", "numRows": "5" } }
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "245",  "proportion": "=245/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "65",   "proportion": "=65/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "100",  "proportion": "=100/7800", "numImages": "75", "numRows": "5" } },
+                  {"type": "graphic", "value": { "padding": "5 0 0 0", "variableImage": "url:horizontal:/images/rocket_green.svg", "columnGutter": 0, "rowGutter": 0, "text-footer": "7700", "proportion": "=7700/7800", "numImages": "75", "numRows": "5" } }
                 ],
                 [
                   {"type": "label", "value": { "padding-top": 10, "padding-inner": 5, "labels": [

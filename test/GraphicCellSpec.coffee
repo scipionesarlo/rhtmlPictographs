@@ -203,19 +203,6 @@ describe 'GraphicCell class', ->
       it 'rejects non Integer padding values', ->
         expect( => @withConfig { padding: 'twelve 15 20 25' }).to.throw()
 
-    describe '"fixedgrid" handling:', ->
-      beforeEach ->
-        @getValueUsingConfig = (config={}) ->
-          @withConfig config
-          @instance.config.fixedgrid
-
-      it 'defaults to false', -> expect(@getValueUsingConfig()).to.equal false
-      it 'accepts the "false" string', -> expect(@getValueUsingConfig { fixedgrid: "false" }).to.equal false
-      it 'accepts the "true" string', -> expect(@getValueUsingConfig { fixedgrid: "true" }).to.equal true
-      it 'accepts the false boolean', -> expect(@getValueUsingConfig { fixedgrid: false }).to.equal false
-      it 'accepts the true boolean', -> expect(@getValueUsingConfig { fixedgrid: true }).to.equal true
-      it 'rejects everything else', -> expect( => @withConfig { fixedgrid: 'y' }).to.throw(/invalid 'fixedgrid'/)
-
     describe 'text handling:', ->
 
       describe 'text-header', ->
@@ -283,6 +270,14 @@ describe 'GraphicCell class', ->
         { proportion: 1, i: 2 }
         { proportion: 1, i: 3 }
         { proportion: 0.25, i: 4 } # woah 0.85 = 0.25?? 0.8 goes to first 4. 0.05 / 0.2 is 0.25. BAM
+      ]
+
+    it '4 image 25%', ->
+      expect(@calc percent=0.25, numImages=4).to.deep.equal [
+        { proportion: 1, i: 0 }
+        { proportion: 0, i: 1 }
+        { proportion: 0, i: 2 }
+        { proportion: 0, i: 3 }
       ]
 
   describe 'e2e tests:', ->
@@ -390,24 +385,3 @@ describe 'GraphicCell class', ->
 
         expect(fourthImageWidth / firstImageWidth).to.be.closeTo(0.5, 0.001);
         expect(fourthImageHeight / firstImageHeight).to.be.closeTo(0.5, 0.001);
-
-    describe 'multi image fixed grid graphic:', ->
-
-      beforeEach ->
-        @uniqueClass = @makeGraphic {
-          proportion: 0.25
-          numImages: 4
-          fixedGrid: true
-          variableImage: 'url:horizontal:/image1.jpg'
-        }
-
-      it 'applies a clip path to hide all of the 2nd 3rd and 4th image', ->
-        firstImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('width'))
-        secondImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-1 clippath rect").attr('width'))
-        thirdImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-1-0 clippath rect").attr('width'))
-        fourthImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('width'))
-
-        expect(firstImageWidth).to.be.above 0
-        expect(secondImageWidth).to.equal 0
-        expect(thirdImageWidth).to.equal 0
-        expect(fourthImageWidth).to.equal 0

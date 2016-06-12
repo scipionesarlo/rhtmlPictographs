@@ -11,7 +11,7 @@ GraphicCell = (function(_super) {
   }
 
   GraphicCell.prototype.setConfig = function(config) {
-    var key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _ref1, _results;
+    var key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _results;
     this.config = _.cloneDeep(config);
     if (this.config.variableImage == null) {
       throw new Error("Must specify 'variableImage'");
@@ -31,12 +31,6 @@ GraphicCell = (function(_super) {
     if ((this.config['numRows'] != null) && (this.config['numCols'] != null)) {
       throw new Error("Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions.");
     }
-    if (this.config['direction'] == null) {
-      this.config['direction'] = 'horizontal';
-    }
-    if ((_ref = this.config['direction']) !== 'horizontal' && _ref !== 'vertical' && _ref !== 'scale') {
-      throw new Error("direction must be either (horizontal|vertical|scale)");
-    }
     this._verifyKeyIsFloat(this.config, 'columnGutter', 0.05, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'columnGutter');
     this._verifyKeyIsFloat(this.config, 'rowGutter', 0.05, 'Must be number between 0 and 1');
@@ -45,7 +39,7 @@ GraphicCell = (function(_super) {
     this._processTextConfig('text-overlay');
     this._processTextConfig('text-footer');
     if (this.config.padding) {
-      _ref1 = this.config.padding.split(" "), paddingTop = _ref1[0], paddingRight = _ref1[1], paddingBottom = _ref1[2], paddingLeft = _ref1[3];
+      _ref = this.config.padding.split(" "), paddingTop = _ref[0], paddingRight = _ref[1], paddingBottom = _ref[2], paddingLeft = _ref[3];
       this.config.padding = {
         top: parseInt(paddingTop.replace(/(px|em)/, '')),
         right: parseInt(paddingRight.replace(/(px|em)/, '')),

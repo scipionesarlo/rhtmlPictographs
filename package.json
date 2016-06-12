@@ -43,6 +43,7 @@
     "karma-chrome-launcher": "^1.0.1",
     "karma-coffee-preprocessor": "^1.0.0",
     "karma-mocha": "^1.0.1",
+    "karma-mocha-reporter": "^2.0.4",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sinon": "^1.0.5",
     "karma-sinon-chai": "^1.2.0",

@@ -170,21 +170,6 @@ describe 'GraphicCell class', ->
 
         it 'proportion="=5/4" will throw error (out of bounds)', -> expect(=> @withConfig { proportion: '=5/4' }).to.throw new RegExp 'proportion'
 
-    describe '"direction" handling:', ->
-      beforeEach ->
-        @useDirection = (direction) ->
-          @withConfig { direction: direction }
-          @instance.config.direction
-
-      it 'defaults to horizontal', ->
-        @withConfig {}
-        expect(@instance.config.direction).to.equal 'horizontal'
-
-      it 'accepts horizontal', -> expect(@useDirection 'horizontal').to.equal 'horizontal'
-      it 'accepts vertical', -> expect(@useDirection 'vertical').to.equal 'vertical'
-      it 'accepts scale', -> expect(@useDirection 'scale').to.equal 'scale'
-      it 'does not accept anything else', -> expect(=> @useDirection 'something').to.throw new RegExp 'direction'
-
     describe '"padding" handling:', ->
       describe 'defaults:', ->
         beforeEach -> @withConfig {}

@@ -17,10 +17,6 @@ class GraphicCell extends BaseCell
     if @config['numRows']? and @config['numCols']?
       throw new Error "Cannot specify both numRows and numCols. Choose one, and use numImages to control exact dimensions."
 
-    @config['direction'] = 'horizontal' unless @config['direction']?
-    unless @config['direction'] in ['horizontal', 'vertical', 'scale']
-      throw new Error "direction must be either (horizontal|vertical|scale)"
-
     @_verifyKeyIsFloat @config, 'columnGutter', 0.05, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'columnGutter'
     @_verifyKeyIsFloat @config, 'rowGutter', 0.05, 'Must be number between 0 and 1'

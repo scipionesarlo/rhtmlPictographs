@@ -24,6 +24,8 @@ module.exports = function(config) {
       '**/*.coffee': ['coffee']
     },
 
+    reporters: ['mocha'],
+    
     phantomjsLauncher: {
       exitOnResourceError: true
     },

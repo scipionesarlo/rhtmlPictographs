@@ -121,8 +121,8 @@ Pictograph = (function(_super) {
     numGuttersAtIndex = function(index) {
       return index;
     };
-    this._verifyKeyIsInt(this.config.table, 'innerRowPadding', 0);
-    this._verifyKeyIsInt(this.config.table, 'innerColumnPadding', 0);
+    this._verifyKeyIsInt(this.config.table, 'rowGutterLength', 0);
+    this._verifyKeyIsInt(this.config.table, 'columnGutterLength', 0);
     if (this.config.table.rowHeights) {
       if (!_.isArray(this.config.table.rowHeights)) {
         throw new Error("rowHeights must be array");
@@ -138,9 +138,9 @@ Pictograph = (function(_super) {
         }
         return rowHeight;
       });
-      sumSpecified = _.sum(this.config.table.rowHeights) + (this.numTableRows - 1) * this.config.table.innerRowPadding;
+      sumSpecified = _.sum(this.config.table.rowHeights) + (this.numTableRows - 1) * this.config.table.rowGutterLength;
       if (!(sumSpecified <= this.initialHeight)) {
-        throw new Error("Cannot specify rowHeights/innerRowPadding where sum(rows+padding) exceeds table height: " + sumSpecified + " !< " + this.initialHeight);
+        throw new Error("Cannot specify rowHeights/rowGutterLength where sum(rows+padding) exceeds table height: " + sumSpecified + " !< " + this.initialHeight);
       }
     } else {
       this.config.table.rowHeights = (function() {
@@ -168,9 +168,9 @@ Pictograph = (function(_super) {
         }
         return colWidth;
       });
-      sumSpecified = _.sum(this.config.table.colWidths) + (this.numTableCols - 1) * this.config.table.innerColumnPadding;
+      sumSpecified = _.sum(this.config.table.colWidths) + (this.numTableCols - 1) * this.config.table.columnGutterLength;
       if (!(sumSpecified <= this.initialWidth)) {
-        throw new Error("Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : " + sumSpecified + " !< " + this.initialWidth);
+        throw new Error("Cannot specify colWidths/columnGutterLength where sum(cols+padding) exceeds table width: : " + sumSpecified + " !< " + this.initialWidth);
       }
     } else {
       this.config.table.colWidths = (function() {
@@ -222,7 +222,7 @@ Pictograph = (function(_super) {
         if (lineIndex > _this.numTableRows || lineIndex < 0) {
           throw new Error("Cannot create line at '" + lineIndex + "': past end of table");
         }
-        y = calcLineVariableDimension(lineIndex, _this.config.table.rowHeights, _this.config.table.innerRowPadding);
+        y = calcLineVariableDimension(lineIndex, _this.config.table.rowHeights, _this.config.table.rowGutterLength);
         return {
           position: lineIndex,
           x1: 0 + _this.config.table.lines['padding-left'],
@@ -243,7 +243,7 @@ Pictograph = (function(_super) {
         if (lineIndex > _this.numTableCols || lineIndex < 0) {
           throw new Error("Cannot create line at '" + lineIndex + "': past end of table");
         }
-        x = calcLineVariableDimension(lineIndex, _this.config.table.colWidths, _this.config.table.innerColumnPadding);
+        x = calcLineVariableDimension(lineIndex, _this.config.table.colWidths, _this.config.table.columnGutterLength);
         return {
           position: lineIndex,
           x1: x,
@@ -257,8 +257,8 @@ Pictograph = (function(_super) {
     return this.config.table.rows.forEach((function(_this) {
       return function(row, rowIndex) {
         return row.forEach(function(cell, columnIndex) {
-          cell.x = _.sum(_.slice(_this.config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * _this.config.table.innerColumnPadding;
-          cell.y = _.sum(_.slice(_this.config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * _this.config.table.innerRowPadding;
+          cell.x = _.sum(_.slice(_this.config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * _this.config.table.columnGutterLength;
+          cell.y = _.sum(_.slice(_this.config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * _this.config.table.rowGutterLength;
           cell.width = _this.config.table.colWidths[columnIndex];
           cell.height = _this.config.table.rowHeights[rowIndex];
           cell.row = rowIndex;

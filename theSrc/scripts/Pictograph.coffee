@@ -88,8 +88,8 @@ class Pictograph extends RhtmlSvgWidget
 
     numGuttersAtIndex = (index) -> index
 
-    @_verifyKeyIsInt @config.table, 'innerRowPadding', 0
-    @_verifyKeyIsInt @config.table, 'innerColumnPadding', 0
+    @_verifyKeyIsInt @config.table, 'rowGutterLength', 0
+    @_verifyKeyIsInt @config.table, 'columnGutterLength', 0
 
     if @config.table.rowHeights
       #@TODO: verify and cast Array values to Ints
@@ -105,9 +105,9 @@ class Pictograph extends RhtmlSvgWidget
           throw new Error "Invalid rowHeight '#{candidate}': must be integer"
         rowHeight
 
-      sumSpecified = _.sum(@config.table.rowHeights) + (@numTableRows-1) * @config.table.innerRowPadding
+      sumSpecified = _.sum(@config.table.rowHeights) + (@numTableRows-1) * @config.table.rowGutterLength
       unless sumSpecified <= @initialHeight
-        throw new Error "Cannot specify rowHeights/innerRowPadding where sum(rows+padding) exceeds table height: #{sumSpecified} !< #{@initialHeight}"
+        throw new Error "Cannot specify rowHeights/rowGutterLength where sum(rows+padding) exceeds table height: #{sumSpecified} !< #{@initialHeight}"
 
     else
       @config.table.rowHeights = [1..@numTableRows].map ( => parseInt(@initialHeight / @numTableRows) )
@@ -126,9 +126,9 @@ class Pictograph extends RhtmlSvgWidget
           throw new Error "Invalid colWidth '#{candidate}': must be integer"
         colWidth
 
-      sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.innerColumnPadding
+      sumSpecified = _.sum(@config.table.colWidths) + (@numTableCols-1) * @config.table.columnGutterLength
       unless sumSpecified <= @initialWidth
-        throw new Error "Cannot specify colWidths/innerColumnPadding where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
+        throw new Error "Cannot specify colWidths/columnGutterLength where sum(cols+padding) exceeds table width: : #{sumSpecified} !< #{@initialWidth}"
 
     else
       @config.table.colWidths = [1..@numTableCols].map ( => parseInt(@initialWidth / @numTableCols) )
@@ -169,7 +169,7 @@ class Pictograph extends RhtmlSvgWidget
       if lineIndex > @numTableRows or lineIndex < 0
         throw new Error "Cannot create line at '#{lineIndex}': past end of table"
 
-      y = calcLineVariableDimension lineIndex, @config.table.rowHeights, @config.table.innerRowPadding
+      y = calcLineVariableDimension lineIndex, @config.table.rowHeights, @config.table.rowGutterLength
       return {
         position: lineIndex
         x1: 0 + @config.table.lines['padding-left']
@@ -188,7 +188,7 @@ class Pictograph extends RhtmlSvgWidget
       if lineIndex > @numTableCols  or lineIndex < 0
         throw new Error "Cannot create line at '#{lineIndex}': past end of table"
 
-      x = calcLineVariableDimension lineIndex, @config.table.colWidths, @config.table.innerColumnPadding
+      x = calcLineVariableDimension lineIndex, @config.table.colWidths, @config.table.columnGutterLength
       return {
         position: lineIndex
         x1: x
@@ -200,8 +200,8 @@ class Pictograph extends RhtmlSvgWidget
 
     @config.table.rows.forEach (row, rowIndex) =>
       row.forEach (cell, columnIndex) =>
-        cell.x = _.sum( _.slice(@config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * @config.table.innerColumnPadding
-        cell.y = _.sum( _.slice(@config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * @config.table.innerRowPadding
+        cell.x = _.sum( _.slice(@config.table.colWidths, 0, columnIndex)) + numGuttersAtIndex(columnIndex) * @config.table.columnGutterLength
+        cell.y = _.sum( _.slice(@config.table.rowHeights, 0, rowIndex)) + numGuttersAtIndex(rowIndex) * @config.table.rowGutterLength
         cell.width = @config.table.colWidths[columnIndex]
         cell.height = @config.table.rowHeights[rowIndex]
         cell.row = rowIndex

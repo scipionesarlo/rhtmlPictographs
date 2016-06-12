@@ -531,9 +531,9 @@
             "table": {
 
               "rowHeights": [ 400, 200, 200 ],
-              "innerRowPadding": 20,
+              "rowGutterLength": 20,
               "colWidths": [ 400, 400, 100 ],
-              "innerColumnPadding": 20,
+              "columnGutterLength": 20,
               "lines": {
                 "padding-left": 30,
                 "padding-right": 30,
@@ -617,7 +617,7 @@
             "font-size": "24px",
             "table": {
               "colWidths": [160, 70, 70, 70, 70, 70],
-              "innerColumnPadding": 12,
+              "columnGutterLength": 12,
               "lines": {
                 "padding-left": 160,
                 "padding-right": 30,
@@ -695,7 +695,7 @@
                   "displayr1": [ "red", "green", "blue" ]
                 }
               },
-              "innerColumnPadding": 12,
+              "columnGutterLength": 12,
               "lines": {
                 "padding-left": 80,
                 "padding-right": 20,
@@ -936,7 +936,7 @@
             "table": {
               "colWidths": [240, 100, 100, 100, 100],
               "rowHeights": [26, 100, 150, 75, 100, 100, 125, 125, 40],
-              "innerColumnPadding": 12,
+              "columnGutterLength": 12,
               "lines": {
                 "horizontal": [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
                 "style": "stroke:grey;stroke-width:2"

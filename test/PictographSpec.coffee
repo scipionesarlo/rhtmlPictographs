@@ -114,8 +114,8 @@ describe 'Pictograph class:', ->
       #  - 'numCols=2'
       #  - 'rowHeights'
       #  - 'colWidths'
-      #  - 'innerRowPadding'
-      #  - 'innerColumnPadding'
+      #  - 'rowGutterLength'
+      #  - 'columnGutterLength'
       #  - 'lPLeft'
       #  - 'lPRight'
       #  - 'lPTop'
@@ -127,7 +127,7 @@ describe 'Pictograph class:', ->
           table:
             rows: []
 
-        for key in ['rowHeights', 'colWidths', 'innerRowPadding', 'innerColumnPadding']
+        for key in ['rowHeights', 'colWidths', 'rowGutterLength', 'columnGutterLength']
           tableConfig.table[key] = c[key] if c[key]?
 
         for i in _.range(0, c.numRows || 2)
@@ -178,7 +178,7 @@ describe 'Pictograph class:', ->
               ]
               rowHeights: rowHeights
           }
-          c.table.innerRowPadding = rowPadding if rowPadding?
+          c.table.rowGutterLength = rowPadding if rowPadding?
           @setup c, width, height
 
       describe 'invalid values:', ->
@@ -220,7 +220,7 @@ describe 'Pictograph class:', ->
               ]
               colWidths: colWidths
           }
-          c.table.innerColumnPadding = colPadding if colPadding?
+          c.table.columnGutterLength = colPadding if colPadding?
           @setup c, width, height
 
       describe 'invalid values:', ->
@@ -261,7 +261,7 @@ describe 'Pictograph class:', ->
             numRows: 4
             numCols: 1
             rowHeights: [100,200,300,400]
-            innerRowPadding: rowPadding
+            rowGutterLength: rowPadding
             hLines: horizontalLines
             lPLeft: linePadLeft
             lPRight: linePadRight
@@ -312,7 +312,7 @@ describe 'Pictograph class:', ->
             numRows: 1
             numCols: 4
             colWidths: [100,200,300,400]
-            innerColumnPadding: colPadding
+            columnGutterLength: colPadding
             vLines: verticalLines
             lPTop: linePadTop
             lPBottom: linePadBottom
@@ -384,9 +384,9 @@ describe 'Pictograph class:', ->
 
       # @TODO: This IMO demonstrates a bug. We were given h/w = 1000/1000,
       # but we generated a graphic of 1010/1010 because of padding
-      describe 'specify innerRowPadding and innerColumnPadding:', ->
+      describe 'specify rowGutterLength and columnGutterLength:', ->
         beforeEach ->
-          @makeTable { numRows: 2, numCols: 2, height: 1000, width: 1000, innerRowPadding: 10, innerColumnPadding: 10 }
+          @makeTable { numRows: 2, numCols: 2, height: 1000, width: 1000, rowGutterLength: 10, columnGutterLength: 10 }
 
         it 'places cell 0,0 correctly', -> expect(@placement(0,0)).to.deep.equal [0  ,  0,500,500]
         it 'places cell 0,1 correctly', -> expect(@placement(0,1)).to.deep.equal [510,  0,500,500]

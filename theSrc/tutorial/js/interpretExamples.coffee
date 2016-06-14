@@ -1,7 +1,7 @@
 
-addExampleTo = () ->
+addExampleTo = (rowConfig) ->
   element = $(this)
-  exampleConfig = $(this).data()
+  exampleConfig = _.defaults $(this).data(), rowConfig
 
   graphicCellConfig = null
   configString = element.text()
@@ -21,15 +21,15 @@ addExampleTo = () ->
 
   innerExampleDiv = $('<div>')
     .attr('class', 'inner-example')
-    .css('width', "#{exampleConfig.exampleWidth}")
-    .css('height', "#{exampleConfig.exampleHeight}")
+    .css('width', "#{exampleConfig.exW}")
+    .css('height', "#{exampleConfig.exH}")
 
   innerInnerExampleDiv = $('<div>')
 
   element.append configDiv.append(configPre)
   element.append innerExampleDiv.append(innerInnerExampleDiv)
 
-  instance = new Pictograph innerInnerExampleDiv, exampleConfig.exampleWidth, exampleConfig.exampleHeight
+  instance = new Pictograph innerInnerExampleDiv, exampleConfig.exW, exampleConfig.exH
   instance.setConfig graphicCellConfig
   instance.draw()
 
@@ -37,8 +37,8 @@ addExampleTo = () ->
   innerInnerExampleDiv.attr('class', "inner-inner-example #{instanceId}")
 
 defaultConfig = {
-  exampleWidth: 100
-  exampleHeight: 100
+  exW: 100
+  exH: 100
 }
 
 processRow = () ->
@@ -46,8 +46,7 @@ processRow = () ->
 
   rowConfig = _.defaults row.data(), defaultConfig
 
-  $(this).find('.example').data(rowConfig)
-  $(this).find('.example').each addExampleTo
+  $(this).find('.example').each _.partial addExampleTo, rowConfig
 
 $(document).ready ->
   $('.row').each processRow

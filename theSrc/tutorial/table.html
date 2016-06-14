@@ -49,13 +49,13 @@
 <p>The rest of this tutorial focuses specifically on structuring the table itself, specifically row and column sizes, gutter sizes, line placement, color pallettes, and global font configuration.</p>
 
 <h2>Simple Table</h2>
-<div class="row" data-example-width="220">
+<div class="row" data-ex-w="220">
   <div class="example">{ "table": { "rows": [ [ "label:a circle", "circle:lightblue" ] ] } }</div>
 </div>
 
 <h2>Row and Column Sizes are Evenly Distributed by Default, with Gutter = 0</h2>
 <p>This example uses a total width of 370 and a height of 310. The rows and columns are evenly sized to fill the entire space.</p>
-<div class="row" data-example-width="370" data-example-height="310">
+<div class="row" data-ex-w="370" data-ex-h="310">
   <div class="example">{ "table": {
     "rows": [
       ["rect:displayr", "rect:displayr", "rect:displayr"],
@@ -69,7 +69,7 @@
 <p>Each of these examples uses a total width of 370 and a height of 310.</p>
 <p>By gutter I refer to the space in between each row and column.</p>
 <p>When specifying the widths, heights, and columns, you must not exceed the total height and width of the table, or an error will be thrown and the table will not render.</p>
-<div class="row" data-example-width="370" data-example-height="310">
+<div class="row" data-ex-w="370" data-ex-h="310">
   <div class="example">{ "table": {
     "rowHeights": [100, 200],
     "colWidths": [50, 100, 200],
@@ -112,7 +112,7 @@
 <p>Example 2 shows the use of a different line style. Any combination of SVG style that applies to SVG paths can be provided.</p>
 <p>Currently there is no way to apply unique styles to each line, only to all the lines. This can be added in the future.</p>
 
-<div class="row" data-example-width="370" data-example-height="310">
+<div class="row" data-ex-w="370" data-ex-h="310">
   <div class="example">{ "table": {
     "rowGutterLength": 10,
     "columnGutterLength": 10,
@@ -176,7 +176,7 @@
 <h2>Color Palettes and Color Aliases</h2>
 <p>(Example 1) Users can define their own palettes and aliases. Graphics using a palette will rotate through the colors in that palette.</p>
 <p>(Example 2) There are also 7 predefined palettes: [google10, google20, displayr, d310, d320, d320b, d320c]</p>
-<div class="row" data-example-width="300" data-example-height="150">
+<div class="row" data-ex-w="300" data-ex-h="150">
   <div class="example">{ "table": {
   "colors": {
     "palettes": {
@@ -208,7 +208,7 @@
 
 <h2>Fonts</h2>
 <p> 4 font settings can be controlled globally for the table, or set for each cell. Additionally, as demonstrated in the LabelCell and GraphicCell tutorials, font settings can be applied within the cell definition for further customization.</p>
-<div class="row" data-example-width="250" data-example-height="50">
+<div class="row" data-ex-w="250" data-ex-h="50">
   <div class="example">{
     "font-color": "red",
     "font-family": "impact",

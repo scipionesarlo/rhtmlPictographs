@@ -85,7 +85,7 @@ Is the same as this table config:
 </ul>
 
 <h2>Shapes</h2>
-<div class="row" data-example-height="100" data-example-width="150">
+<div class="row" data-ex-h="100" data-ex-w="150">
   <div class="example">circle</div>
   <div class="example">ellipse</div>
   <div class="example">rect</div>
@@ -113,7 +113,7 @@ Is the same as this table config:
 
 <h2>Original SVGs</h2>
 <p>External SVGs can be recolored simply by providing a color in the config string. Here are the original SVGs:</p>
-<div class="row" data-example-height="100" data-example-width="100">
+<div class="row" data-ex-h="100" data-ex-w="100">
   <div class="example">url:/images/blue_circle_512.svg</div>
   <div class="example">url:/images/soyuz_rocket.svg</div>
   <div class="example">url:/images/dollar_sign_green.svg</div>
@@ -123,7 +123,7 @@ Is the same as this table config:
 
 <h2>Recolored SVGs</h2>
 <p>And here are the SVGs recolored red</p>
-<div class="row" data-example-height="100" data-example-width="100">
+<div class="row" data-ex-h="100" data-ex-w="100">
   <div class="example">url:red:/images/blue_circle_512.svg</div>
   <div class="example">url:red:/images/soyuz_rocket.svg</div>
   <div class="example">url:red:/images/dollar_sign_green.svg</div>
@@ -159,7 +159,7 @@ Is the same as this table config:
 <h2>Add text</h2>
 <p>Text can be placed above, below, or inlaid on the graphic.</p>
 <p>By default the text will inherit font settings from the table, but they can be overridden individually.</p>
-<div class="row" data-example-height="200" data-example-width="200">
+<div class="row" data-ex-h="200" data-ex-w="200">
   <div class="example">{ "variableImage": "circle:lightblue", "text-header": "top", "text-overlay": "overlay", "text-footer": "bottom" }</div>
   <div class="example">{ "variableImage": "circle:lightblue", "font-color": "orange", "font-size": "16px", "font-family": "Arial", "font-weight": "900", "text-header": "top", "text-overlay": "overlay", "text-footer": "bottom" }</div>
   <div class="example">{ "variableImage": "circle:lightblue", "text-header" : { "text":"top", "font-color": "orange", "font-size": "16px", "font-family": "Arial", "font-weight": "900" }, "text-overlay": "overlay", "text-footer": "bottom" }</div>
@@ -167,7 +167,7 @@ Is the same as this table config:
 
 <h2>Use Text Presets</h2>
 <p>The strings "proportion" and "percentage" will auto generate text based on the proportion field.</p>
-<div class="row" data-example-height="200" data-example-width="200">
+<div class="row" data-ex-h="200" data-ex-w="200">
   <div class="example">{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "proportion", "text-overlay" : "proportion", "text-footer" : "proportion" }</div>
   <div class="example">{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "percentage", "text-overlay" : "percentage", "text-footer" : "percentage" }</div>
 </div>
@@ -195,7 +195,7 @@ Is the same as this table config:
 
 <h2>ImageGrids With Proportion Set</h2>
 <p> When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.</p>
-<div class="row" data-example-height="50">
+<div class="row" data-ex-h="50">
   <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</div>
   <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.25" }</div>
   <div class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.75" }</div>
@@ -217,8 +217,7 @@ Is the same as this table config:
 <p>Two types of padding is applied to the graphic cells: outer padding and gutter proportions. This example covers gutter proportions.</p>
 <p>Gutter simply means the space between two images (think bowling).</p>
 <p>Gutter Proportions (specified using rowGutter and columnGutter) specify the proportion of the total width/hieght to be used by the gutter vs the image itself.</p>
-<p>A gutter proportion of 0.5 means that the gutter should be as big as the image. A gutter proportion of 0 means no gutter. A gutter proportion of 1 means all gutter (you wouldn't use this).</p>
-<p><b><em>The default gutter proportions are rowGutter: 0.05 and columnGutter: 0.05.</em></b></p>
+<p><b><em>A gutter proportion of 0.5 means that the gutter should be as big as the image.</em></b> A gutter proportion of 0 means no gutter. A gutter proportion of 1 means all gutter (you wouldn't use this). <b><em>The default gutter proportions are rowGutter: 0.05 and columnGutter: 0.05.</em></b></p>
 <p>For more info, the two gutter params set the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands</p>
 </ul>
 

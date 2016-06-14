@@ -3,7 +3,7 @@ var ImageFactory;
 
 ImageFactory = (function() {
   ImageFactory.addImageTo = function(config, width, height) {
-    var d3Node, newImage, uniqueClipId;
+    var d3Node, imageBox, newImage;
     d3Node = d3.select(this);
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
@@ -12,18 +12,28 @@ ImageFactory = (function() {
         throw new Error("Invalid image creation config : unknown image type " + config.type);
       }
     }
+    imageBox = {
+      x: 0,
+      y: 0,
+      width: width,
+      height: height
+    };
     newImage = ImageFactory.types[config.type](d3Node, config, width, height);
-    uniqueClipId = null;
+    if (_.isObject(newImage) && _.has(newImage, 'newImage')) {
+      imageBox = newImage;
+      newImage = imageBox.newImage;
+      delete imageBox.newImage;
+    }
     if (config.verticalclip) {
-      config.verticalclip = ImageFactory.addVerticalClip(d3Node, config, width, height);
+      config.verticalclip = ImageFactory.addVerticalClip(d3Node, imageBox);
       newImage.attr('clip-path', "url(#" + config.verticalclip + ")");
     }
     if (config.horizontalclip) {
-      config.horizontalclip = ImageFactory.addHorizontalClip(d3Node, config, width, height);
+      config.horizontalclip = ImageFactory.addHorizontalClip(d3Node, imageBox);
       newImage.attr('clip-path', "url(#" + config.horizontalclip + ")");
     }
     if (config.radialclip) {
-      config.radialclip = ImageFactory.addRadialClip(d3Node, config, width, height);
+      config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
       newImage.attr('clip-path', "url(#" + config.radialclip + ")");
     }
     return null;
@@ -77,7 +87,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addCircleTo = function(d3Node, config, width, height) {
-    var color, ratio;
+    var color, diameter, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -85,10 +95,18 @@ ImageFactory = (function() {
         return 1;
       }
     };
+    diameter = Math.min(width, height);
     color = ColorFactory.getColor(config.color);
-    return d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
-      return ratio(d.proportion) * Math.min(width, height) / 2;
+    newImage = d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
+      return ratio(d.proportion) * diameter / 2;
     }).style('fill', color);
+    return {
+      newImage: newImage,
+      x: (width - diameter) / 2,
+      y: (height - diameter) / 2,
+      width: diameter,
+      height: diameter
+    };
   };
 
   ImageFactory.addEllipseTo = function(d3Node, config, width, height) {
@@ -106,6 +124,35 @@ ImageFactory = (function() {
     }).attr('ry', function(d) {
       return height * ratio(d.proportion) / 2;
     }).style('fill', color);
+  };
+
+  ImageFactory.addSquareTo = function(d3Node, config, width, height) {
+    var color, length, newImage, ratio;
+    ratio = function(p) {
+      if (config.scale) {
+        return p;
+      } else {
+        return 1;
+      }
+    };
+    length = Math.min(width, height);
+    color = ColorFactory.getColor(config.color);
+    newImage = d3Node.append("svg:rect").classed('square', true).attr('x', function(d) {
+      return (width - length) / 2 + width * (1 - ratio(d.proportion)) / 2;
+    }).attr('y', function(d) {
+      return (height - length) / 2 + height * (1 - ratio(d.proportion)) / 2;
+    }).attr('width', function(d) {
+      return ratio(d.proportion) * length;
+    }).attr('height', function(d) {
+      return ratio(d.proportion) * length;
+    }).style('fill', color);
+    return {
+      newImage: newImage,
+      x: (width - length) / 2,
+      y: (height - length) / 2,
+      width: length,
+      height: length
+    };
   };
 
   ImageFactory.addRectTo = function(d3Node, config, width, height) {
@@ -179,58 +226,68 @@ ImageFactory = (function() {
     }).attr('xlink:href', config.url).attr('class', 'variable-image');
   };
 
-  ImageFactory.addVerticalClip = function(d3Node, config, width, height) {
+  ImageFactory.addVerticalClip = function(d3Node, imageBox) {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
-    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', 0).attr('y', function(d) {
-      return height * (1 - d.proportion);
-    }).attr('width', width).attr('height', function(d) {
-      return height * d.proportion;
+    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', imageBox.x).attr('y', function(d) {
+      return imageBox.y + imageBox.height * (1 - d.proportion);
+    }).attr('width', imageBox.width).attr('height', function(d) {
+      return imageBox.height * d.proportion;
     });
     return uniqueId;
   };
 
-  ImageFactory.addRadialClip = function(d3Node, config, w, h) {
+  ImageFactory.addHorizontalClip = function(d3Node, imageBox) {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
-    d3Node.append('clipPath').attr('id', uniqueId).style('stroke', 'red').style('stroke-width', '3').append('path').attr('d', function(d) {
+    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', imageBox.x).attr('y', imageBox.y).attr('width', function(d) {
+      return imageBox.width * d.proportion;
+    }).attr('height', imageBox.height);
+    return uniqueId;
+  };
+
+  ImageFactory.addRadialClip = function(d3Node, imageBox) {
+    var height, uniqueId, width, x, y;
+    x = imageBox.x, y = imageBox.y, width = imageBox.width, height = imageBox.height;
+    uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
+    d3Node.append('clipPath').attr('id', uniqueId).append('path').attr('d', function(d) {
       var degrees, h2, p, pathParts, w2;
       p = d.proportion;
       degrees = p * 360;
-      w2 = w / 2;
-      h2 = h / 2;
-      pathParts = ["M" + w2 + "," + h2 + " l0,-" + h2];
-      if (p > 1 / 8) {
+      w2 = width / 2;
+      h2 = height / 2;
+      pathParts = ["M" + (x + w2) + "," + (y + h2) + " l0,-" + h2];
+      if (p >= 1 / 8) {
         pathParts.push("l" + w2 + ",0");
       } else {
         pathParts.push("l" + (h2 * Math.tan(degrees * Math.PI / 180)) + ",0");
       }
-      if (p > 2 / 8) {
+      if (p >= 2 / 8) {
         pathParts.push("l0," + h2);
       } else if (p > 1 / 8) {
         pathParts.push("l0," + (h2 - w2 * Math.tan((90 - degrees) * Math.PI / 180)));
       }
-      if (p > 3 / 8) {
+      if (p >= 3 / 8) {
         pathParts.push("l0," + h2);
       } else if (p > 2 / 8) {
         pathParts.push("l0," + (w2 * Math.tan((degrees - 90) * Math.PI / 180)));
       }
-      if (p > 4 / 8) {
+      if (p >= 4 / 8) {
         pathParts.push("l-" + w2 + ",0");
       } else if (p > 3 / 8) {
         pathParts.push("l-" + (w2 - h2 * Math.tan((180 - degrees) * Math.PI / 180)) + ",0");
       }
-      if (p > 5 / 8) {
+      if (p >= 5 / 8) {
         pathParts.push("l-" + w2 + ",0");
       } else if (p > 4 / 8) {
         pathParts.push("l-" + (h2 * Math.tan((degrees - 180) * Math.PI / 180)) + ",0");
       }
-      if (p > 6 / 8) {
+      if (p >= 6 / 8) {
         pathParts.push("l0,-" + h2);
       } else if (p > 5 / 8) {
         pathParts.push("l0,-" + (h2 - w2 * Math.tan((270 - degrees) * Math.PI / 180)));
       }
-      if (p > 7 / 8) {
+      if (p >= 7 / 8) {
         pathParts.push("l0,-" + h2);
       } else if (p > 6 / 8) {
         pathParts.push("l0,-" + (w2 * Math.tan((degrees - 270) * Math.PI / 180)));
@@ -246,19 +303,10 @@ ImageFactory = (function() {
     return uniqueId;
   };
 
-  ImageFactory.addHorizontalClip = function(d3Node, config, width, height) {
-    var uniqueId;
-    uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
-    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', 0).attr('y', 0).attr('width', function(d) {
-      return width * d.proportion;
-    }).attr('height', height);
-    return uniqueId;
-  };
-
   ImageFactory.types = {
     circle: ImageFactory.addCircleTo,
     ellipse: ImageFactory.addEllipseTo,
-    square: ImageFactory.addRectTo,
+    square: ImageFactory.addSquareTo,
     rect: ImageFactory.addRectTo,
     url: ImageFactory.addExternalImage
   };

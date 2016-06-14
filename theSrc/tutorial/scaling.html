@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Arvo:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
+  <style>
+
+    body {
+      font-family: 'Arvo', serif;
+    }
+
+    h2 {
+      margin: 10px;
+    }
+
+    pre.config {
+      margin: 5px;
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .for-consideration .inner-example {
+      border: 4px dashed red;
+    }
+
+    .example {
+      align-self: flex-end;
+      flex: 0 0 auto;
+      margin: 10px;
+      /*border: 1px dashed dimgrey;*/
+    }
+
+    .inner-example {
+      border: 1px dashed dimgrey;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .config-only {
+      background-color: #dddddd;
+      font-family: 'monospace';
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+<a href="/index.html">Back to Index</a>
+
+
+<h2>Squares</h2>
+<div class="row" data-example-width="200">
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:radial", "proportion": "=7/8" }</div>
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:horizontal", "proportion": "=7/8" }</div>
+</div>
+
+<h2>Rectangles</h2>
+<div class="row" data-example-width="200">
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:radial", "proportion": "=7/8" }</div>
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:horizontal", "proportion": "=7/8" }</div>
+</div>
+
+<h2>Circles</h2>
+<div class="row" data-example-width="200">
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:radial", "proportion": "=7/8" }</div>
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:horizontal", "proportion": "=7/8" }</div>
+</div>
+
+<h2>Ellipse</h2>
+<div class="row" data-example-width="200">
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:radial", "proportion": "=7/8" }</div>
+  <div class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:horizontal", "proportion": "=7/8" }</div>
+</div>
+
+<h2>External Image URL</h2>
+<div class="row" data-example-width="200">
+  <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:horizontal:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
+  <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:radial:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
+</div>
+
+<h2>Vertical Clipping for All of the Above</h2>
+<div class="row" data-example-height="200">
+  <div class="example">{ "padding": "5 5 5 5", "numImages": 1, "background-color": "#dddddd", "variableImage": "square:vertical", "proportion": "=5/8" }</div>
+  <div class="example">{ "padding": "5 5 5 5", "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:vertical", "proportion": "=5/8" }</div>
+  <div class="example">{ "padding": "5 5 5 5", "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:vertical", "proportion": "=5/8" }</div>
+  <div class="example">{ "padding": "5 5 5 5", "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:vertical", "proportion": "=5/8" }</div>
+  <div class="example">{ "padding": "5 5 5 5", "numImages": 1, "background-color": "#dddddd", "variableImage": "url:vertical:/images/blue_circle_512.svg", "proportion": "=5/8" }</div>
+</div>
+
+<script src="/external/lodash.min.js"></script>
+<script src="/external/jquery.min.js"></script>
+<script src="/external/d3.min.js"></script>
+<script src="/external/d3-grid.js"></script>
+<script src="/external/rHtmlStatefulWidget.js"></script>
+<script src="/external/rHtmlSvgWidget.js"></script>
+
+<script src="/scripts/RecolorSvg.js"></script>
+<script src="/scripts/ColorFactory.js"></script>
+<script src="/scripts/ImageFactory.js"></script>
+<script src="/scripts/DisplayError.js"></script>
+<script src="/scripts/BaseCell.js"></script>
+<script src="/scripts/GraphicCell.js"></script>
+<script src="/scripts/LabelCell.js"></script>
+<script src="/scripts/Pictograph.js"></script>
+
+<script src="/tutorial/js/interpretExamples.js"></script>
+</body>
+</html>

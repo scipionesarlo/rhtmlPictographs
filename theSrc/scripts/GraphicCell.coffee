@@ -117,9 +117,6 @@ class GraphicCell extends BaseCell
     if @config.baseImage?
       enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.baseImage, imageWidth, imageHeight)
 
-    #@TODO by using ImageFactory for both I've lost the base-image vs variable-image class markers
-    #.attr 'class', 'base-image'
-
     enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.variableImage, imageWidth, imageHeight)
 
     if @config['tooltip']

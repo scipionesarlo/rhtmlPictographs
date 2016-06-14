@@ -13,17 +13,28 @@ class ImageFactory
       unless config.type of ImageFactory.types
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
+    #why imageBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
+    #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
+    imageBox = {
+      x: 0
+      y: 0
+      width: width
+      height: height
+    }
     newImage = ImageFactory.types[config.type](d3Node, config, width, height)
+    if _.isObject(newImage) and _.has(newImage, 'newImage')
+      imageBox = newImage
+      newImage = imageBox.newImage
+      delete imageBox.newImage
 
-    uniqueClipId = null
     if config.verticalclip
-      config.verticalclip = ImageFactory.addVerticalClip d3Node, config, width, height
+      config.verticalclip = ImageFactory.addVerticalClip d3Node, imageBox
       newImage.attr 'clip-path', "url(##{config.verticalclip})"
     if config.horizontalclip
-      config.horizontalclip = ImageFactory.addHorizontalClip d3Node, config, width, height
+      config.horizontalclip = ImageFactory.addHorizontalClip d3Node, imageBox
       newImage.attr 'clip-path', "url(##{config.horizontalclip})"
     if config.radialclip
-      config.radialclip = ImageFactory.addRadialClip d3Node, config, width, height
+      config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
       newImage.attr 'clip-path', "url(##{config.radialclip})"
 
 
@@ -73,17 +84,24 @@ class ImageFactory
     return config
 
   @addCircleTo: (d3Node, config, width, height) ->
-    ratio = (p) ->
-      return if config.scale then p else 1
-
+    ratio = (p) -> if config.scale then p else 1
+    diameter = Math.min(width, height)
     color = ColorFactory.getColor config.color
 
-    return d3Node.append("svg:circle")
+    newImage = d3Node.append("svg:circle")
       .classed('circle', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'r', (d) -> ratio(d.proportion) * Math.min(width,height) / 2
+      .attr 'r', (d) -> ratio(d.proportion) * diameter / 2
       .style 'fill', color
+
+    return {
+      newImage: newImage
+      x: (width - diameter) / 2
+      y: (height - diameter) / 2
+      width: diameter
+      height: diameter
+    }
 
   @addEllipseTo: (d3Node, config, width, height) ->
     ratio = (p) ->
@@ -98,6 +116,28 @@ class ImageFactory
       .attr 'rx', (d) -> width * ratio(d.proportion) / 2
       .attr 'ry', (d) -> height * ratio(d.proportion) / 2
       .style 'fill', color
+
+  @addSquareTo: (d3Node, config, width, height) ->
+    ratio = (p) -> return if config.scale then p else 1
+    length = Math.min(width,height)
+
+    color = ColorFactory.getColor config.color
+
+    newImage = d3Node.append("svg:rect")
+      .classed('square', true)
+      .attr 'x', (d) -> (width - length) / 2 + width * (1 - ratio(d.proportion)) / 2
+      .attr 'y', (d) -> (height - length) / 2 + height * (1 - ratio(d.proportion)) / 2
+      .attr 'width', (d) -> ratio(d.proportion) * length
+      .attr 'height', (d) -> ratio(d.proportion) * length
+      .style 'fill', color
+
+    return {
+      newImage: newImage
+      x: (width - length) / 2
+      y: (height - length) / 2
+      width: length
+      height: length
+    }
 
   @addRectTo: (d3Node, config, width, height) ->
     ratio = (p) ->
@@ -132,11 +172,11 @@ class ImageFactory
   @addExternalImage: (d3Node, config, width, height) ->
     if config.color
       if config.url.match(/\.svg$/)
-        ImageFactory.addRecoloredSvgTo d3Node, config, width, height
+        return ImageFactory.addRecoloredSvgTo d3Node, config, width, height
       else
         throw new Error "Cannot recolor #{config.url}: unsupported image type for recoloring"
     else
-      ImageFactory._addExternalImage d3Node, config, width, height
+      return ImageFactory._addExternalImage d3Node, config, width, height
 
   @_addExternalImage: (d3Node, config, width, height) ->
     ratio = (p) ->
@@ -150,66 +190,78 @@ class ImageFactory
       .attr 'xlink:href', config.url
       .attr 'class', 'variable-image'
 
-  @addVerticalClip: (d3Node, config, width, height) ->
+  @addVerticalClip: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
     d3Node.append('clipPath')
       .attr 'id', uniqueId
       .append 'rect'
-        .attr 'x', 0
-        .attr 'y', (d) -> height * (1 - d.proportion)
-        .attr 'width', width
-        .attr 'height', (d) -> height * d.proportion
+        .attr 'x', imageBox.x
+        .attr 'y', (d) -> imageBox.y + imageBox.height * (1 - d.proportion)
+        .attr 'width', imageBox.width
+        .attr 'height', (d) -> imageBox.height * d.proportion
     return uniqueId
 
-  @addRadialClip: (d3Node, config, w, h) ->
+  @addHorizontalClip: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
     d3Node.append('clipPath')
     .attr 'id', uniqueId
-    .style 'stroke', 'red'
-    .style 'stroke-width', '3'
+    .append 'rect'
+    .attr 'x', imageBox.x
+    .attr 'y', imageBox.y
+    .attr 'width', (d) -> imageBox.width * d.proportion
+    .attr 'height', imageBox.height
+    return uniqueId
+
+  @addRadialClip: (d3Node, imageBox) ->
+    {x, y, width, height} = imageBox
+
+    uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
+    d3Node.append('clipPath')
+    .attr 'id', uniqueId
     .append 'path'
       .attr 'd', (d) ->
         p = d.proportion
         degrees = p * 360
-        w2 = w/2
-        h2 = h/2
+        w2 = width/2
+        h2 = height/2
 
-        pathParts = ["M#{w2},#{h2} l0,-#{h2}"]
+        #start in the centre, then go straight up, then ...
+        pathParts = ["M#{x + w2},#{y + h2} l0,-#{h2}"]
 
         #trace the edges of the rectangle, returning to the centre once we have "used up" all the proportion
         #probably can be optimized or expressed better ...
 
-        if p > 1/8
+        if p >= 1/8
           pathParts.push "l#{w2},0"
         else
           pathParts.push "l#{h2 * Math.tan(degrees * Math.PI/180)},0"
 
-        if p > 2/8
+        if p >= 2/8
           pathParts.push "l0,#{h2}"
         else if p > 1/8
           pathParts.push "l0,#{h2 - w2 * Math.tan((90-degrees)* Math.PI/180)}"
 
-        if p > 3/8
+        if p >= 3/8
           pathParts.push "l0,#{h2}"
         else if p > 2/8
           pathParts.push "l0,#{w2 * Math.tan((degrees-90)* Math.PI/180)}"
 
-        if p > 4/8
+        if p >= 4/8
           pathParts.push "l-#{w2},0"
         else if p > 3/8
           pathParts.push "l-#{w2 - h2 * Math.tan((180-degrees)* Math.PI/180)},0"
 
-        if p > 5/8
+        if p >= 5/8
           pathParts.push "l-#{w2},0"
         else if p > 4/8
           pathParts.push "l-#{h2 * Math.tan((degrees-180)* Math.PI/180)},0"
 
-        if p > 6/8
+        if p >= 6/8
           pathParts.push "l0,-#{h2}"
         else if p > 5/8
           pathParts.push "l0,-#{h2 - w2 * Math.tan((270-degrees)* Math.PI/180)}"
 
-        if p > 7/8
+        if p >= 7/8
           pathParts.push "l0,-#{h2}"
         else if p > 6/8
           pathParts.push "l0,-#{w2 * Math.tan((degrees-270)* Math.PI/180)}"
@@ -224,22 +276,10 @@ class ImageFactory
 
     return uniqueId
 
-
-  @addHorizontalClip: (d3Node, config, width, height) ->
-    uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
-    d3Node.append('clipPath')
-      .attr 'id', uniqueId
-      .append 'rect'
-        .attr 'x', 0
-        .attr 'y', 0
-        .attr 'width', (d) -> width * d.proportion
-        .attr 'height', height
-    return uniqueId
-
   @types = {
     circle: ImageFactory.addCircleTo
     ellipse: ImageFactory.addEllipseTo
-    square: ImageFactory.addRectTo
+    square: ImageFactory.addSquareTo
     rect: ImageFactory.addRectTo
     url : ImageFactory.addExternalImage
   }

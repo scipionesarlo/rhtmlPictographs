@@ -165,6 +165,20 @@ Is the same as this table config:
   <div class="example">{ "variableImage": "circle:lightblue", "text-header" : { "text":"top", "font-color": "orange", "font-size": "16px", "font-family": "Arial", "font-weight": "900" }, "text-overlay": "overlay", "text-footer": "bottom" }</div>
 </div>
 
+<h2>Add text with left and right alignment</h2>
+<p>Text can be placed above, below, or inlaid on the graphic.</p>
+<p>By default the text will inherit font settings from the table, but they can be overridden individually.</p>
+<div class="row" data-ex-h="200" data-ex-w="200">
+  <div class="example">{
+    "variableImage": "circle:lightblue",
+    "text-header" : { "text": "LEFT", "horizontal-align": "left", "padding-left": "6" },
+    "text-overlay": "overlay",
+    "text-footer": { "text": "RIGHT", "horizontal-align": "right", "padding-right": "6" }
+  }
+  </div>
+</div>
+
+
 <h2>Use Text Presets</h2>
 <p>The strings "proportion" and "percentage" will auto generate text based on the proportion field.</p>
 <div class="row" data-ex-h="200" data-ex-w="200">

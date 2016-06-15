@@ -46,16 +46,34 @@ LabelCell = (function(_super) {
     }
     this._verifyKeyIsInt(this.config, 'padding-top', 0);
     this._verifyKeyIsInt(this.config, 'padding-inner', 0);
+    this._verifyKeyIsInt(this.config, 'padding-right', 0);
+    this._verifyKeyIsInt(this.config, 'padding-left', 0);
     return _.forEach(this.labels, (function(_this) {
       return function(labelConfig, index) {
+        var _ref, _ref1, _ref2, _ref3;
         if (labelConfig['class'] == null) {
           labelConfig['class'] = "label-" + index;
+        }
+        if (labelConfig['horizontal-align'] == null) {
+          labelConfig['horizontal-align'] = 'middle';
+        }
+        if ((_ref = labelConfig['horizontal-align']) === 'center' || _ref === 'centre') {
+          labelConfig['horizontal-align'] = 'middle';
+        }
+        if ((_ref1 = labelConfig['horizontal-align']) === 'left') {
+          labelConfig['horizontal-align'] = 'start';
+        }
+        if ((_ref2 = labelConfig['horizontal-align']) === 'right') {
+          labelConfig['horizontal-align'] = 'end';
+        }
+        if ((_ref3 = labelConfig['horizontal-align']) !== 'start' && _ref3 !== 'middle' && _ref3 !== 'end') {
+          throw new Error("Invalid horizontal align " + labelConfig['horizontal-align'] + " : must be one of ['left', 'center', 'right']");
         }
         if (labelConfig['font-size'] == null) {
           labelConfig['font-size'] = BaseCell.getDefault('font-size');
         }
         return _.forEach(labelConfig, function(labelValue, labelKey) {
-          if (labelKey === 'class' || labelKey === 'text') {
+          if (labelKey === 'class' || labelKey === 'text' || labelKey === 'horizontal-align') {
             return;
           }
           return _this.setCss(labelConfig['class'], labelKey, labelValue);
@@ -64,25 +82,47 @@ LabelCell = (function(_super) {
     })(this));
   };
 
+  LabelCell.prototype.computeLabelOffsetsUsingAlign = function(config) {
+    var alignment, labelCoord;
+    alignment = config['horizontal-align'];
+    labelCoord = (function() {
+      switch (false) {
+        case alignment !== 'start':
+          return {
+            x: 0 + this.config['padding-left'],
+            y: 0
+          };
+        case alignment !== 'middle':
+          return {
+            x: this.width / 2,
+            y: 0
+          };
+        case alignment !== 'end':
+          return {
+            x: this.width - this.config['padding-right'],
+            y: 0
+          };
+      }
+    }).call(this);
+    return labelCoord;
+  };
+
   LabelCell.prototype._draw = function() {
     var currentY;
     currentY = this.config['padding-top'];
     return _.forEach(this.labels, (function(_this) {
       return function(labelConfig) {
-        var fontSize, labelCenter;
+        var fontSize, labelOffsets;
         fontSize = parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
-        labelCenter = {
-          x: _this.width / 2,
-          y: currentY + fontSize / 2
-        };
-        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelCenter.x, labelCenter.y);
+        labelOffsets = _this.computeLabelOffsetsUsingAlign(labelConfig);
+        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], labelOffsets.x, labelOffsets.y + currentY + fontSize / 2);
         return currentY += fontSize + _this.config['padding-inner'];
       };
     })(this));
   };
 
-  LabelCell.prototype._addTextTo = function(parent, text, myClass, x, y) {
-    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).style('text-anchor', 'middle').style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
+  LabelCell.prototype._addTextTo = function(parent, text, myClass, textAnchor, x, y) {
+    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).attr('text-anchor', textAnchor).style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
   };
 
   return LabelCell;

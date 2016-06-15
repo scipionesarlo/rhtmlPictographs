@@ -38,7 +38,13 @@ describe 'GraphicCell class', ->
     describe 'string as input:', ->
         it 'builds the config object and uses BaseCell.default font-size', ->
           @withConfig makeConfig 'test-text'
-          expect(@instance.config[key]).to.deep.equal { text: 'test-text', 'font-size': '24px' }
+          expect(@instance.config[key]).to.deep.equal {
+            text: 'test-text'
+            'font-size': '24px'
+            'horizontal-align': 'middle'
+            'padding-left': 1
+            'padding-right': 1
+          }
 
     describe 'object as input:', ->
       it 'must have a text field', ->
@@ -59,12 +65,32 @@ describe 'GraphicCell class', ->
           'font-family': 'fam'
           'font-color': 'blue'
           'font-weight': '900'
+          'horizontal-align': 'middle'
+          'padding-left': 1
+          'padding-right': 1
         }
 
         @wasSet 'font-size'
         @wasSet 'font-family'
         @wasSet 'font-color'
         @wasSet 'font-weight'
+
+      describe 'horizontal-alignment', ->
+        beforeEach ->
+          @testHorizontalAlignConfigHandling = (input, expectedOut) ->
+            @withConfig makeConfig { text: 'foo', 'horizontal-align' : input }
+            expect(@instance.config[key]['horizontal-align']).to.equal expectedOut
+
+        it 'accepts centre', -> @testHorizontalAlignConfigHandling('centre', 'middle')
+        it 'accepts center', -> @testHorizontalAlignConfigHandling('center', 'middle')
+        it 'accepts middle', -> @testHorizontalAlignConfigHandling('middle', 'middle')
+        it 'accepts left', -> @testHorizontalAlignConfigHandling('left', 'start')
+        it 'accepts start', -> @testHorizontalAlignConfigHandling('start', 'start')
+        it 'accepts end', -> @testHorizontalAlignConfigHandling('end', 'end')
+        it 'accepts right', -> @testHorizontalAlignConfigHandling('right', 'end')
+
+        it 'rejects everything else', ->
+          expect( => @withConfig makeConfig { text: 'foo', 'horizontal-align' : 'cats' }).to.throw new RegExp 'Invalid horizontal align'
 
       describe '"proportion" keyword:', ->
 

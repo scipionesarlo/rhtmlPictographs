@@ -57,6 +57,16 @@ class GraphicCell extends BaseCell
       #font-size must be present to compute dimensions
       textConfig['font-size'] ?= BaseCell.getDefault('font-size')
 
+      textConfig['horizontal-align'] ?= 'middle'
+      textConfig['horizontal-align'] = 'middle' if textConfig['horizontal-align'] in ['center', 'centre']
+      textConfig['horizontal-align'] = 'start' if textConfig['horizontal-align'] in ['left']
+      textConfig['horizontal-align'] = 'end' if textConfig['horizontal-align'] in ['right']
+
+      @_verifyKeyIsPositiveInt(textConfig, 'padding-left', 1)
+      @_verifyKeyIsPositiveInt(textConfig, 'padding-right', 1)
+
+      unless textConfig['horizontal-align'] in ['start', 'middle', 'end']
+        throw new Error "Invalid horizontal align #{textConfig['horizontal-align']} : must be one of ['left', 'center', 'right']"
 
       for cssAttribute in ['font-family', 'font-size', 'font-weight', 'font-color']
         @setCss(key, cssAttribute, textConfig[cssAttribute]) if textConfig[cssAttribute]?
@@ -67,18 +77,18 @@ class GraphicCell extends BaseCell
     @_computeDimensions()
 
     if @config['text-header']?
-      x = @dimensions.headerXOffset + @dimensions.headerWidth / 2
-      y = @dimensions.headerYOffset + @dimensions.headerHeight / 2
-      @_addTextTo @parentSvg, @config['text-header']['text'], 'text-header', x, y
+      textSpanWidth = @dimensions.headerXOffset + @dimensions.headerWidth
+      yMidpoint = @dimensions.headerYOffset + @dimensions.headerHeight / 2
+      @_addTextTo @parentSvg, 'text-header', @config['text-header'], textSpanWidth, yMidpoint
 
     graphicContainer = @parentSvg.append('g')
       .attr('class', 'graphic-container')
       .attr 'transform', "translate(#{@dimensions.graphicXOffset},#{@dimensions.graphicYOffset})"
 
     if @config['text-footer']?
-      x = @dimensions.footerXOffset + @dimensions.footerWidth / 2
-      y = @dimensions.footerYOffset + @dimensions.footerHeight / 2
-      @_addTextTo @parentSvg, @config['text-footer']['text'], 'text-footer', x, y
+      textSpanWidth = @dimensions.footerXOffset + @dimensions.footerWidth
+      yMidpoint = @dimensions.footerYOffset + @dimensions.footerHeight / 2
+      @_addTextTo @parentSvg, 'text-footer', @config['text-footer'], textSpanWidth, yMidpoint
 
     d3Data = @_generateDataArray(@config.proportion, @config.numImages)
 
@@ -124,9 +134,9 @@ class GraphicCell extends BaseCell
         .text @config['tooltip']
 
     if @config['text-overlay']?
-      x = gridLayout.nodeSize()[0] / 2
-      y = gridLayout.nodeSize()[1] / 2
-      @_addTextTo enteringLeafNodes, @config['text-overlay']['text'], 'text-overlay', x, y
+      textSpanWidth = gridLayout.nodeSize()[0]
+      yMidpoint = gridLayout.nodeSize()[1] / 2
+      @_addTextTo enteringLeafNodes, 'text-overlay', @config['text-overlay'], textSpanWidth, yMidpoint
 
   _computeDimensions: () ->
 
@@ -149,16 +159,22 @@ class GraphicCell extends BaseCell
     @dimensions.footerXOffset = 0 + @config.padding.left
     @dimensions.footerYOffset = 0 + @dimensions.graphicYOffset + @dimensions.graphicHeight
 
-  _addTextTo: (parent, text, myClass, x, y) ->
+  _addTextTo: (parent, myClass, textConfig, textSpanWidth, yMidpoint) ->
+
+    x = switch
+      when textConfig['horizontal-align'] is 'start' then 0 + textConfig['padding-left']
+      when textConfig['horizontal-align'] is 'middle' then textSpanWidth/2
+      when textConfig['horizontal-align'] is 'end' then textSpanWidth - textConfig['padding-right']
+
     parent.append('svg:text')
       .attr 'class', myClass
-      .attr 'x', x # note this is the midpoint not the top/bottom (thats why we divide by 2)
-      .attr 'y', y # same midpoint consideration
-      .style 'text-anchor', 'middle'
+      .attr 'x', x
+      .attr 'y', yMidpoint
+      .attr 'text-anchor', textConfig['horizontal-align']
       #alignment-baseline and dominant-baseline should do same thing but are both may be necessary for browser compatability
       .style 'alignment-baseline', 'central'
       .style 'dominant-baseline', 'central'
-      .text text
+      .text textConfig.text
 
   _generateDataArray: (proportion, numImages) ->
     d3Data = []

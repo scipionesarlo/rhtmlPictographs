@@ -85,6 +85,7 @@ Is the same as this table config:
 </ul>
 
 <h2>Shapes</h2>
+<p> Several basic SVG shapes are supported, as well as the use of external image URLs, and image 'data URIs' (where the image is encoded in base64).</p>
 <div class="row" data-ex-h="100" data-ex-w="150">
   <div class="example">circle</div>
   <div class="example">ellipse</div>
@@ -92,6 +93,30 @@ Is the same as this table config:
   <div class="example">square</div>
   <div class="example">url:/images/black_circle_512.svg</div>
 </div>
+<div class="row" data-ex-h="100" data-ex-w="150">
+  <div class="example">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAgElEQVQYlW2PQQ7CMAwEZyIL8S5ezpe4VijLoUkbCrnY8k52bR/P7QXcgQYCdAh7PytbDegGDOHfS6uE+Ytf+Jj3OiOu4hoPTU9RRMHBaka11d5cncBBT7ggJAt0tEElAQz1tbLrUXNjgfTa3bKkLu5Ti5Rmm7DYcL82oSskoLw/acsyJxuTWyQAAAAASUVORK5CYII=</div>
+</div>
+
+<h2>Combining Shapes and Keywords</h2>
+<p>We can modify each of the shape types above by adding one or more keywords. These will all be demonstrated below, but this section just talks about how to combine and order the keywords in the string.</p>
+<p>Graphic cell strings always start with a type and then have zero or more keywords after the type. Colons are used to seperate the parts of the string.</p>
+<p>The following ordering rules apply:</p>
+<ul>
+  <li>The string must start with a valid type: [circle, ellipse, square, rect, url, data]</li>
+  <li>url and data types must end with the actual URL. As in the last part of the string must be the URL</li>
+  <li>Otherwise the order of the tokens does not matter</li>
+  <li>If a keyword is not recognized (e.g., red, pink, lightblue) we assume its a color and use it as a color</li>
+  <li>There can be only zero or one unrecognized keywords. For example "circle:horizontal:red" is valid but "circle:horizontal:red:blue" is invalid.</li>
+</ul>
+
+<p>Some quick examples, note that what each keyword does is described below</p>
+<ul>
+  <li>circle:blue</li>
+  <li>circle:blue:radial</li>
+  <li>circle:radial:blue</li>
+  <li>url:blue:http://somesvg.com/that_i_will_recolor_to_blue.svg</li>
+  <li>data:scale:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzklEQVRYhe2XQQ=</li>
+</ul>
 
 <h2>Add colors to shapes</h2>
 <div class="row">
@@ -139,13 +164,7 @@ Is the same as this table config:
   <li>Vertical clipping</li>
   <li>Radial clipping (like a pie graph)</li>
 </ul>
-<div class="row">
-  <div class="example">{ "variableImage": "circle", "proportion": "0.5" }</div>
-  <div class="example">{ "variableImage": "circle:scale", "proportion": "0.5" }</div>
-  <div class="example">{ "variableImage": "circle:radial", "proportion": "0.3" }</div>
-  <div class="example">{ "variableImage": "circle:horizontal", "proportion": "0.7" }</div>
-  <div class="example">{ "variableImage": "circle:vertical", "proportion": "0.2" }</div>
-</div>
+<p>Each technique will work with any of the shape types defined above.</p>
 
 <h2>Use a fraction in the proportion field</h2>
 <p>If the proportion string starts with '=', then the remaining string will be interpreted as Javascript, so we can pass in fractions or other mathematical expressions.</p>
@@ -177,7 +196,6 @@ Is the same as this table config:
   }
   </div>
 </div>
-
 
 <h2>Use Text Presets</h2>
 <p>The strings "proportion" and "percentage" will auto generate text based on the proportion field.</p>

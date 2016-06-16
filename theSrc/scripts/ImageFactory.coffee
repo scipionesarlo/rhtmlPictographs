@@ -1,6 +1,5 @@
 
 # I am a singleton, all my methods and variables are static
-# I accept DOM and manipulate it
 
 class ImageFactory
 
@@ -48,10 +47,10 @@ class ImageFactory
     configParts = []
 
     httpRegex = new RegExp '^(.*?):?(https?://.*)$'
-    if matches = configString.match httpRegex
-      configParts = _.without matches[1].split(':'), 'url'
+    if matchesHttp = configString.match httpRegex
+      configParts = _.without matchesHttp[1].split(':'), 'url'
       config.type = 'url'
-      config.url = matches[2]
+      config.url = matchesHttp[2]
     else
       configParts = configString.split(':')
 
@@ -65,6 +64,11 @@ class ImageFactory
       hasDot = new RegExp /\./
       unless config.url and config.url.match(hasDot)
         throw new Error "Invalid image creation configString '#{configString}' : url string must end with a url"
+
+    if type in ['data']
+      config.url = 'data:' + configParts.pop()
+      unless config.url
+        throw new Error "Invalid image creation configString '#{configString}' : data string must have a data url as last string part"
 
     unknownParts = []
     while part = configParts.shift()
@@ -281,7 +285,8 @@ class ImageFactory
     ellipse: ImageFactory.addEllipseTo
     square: ImageFactory.addSquareTo
     rect: ImageFactory.addRectTo
-    url : ImageFactory.addExternalImage
+    url: ImageFactory.addExternalImage
+    data: ImageFactory._addExternalImage
   }
 
   @keywordHandlers = {

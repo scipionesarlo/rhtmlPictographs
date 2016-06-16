@@ -39,6 +39,10 @@ describe 'ImageFactory class:', ->
       it 'is good', -> @run 'url:scale:foo.jpg', { type: 'url', url: 'foo.jpg', scale: true }
       it 'is good', -> @run 'url:/local/image.jpg', { type: 'url', url: '/local/image.jpg' }
 
+    describe 'data urls:', ->
+      it 'is good', -> @run 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIMopbX+=', { type: 'data', url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIMopbX+=' }
+      it 'is good', -> @run 'data:scale:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIMopbX+=', { type: 'data', url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIMopbX+=', 'scale': true }
+
     describe 'invalid strings:', ->
       it 'empty string', -> expect( => @run '').to.throw(/invalid.*empty string/i)
       it 'invalid type', -> expect( => @run 'foo:red').to.throw(/invalid.*unknown.*type/i)

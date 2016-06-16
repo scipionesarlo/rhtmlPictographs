@@ -40,17 +40,17 @@ ImageFactory = (function() {
   };
 
   ImageFactory.parseConfigString = function(configString) {
-    var config, configParts, handler, hasDot, httpRegex, matches, part, type, unknownParts;
+    var config, configParts, handler, hasDot, httpRegex, matchesHttp, part, type, unknownParts;
     if (!(configString.length > 0)) {
       throw new Error("Invalid image creation configString '' : empty string");
     }
     config = {};
     configParts = [];
     httpRegex = new RegExp('^(.*?):?(https?://.*)$');
-    if (matches = configString.match(httpRegex)) {
-      configParts = _.without(matches[1].split(':'), 'url');
+    if (matchesHttp = configString.match(httpRegex)) {
+      configParts = _.without(matchesHttp[1].split(':'), 'url');
       config.type = 'url';
-      config.url = matches[2];
+      config.url = matchesHttp[2];
     } else {
       configParts = configString.split(':');
       type = configParts.shift();
@@ -64,6 +64,12 @@ ImageFactory = (function() {
       hasDot = new RegExp(/\./);
       if (!(config.url && config.url.match(hasDot))) {
         throw new Error("Invalid image creation configString '" + configString + "' : url string must end with a url");
+      }
+    }
+    if (type === 'data') {
+      config.url = 'data:' + configParts.pop();
+      if (!config.url) {
+        throw new Error("Invalid image creation configString '" + configString + "' : data string must have a data url as last string part");
       }
     }
     unknownParts = [];
@@ -308,7 +314,8 @@ ImageFactory = (function() {
     ellipse: ImageFactory.addEllipseTo,
     square: ImageFactory.addSquareTo,
     rect: ImageFactory.addRectTo,
-    url: ImageFactory.addExternalImage
+    url: ImageFactory.addExternalImage,
+    data: ImageFactory._addExternalImage
   };
 
   ImageFactory.keywordHandlers = {

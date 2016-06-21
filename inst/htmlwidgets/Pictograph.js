@@ -60,32 +60,25 @@ Pictograph = (function(_super) {
       'font-color': 'black'
     };
     this.numTableRows = this.config.table.rows.length;
-    this.numTableCols = null;
+    this.numTableCols = Math.max.apply(null, this.config.table.rows.map(function(row) {
+      return row.length;
+    }));
     this.config.table.rows.forEach((function(_this) {
       return function(row, rowIndex) {
+        var i, _i, _ref, _ref1;
         if (!_.isArray(row)) {
           throw new Error("Invalid rows spec: row " + rowIndex + " must be array of cell definitions");
         }
-        if (_.isNull(_this.numTableCols)) {
-          _this.numTableCols = row.length;
-        }
         if (_this.numTableCols !== row.length) {
-          throw new Error("Table is 'jagged' : contains rows with varying column length");
+          for (i = _i = _ref = row.length, _ref1 = _this.numTableCols; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
+            row.push({
+              type: 'empty'
+            });
+          }
         }
         return _this.config.table.rows[rowIndex] = row.map(function(cellDefinition) {
           if (_.isString(cellDefinition)) {
-            if (cellDefinition.startsWith("label:")) {
-              return {
-                type: 'label',
-                value: cellDefinition.replace(/^label:/, '')
-              };
-            }
-            return {
-              type: 'graphic',
-              value: {
-                variableImage: cellDefinition
-              }
-            };
+            return _this._convertStringDefinitionToCellDefinition(cellDefinition);
           } else {
             return cellDefinition;
           }
@@ -114,6 +107,21 @@ Pictograph = (function(_super) {
     if (this.config.table.colors) {
       return ColorFactory.processNewConfig(this.config.table.colors);
     }
+  };
+
+  Pictograph.prototype._convertStringDefinitionToCellDefinition = function(stringDefinition) {
+    if (stringDefinition.startsWith("label:")) {
+      return {
+        type: 'label',
+        value: stringDefinition.replace(/^label:/, '')
+      };
+    }
+    return {
+      type: 'graphic',
+      value: {
+        variableImage: stringDefinition
+      }
+    };
   };
 
   Pictograph.prototype._computeTableLayout = function() {
@@ -310,6 +318,8 @@ Pictograph = (function(_super) {
         label = new LabelCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
         label.setConfig(d.value);
         return label.draw();
+      } else if (d.type === 'empty') {
+        return d3.select(this).classed('empty', true);
       } else {
         throw new Error("Invalid cell definition: " + (JSON.stringify(d)) + " : missing or invalid type");
       }

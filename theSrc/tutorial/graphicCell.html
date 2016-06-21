@@ -102,14 +102,14 @@ Is the same as this table config:
 <p>Graphic cell strings always start with a type and then have zero or more keywords after the type. Colons are used to seperate the parts of the string.</p>
 <p>The following ordering rules apply:</p>
 <ul>
-  <li>The string must start with a valid type: [circle, ellipse, square, rect, url, data]</li>
-  <li>url and data types must end with the actual URL. As in the last part of the string must be the URL</li>
-  <li>Otherwise the order of the tokens does not matter</li>
-  <li>If a keyword is not recognized (e.g., red, pink, lightblue) we assume its a color and use it as a color</li>
+  <li>The string must start with a valid type: [circle, ellipse, square, rect, url, data].</li>
+  <li>url and data types must end with the actual URL. In other words, the last part of the string must be the URL/data string.</li>
+  <li>Otherwise the order of the tokens does not matter.</li>
+  <li>If a keyword is not recognized (e.g., red, pink, lightblue) we assume its a color and use it as a color.</li>
   <li>There can be only zero or one unrecognized keywords. For example "circle:horizontal:red" is valid but "circle:horizontal:red:blue" is invalid.</li>
 </ul>
 
-<p>Some quick examples, note that what each keyword does is described below</p>
+<p>Some quick examples, note that what each keyword does is described below:</p>
 <ul>
   <li>circle:blue</li>
   <li>circle:blue:radial</li>

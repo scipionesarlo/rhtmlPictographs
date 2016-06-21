@@ -159,12 +159,14 @@ describe 'Pictograph class:', ->
         expect(@badConfig { table: rows: ['dogs'] }).to.throw(new RegExp 'row 0 must be array')
 
     describe 'jagged table:', ->
-      it 'throws error if rowLengths are not consistent', ->
+      it 'fills rows with empty columns to balance table', ->
         jaggedRows = [
           [@gen.graphic(), @gen.graphic()],
           [@gen.graphic()]
         ]
-        expect(@badConfig { table: rows: jaggedRows }).to.throw(new RegExp 'jagged')
+        @setup { table: rows: jaggedRows }
+        expect(@instance.config.table.rows[1][1].type).to.deep.equal 'empty'
+        expect(@instance.config.table.rows[1].length).to.equal 2
 
     describe 'row heights:', ->
 
@@ -410,6 +412,7 @@ describe 'Pictograph class:', ->
             rows: [
               [@gen.label('label1'), @gen.graphic({ 'variableImage': 'circle:red' })]
               [@gen.graphic({ 'variableImage': 'circle:blue' }), @gen.label('label2')]
+              [{ type: 'empty' }]
             ]
         }
 
@@ -419,8 +422,8 @@ describe 'Pictograph class:', ->
         GraphicCell.prototype.setConfig.restore()
         LabelCell.prototype.setConfig.restore()
 
-      it 'has two table cells', ->
-        expect($('.table-cell').length).to.equal 4
+      it 'has six table cells', ->
+        expect($('.table-cell').length).to.equal 6
 
       it 'labels each cell by row and column', ->
         #not sure twhy there are two of everything. Test artifact
@@ -437,6 +440,12 @@ describe 'Pictograph class:', ->
       it 'add a "graphic" class to indicate label cell type', ->
         expect(document.querySelector('.table-cell-0-1')).to.have.class 'graphic'
         expect(document.querySelector('.table-cell-1-0')).to.have.class 'graphic'
+
+      it 'add a "empty" class to indicate label cell empty', ->
+        expect(document.querySelector('.table-cell-2-0')).to.have.class 'empty'
+
+      it 'adds a second empty cell to the third row to balance the table', ->
+        expect(document.querySelector('.table-cell-2-1')).to.have.class 'empty'
 
       it 'passes config to GraphicCell.setConfig', ->
         expect(@graphicSetConfigSpy.firstCall.args[0].variableImage).to.equal 'circle:red'

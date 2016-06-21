@@ -38,31 +38,18 @@ class Pictograph extends RhtmlSvgWidget
     }
 
     @numTableRows = @config.table.rows.length
-    @numTableCols = null
+    @numTableCols = Math.max.apply(null, @config.table.rows.map( (row) -> row.length ))
     @config.table.rows.forEach (row, rowIndex) =>
 
       unless _.isArray row
         throw new Error "Invalid rows spec: row #{rowIndex} must be array of cell definitions"
 
-      if _.isNull @numTableCols
-        @numTableCols = row.length
-
       if @numTableCols != row.length
-        throw new Error "Table is 'jagged' : contains rows with varying column length"
+        row.push({ type: 'empty' }) for i in [row.length...@numTableCols]
 
-      #TODO Test this
-      @config.table.rows[rowIndex] = row.map (cellDefinition) ->
+      @config.table.rows[rowIndex] = row.map (cellDefinition) =>
         if _.isString cellDefinition
-          if cellDefinition.startsWith "label:"
-            return {
-              type: 'label'
-              value: cellDefinition.replace(/^label:/,'')
-            }
-
-          return {
-            type: 'graphic'
-            value: { variableImage: cellDefinition }
-          }
+          return @_convertStringDefinitionToCellDefinition cellDefinition
         else
           return cellDefinition
 
@@ -82,6 +69,18 @@ class Pictograph extends RhtmlSvgWidget
           @cssCollector.setCss cssLocationString, cssAttribute, cssValue
 
     ColorFactory.processNewConfig(@config.table.colors) if @config.table.colors
+
+  _convertStringDefinitionToCellDefinition: (stringDefinition) ->
+    if stringDefinition.startsWith "label:"
+      return {
+        type: 'label'
+        value: stringDefinition.replace(/^label:/,'')
+      }
+
+    return {
+      type: 'graphic'
+      value: { variableImage: stringDefinition }
+    }
 
   #@TODO I am a beast of a 100 line function. Could create a custom layout function, could combine with d3-grid
   _computeTableLayout: () ->
@@ -254,10 +253,11 @@ class Pictograph extends RhtmlSvgWidget
         label.setConfig d.value
         label.draw()
 
+      else if d.type is 'empty'
+        d3.select(this).classed 'empty', true
+
       else
         throw new Error "Invalid cell definition: #{JSON.stringify(d)} : missing or invalid type"
-
-      #TODO add empty type
 
     return null
 

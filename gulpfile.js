@@ -45,15 +45,12 @@ gulp.task('test', function (done) {
   }, done).start();
 });
 
-gulp.task('makeExample', ['core'], function (done) {
-  var generateR = require('./build/generateExamplesInR.js');
-  fs.mkdirpAsync('examples')
-    .then(function () { return fs.readFileAsync('theSrc/features/features.json', { encoding: 'utf8' }) })
-    .then(JSON.parse)
-    .then(generateR)
-    .then(function (content) { return fs.writeFileAsync('examples/features.R', content, { encoding: 'utf8' }) })
-    .catch( function(err) { console.log("makeExample error: " + err)})
-    .then(done);
+gulp.task('makeExample', ['core'], function () {
+  var shell = require('gulp-shell');
+  return gulp.src('./theSrc/demo/js/convertDemoToR.coffee', {read: false})
+    .pipe(shell([
+      './node_modules/.bin/coffee <%= file.path %>',
+    ], {}));
 })
 
 gulp.task('less', function () {
@@ -72,23 +69,20 @@ gulp.task('compile-coffee', function () {
     .pipe(gulp.dest('browser/scripts'))
     .pipe(gulp.dest('inst/htmlwidgets/'));
 
-  gulp.src('theSrc/tutorial/**/*.coffee')
+  gulp.src('theSrc/demo/**/*.coffee')
     .pipe(gulp_coffee({ bare: true, header: true }))
-    .pipe(gulp.dest('browser/tutorial'));
+    .pipe(gulp.dest('browser/demo'));
 });
 
 gulp.task('copy', function () {
   gulp.src([
-    'theSrc/**/*.html'
+    'theSrc/**/*.html',
+    'theSrc/**/*.css'
   ], {}).pipe(gulp.dest('browser'));
 
   gulp.src([
     'theSrc/images/**/*'
   ], {}).pipe(gulp.dest('browser/images'));
-
-  gulp.src([
-    'theSrc/features/*.json'
-  ], {}).pipe(gulp.dest('browser/features'));
 
   var rename = require('gulp-rename');
   gulp.src('theSrc/R/htmlwidget.yaml')

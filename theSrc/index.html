@@ -15,55 +15,25 @@
 
     <h2>Tutorial</h2>
     <ul class='tutorial-list'>
-      <li><a href="/tutorial/overview.html">Overview</a></li>
-      <li><a href="/tutorial/graphicCell.html">GraphicCell</a></li>
-      <li><a href="/tutorial/labelCell.html">LabelCell</a></li>
-      <li><a href="/tutorial/table.html">Table of Cells</a></li>
+      <li><a href="/demo/content/tutorials/overview.html">Overview</a></li>
+      <li><a href="/demo/content/tutorials/graphicCell.html">GraphicCell</a></li>
+      <li><a href="/demo/content/tutorials/labelCell.html">LabelCell</a></li>
+      <li><a href="/demo/content/tutorials/table.html">Table of Cells</a></li>
+      <li><a href="/demo/content/tutorials/resizing_and_aspect_ratios.html">Resizing and Aspect Ratios</a></li>
+    </ul>
+
+    <h2>Feature Examples/ Visual Regression Aids</h2>
+    <ul class='tutorial-list'>
+      <li><a href="/demo/content/tutorials/scaling.html">Scaling</a></li>
+      <li><a href="/demo/content/tutorials/radial_scaling.html">Radial Scaling</a></li>
     </ul>
 
     <h2>Examples</h2>
     <ul class='example-list'></ul>
-    <br/>
-    <a href="/features.r.html">Examples in an R Script</a>
-    <br/>
+
+    <h2>Experiments</h2>
     <a href="/experiments">Single page test/experiments</a>
+
+    <script src="/demo/js/buildExampleListOnIndex.js"></script>
   </body>
-  <script>
-
-    generateExampleLinks = function() {
-      var exampleList = $('.example-list');
-
-      $.ajax('/features/features.json').done(function (response) {
-        _.forEach(response.features, function (feature, featureIndex) {
-          var feature = response.features[featureIndex];
-          var featureItem = $('<li>');
-          var featureTitle = $('<h2>').html(feature.name);
-          featureItem.append(featureTitle);
-
-          var featureList = $('<ul>');
-
-          _.forEach(feature.scenarios, function (scenario, scenarioIndex) {
-            var listItem = $('<li>');
-            var link = "render.html?featureIndex=" + featureIndex + "&scenarioIndex=" + scenarioIndex;
-
-            var scenario = feature.scenarios[scenarioIndex];
-            var anchor = $('<a>').html(scenario.name)
-              .attr('href', link)
-
-            featureList.append(listItem.append(anchor));
-
-          });
-
-          exampleList.append(featureItem.append(featureList));
-
-        });
-      }).fail( function(error) {
-        console.error("Download of ./theSrc/features/features.json failed. Probably invalid JSON.");
-        console.error(error);
-        $('body').append($('<div>').text("Failure to download/parse ./theSrc/features/features.json (probably invalid JSON). See dev tools console for error logging."));
-      });
-    }
-
-    $(document).ready(generateExampleLinks);
-  </script>
 </html>

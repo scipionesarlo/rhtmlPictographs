@@ -6,14 +6,15 @@
 - The cell type is also added as a class, currently either `.graphic` or `.label`
 
 - Inside each graphic cell the following classes are always used:
--- `.node`
--- `.node-I`
--- `.node-xy-X-Y`
--- `.text-header`
--- `.text-footer`
--- `.text-overlay`
--- `.background-rect`
--- `.base-img`
--- `.variable-img`
+
+    - `.node`
+    - `.node-I`
+    - `.node-xy-X-Y`
+    - `.text-header`
+    - `.text-footer`
+    - `.text-overlay`
+    - `.background-rect`
+    - `.base-img`
+    - `.variable-img`
 
 - Inside each label cell each subsequent label is given a class of `.text-label-N`, for example the second label is `.text-label-0`

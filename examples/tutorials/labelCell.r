@@ -9,7 +9,8 @@
 ## In the next simplest form, we specify the cell as an object with type=label, and use a single string for the "value" of the "value" key
 ## In the next simplest form, we specify an array of strings for the value
 ## If we need more control than that, we can set value to an object of keys, or an array of objects with keys
-##The following parameters can be set for a label:
+##The following parameters can be set once for the label cell:
+##The following parameters can be set for each label:
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ "label:A label" ] ] } }')
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": "A label" } ] ] } }')
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": [ "Line 1", "Line 2" ] } ] ] } }')
@@ -17,9 +18,21 @@ rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": 
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": [{ "text": "label 1" }, { "text": "label 2" }] } ] ] } }')
 
 #Multi Label, With Padding, With Different Fonts on Each Line
-rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "padding-top": 20, "padding-inner": 25, "labels": [ "Line 1", { "text": "Line 2", "font-size": "14px", "font-color": "red" } ] } } ] ] } }')
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "padding-top": 10, "padding-inner": 18, "labels": [ "Line 1", { "text": "Line 2", "font-size": "14px", "font-color": "red" } ] } } ] ] } }')
 
-#Text Alignment in labels
+#Setting a background color
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "background-color" : "#dddddd", "labels": [ "row1", "row2" ] } } ] ] } }')
+
+#Vertical Text Alignment in labels
+##By default, the labels are vertically centered, with all unallocated vertical space being split above and below the labels.
+##The valid values for vertical-align are 'top', 'center', and 'bottom'
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "vertical-align": "top", "labels": [ "row1", "row2" ] } } ] ] } }')
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "padding-top": "15", "vertical-align": "top", "labels": [ "row1", "row2" ] } } ] ] } }')
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "vertical-align": "center", "labels": [ "row1", "row2" ] } } ] ] } }')
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "padding-bottom": "15", "vertical-align": "bottom", "labels": [ "row1", "row2" ] } } ] ] } }')
+rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": { "vertical-align": "bottom", "labels": [ "row1", "row2" ] } } ] ] } }')
+
+#Horizontal Text Alignment in labels
 ##The attribute to control horizontal text alignment is called horizontal-align. In order to use horizontal-align you must specify the label as an object, not as a simple string.
 ##There are three options: left, middle, and right. For convenience the keywords "start", "centre", "center", and "end" are also valid.
 ##When specifying left aligned labels, you will probably want to add "padding-left" as well, so that the label does not crowd the border

@@ -224,6 +224,13 @@ class Pictograph extends RhtmlSvgWidget
           .attr 'style', (d) -> d.style
           .attr 'class', (d) -> "line #{lineType} line-#{d.position}"
 
+    if @config['background-color']
+      @outerSvg.append 'svg:rect'
+      .attr 'class', 'background'
+      .attr 'width', @initialWidth
+      .attr 'height', @initialHeight
+      .attr 'fill', @config['background-color']
+
     addLines 'horizontal-line', @config.table.lines.horizontal
     addLines 'vertical-line', @config.table.lines.vertical
 

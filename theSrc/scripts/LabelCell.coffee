@@ -28,9 +28,17 @@ class LabelCell extends BaseCell
 
     @_verifyKeyIsInt @config, 'padding-top', 0
     @_verifyKeyIsInt @config, 'padding-inner', 0
+    @_verifyKeyIsInt @config, 'padding-bottom', 0
     @_verifyKeyIsInt @config, 'padding-right', 0
     @_verifyKeyIsInt @config, 'padding-left', 0
 
+    @config['vertical-align'] ?= 'center'
+    @config['vertical-align'] = 'center' if @config['vertical-align'] in ['middle', 'centre']
+
+    unless @config['vertical-align'] in ['top', 'center', 'bottom']
+      throw new Error "Invalid vertical align #{@config['vertical-align']} : must be one of ['top', 'center', 'bottom']"
+
+    @allocatedVerticalSpace = 0
     _.forEach @labels, (labelConfig, index) =>
       labelConfig['class'] ?= "label-#{index}"
 
@@ -49,22 +57,44 @@ class LabelCell extends BaseCell
         return if labelKey in ['class', 'text', 'horizontal-align']
         @setCss(labelConfig['class'], labelKey, labelValue)
 
-  computeLabelOffsetsUsingAlign: (config) ->
-    alignment = config['horizontal-align']
-    labelCoord = switch
-      when alignment is 'start' then { x : 0 + @config['padding-left'], y: 0 }
-      when alignment is 'middle' then { x: @width / 2, y: 0 }
-      when alignment is 'end' then { x: @width - @config['padding-right'], y: 0 }
-    labelCoord
+      @allocatedVerticalSpace += parseInt(labelConfig['font-size'].replace(/(px|em)/, ''))
+
+    @allocatedVerticalSpace += @config['padding-inner'] * @labels.length - 1
+
+  computeHorizontalOffset: (horizontalAlign) ->
+    return switch
+      when horizontalAlign is 'start' then @config['padding-left']
+      when horizontalAlign is 'middle' then @width / 2
+      when horizontalAlign is 'end' then @width - @config['padding-right']
+
+  computeInitialVerticalOffset: (verticalAlign) ->
+    freeVertSpace = @height - @config['padding-top'] - @config['padding-bottom'] - @allocatedVerticalSpace
+    if freeVertSpace < 0
+      console.log freeVertSpace
+      console.error "Label is using too much vertical space"
+      freeVertSpace = 0
+
+    return switch
+      when verticalAlign is 'top' then @config['padding-top']
+      when verticalAlign is 'center' then @config['padding-top'] + freeVertSpace / 2
+      when verticalAlign is 'bottom' then @config['padding-top'] + freeVertSpace
 
   _draw: () ->
-    currentY = @config['padding-top']
+    if @config['background-color']
+      @parentSvg.append 'svg:rect'
+        .attr 'class', 'background'
+        .attr 'width', @width
+        .attr 'height', @height
+        .attr 'fill', @config['background-color']
+
+    currentY = @computeInitialVerticalOffset @config['vertical-align']
+
     _.forEach @labels, (labelConfig) =>
       fontSize = parseInt labelConfig['font-size'].replace(/(px|em)/, '')
 
-      labelOffsets = this.computeLabelOffsetsUsingAlign labelConfig
+      xOffset = @computeHorizontalOffset labelConfig['horizontal-align']
 
-      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], labelOffsets.x, labelOffsets.y + currentY + fontSize / 2
+      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2
 
       currentY += fontSize + @config['padding-inner']
 

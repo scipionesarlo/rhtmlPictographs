@@ -11,6 +11,7 @@ LabelCell = (function(_super) {
   }
 
   LabelCell.prototype.setConfig = function(config) {
+    var _base, _ref, _ref1;
     this.config = config;
     this.labels = [];
     if (_.isString(this.config)) {
@@ -46,76 +47,96 @@ LabelCell = (function(_super) {
     }
     this._verifyKeyIsInt(this.config, 'padding-top', 0);
     this._verifyKeyIsInt(this.config, 'padding-inner', 0);
+    this._verifyKeyIsInt(this.config, 'padding-bottom', 0);
     this._verifyKeyIsInt(this.config, 'padding-right', 0);
     this._verifyKeyIsInt(this.config, 'padding-left', 0);
-    return _.forEach(this.labels, (function(_this) {
+    if ((_base = this.config)['vertical-align'] == null) {
+      _base['vertical-align'] = 'center';
+    }
+    if ((_ref = this.config['vertical-align']) === 'middle' || _ref === 'centre') {
+      this.config['vertical-align'] = 'center';
+    }
+    if ((_ref1 = this.config['vertical-align']) !== 'top' && _ref1 !== 'center' && _ref1 !== 'bottom') {
+      throw new Error("Invalid vertical align " + this.config['vertical-align'] + " : must be one of ['top', 'center', 'bottom']");
+    }
+    this.allocatedVerticalSpace = 0;
+    _.forEach(this.labels, (function(_this) {
       return function(labelConfig, index) {
-        var _ref, _ref1, _ref2, _ref3;
+        var _ref2, _ref3, _ref4, _ref5;
         if (labelConfig['class'] == null) {
           labelConfig['class'] = "label-" + index;
         }
         if (labelConfig['horizontal-align'] == null) {
           labelConfig['horizontal-align'] = 'middle';
         }
-        if ((_ref = labelConfig['horizontal-align']) === 'center' || _ref === 'centre') {
+        if ((_ref2 = labelConfig['horizontal-align']) === 'center' || _ref2 === 'centre') {
           labelConfig['horizontal-align'] = 'middle';
         }
-        if ((_ref1 = labelConfig['horizontal-align']) === 'left') {
+        if ((_ref3 = labelConfig['horizontal-align']) === 'left') {
           labelConfig['horizontal-align'] = 'start';
         }
-        if ((_ref2 = labelConfig['horizontal-align']) === 'right') {
+        if ((_ref4 = labelConfig['horizontal-align']) === 'right') {
           labelConfig['horizontal-align'] = 'end';
         }
-        if ((_ref3 = labelConfig['horizontal-align']) !== 'start' && _ref3 !== 'middle' && _ref3 !== 'end') {
+        if ((_ref5 = labelConfig['horizontal-align']) !== 'start' && _ref5 !== 'middle' && _ref5 !== 'end') {
           throw new Error("Invalid horizontal align " + labelConfig['horizontal-align'] + " : must be one of ['left', 'center', 'right']");
         }
         if (labelConfig['font-size'] == null) {
           labelConfig['font-size'] = BaseCell.getDefault('font-size');
         }
-        return _.forEach(labelConfig, function(labelValue, labelKey) {
+        _.forEach(labelConfig, function(labelValue, labelKey) {
           if (labelKey === 'class' || labelKey === 'text' || labelKey === 'horizontal-align') {
             return;
           }
           return _this.setCss(labelConfig['class'], labelKey, labelValue);
         });
+        return _this.allocatedVerticalSpace += parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
       };
     })(this));
+    return this.allocatedVerticalSpace += this.config['padding-inner'] * this.labels.length - 1;
   };
 
-  LabelCell.prototype.computeLabelOffsetsUsingAlign = function(config) {
-    var alignment, labelCoord;
-    alignment = config['horizontal-align'];
-    labelCoord = (function() {
-      switch (false) {
-        case alignment !== 'start':
-          return {
-            x: 0 + this.config['padding-left'],
-            y: 0
-          };
-        case alignment !== 'middle':
-          return {
-            x: this.width / 2,
-            y: 0
-          };
-        case alignment !== 'end':
-          return {
-            x: this.width - this.config['padding-right'],
-            y: 0
-          };
-      }
-    }).call(this);
-    return labelCoord;
+  LabelCell.prototype.computeHorizontalOffset = function(horizontalAlign) {
+    switch (false) {
+      case horizontalAlign !== 'start':
+        return this.config['padding-left'];
+      case horizontalAlign !== 'middle':
+        return this.width / 2;
+      case horizontalAlign !== 'end':
+        return this.width - this.config['padding-right'];
+    }
+  };
+
+  LabelCell.prototype.computeInitialVerticalOffset = function(verticalAlign) {
+    var freeVertSpace;
+    freeVertSpace = this.height - this.config['padding-top'] - this.config['padding-bottom'] - this.allocatedVerticalSpace;
+    if (freeVertSpace < 0) {
+      console.log(freeVertSpace);
+      console.error("Label is using too much vertical space");
+      freeVertSpace = 0;
+    }
+    switch (false) {
+      case verticalAlign !== 'top':
+        return this.config['padding-top'];
+      case verticalAlign !== 'center':
+        return this.config['padding-top'] + freeVertSpace / 2;
+      case verticalAlign !== 'bottom':
+        return this.config['padding-top'] + freeVertSpace;
+    }
   };
 
   LabelCell.prototype._draw = function() {
     var currentY;
-    currentY = this.config['padding-top'];
+    if (this.config['background-color']) {
+      this.parentSvg.append('svg:rect').attr('class', 'background').attr('width', this.width).attr('height', this.height).attr('fill', this.config['background-color']);
+    }
+    currentY = this.computeInitialVerticalOffset(this.config['vertical-align']);
     return _.forEach(this.labels, (function(_this) {
       return function(labelConfig) {
-        var fontSize, labelOffsets;
+        var fontSize, xOffset;
         fontSize = parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
-        labelOffsets = _this.computeLabelOffsetsUsingAlign(labelConfig);
-        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], labelOffsets.x, labelOffsets.y + currentY + fontSize / 2);
+        xOffset = _this.computeHorizontalOffset(labelConfig['horizontal-align']);
+        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2);
         return currentY += fontSize + _this.config['padding-inner'];
       };
     })(this));

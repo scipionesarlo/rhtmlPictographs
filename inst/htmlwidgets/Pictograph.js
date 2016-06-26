@@ -298,6 +298,9 @@ Pictograph = (function(_super) {
         });
       };
     })(this);
+    if (this.config['background-color']) {
+      this.outerSvg.append('svg:rect').attr('class', 'background').attr('width', this.initialWidth).attr('height', this.initialHeight).attr('fill', this.config['background-color']);
+    }
     addLines('horizontal-line', this.config.table.lines.horizontal);
     addLines('vertical-line', this.config.table.lines.vertical);
     enteringCells = this.outerSvg.selectAll('.table-cell').data(tableCells).enter().append('g').attr('class', 'table-cell').attr('transform', function(d) {

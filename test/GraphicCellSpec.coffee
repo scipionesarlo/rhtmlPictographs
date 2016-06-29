@@ -335,13 +335,13 @@ describe 'GraphicCell class', ->
           expect($(".#{@uniqueClass} .node-xy-1-1").length).to.equal 1
           expect($(".#{@uniqueClass} .node-xy-2-0").length).to.equal 0
 
-    describe 'multi image horizontal clipped graphic:', ->
+    describe 'multi image clipped from left graphic:', ->
 
       beforeEach ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
-          variableImage: 'circle:horizontalclip:blue'
+          variableImage: 'circle:fromleft:blue'
         }
 
       it 'applies a clip path to hide part of the fourth graphic', ->
@@ -355,7 +355,7 @@ describe 'GraphicCell class', ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
-          variableImage: 'circle:verticalclip:blue'
+          variableImage: 'circle:frombottom:blue'
         }
 
       it 'applies a clip path to hide part of the fourth graphic', ->

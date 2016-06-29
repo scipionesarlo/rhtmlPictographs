@@ -67,7 +67,7 @@ Is the same as this table config:
     <li>url and data types must end with the actual URL. In other words, the last part of the string must be the URL/data string.</li>
     <li>Otherwise the order of the tokens does not matter.</li>
     <li>If a keyword is not recognized (e.g., red, pink, lightblue) we assume its a color and use it as a color.</li>
-    <li>There can be only zero or one unrecognized keywords. For example "circle:horizontal:red" is valid but "circle:horizontal:red:blue" is invalid.</li>
+    <li>There can be only zero or one unrecognized keywords. For example "circle:fromleft:red" is valid but "circle:fromleft:red:blue" is invalid.</li>
   </ul>
 
   <p>Some quick examples, note that what each keyword does is described below:</p>
@@ -127,8 +127,8 @@ Is the same as this table config:
 </section>
 
 <section>
-  <h2>Use a proportion</h2>
-  <p>Proportions can be provided and visually represented using 4 different techniques:</p>
+  <h2>Use a proportion and a scaling technique</h2>
+  <p>Proportions can be provided and visually represented using 4 different scaling techniques:</p>
   <ul>
     <li>Scaling the size of the image</li>
     <li>Horizontal clipping</li>
@@ -136,6 +136,25 @@ Is the same as this table config:
     <li>Radial clipping (like a pie graph)</li>
   </ul>
   <p>Each technique will work with any of the shape types defined above.</p>
+
+  <div class="row" data-ex-h="100" data-ex-w="100">
+    <div class="example">{ "variableImage": "circle:fromleft", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:fromright", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:frombottom", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:fromtop", "proportion": "0.75" }</div>
+  </div>
+  <div class="row" data-ex-h="100" data-ex-w="100">
+    <div class="example">{ "variableImage": "circle:scale", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:radial", "proportion": "0.75" }</div>
+  </div>
+
+  <p>There are also some aliases (horizontal=fromleft, vertical=frombottom, pie=radial) that behave the same as above</p>
+  <div class="row" data-ex-h="100" data-ex-w="100">
+    <div class="example">{ "variableImage": "circle:horizontal", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:vertical", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:pie", "proportion": "0.75" }</div>
+  </div>
+
 </section>
 
 <section>
@@ -196,9 +215,9 @@ Is the same as this table config:
   <p> Base image syntax is identical to variableImage syntax.</p>
   <p> The base image is rendered "underneath" the variable image.</p>
   <div class="row">
-    <pre class="example">{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "rect:green" }</pre>
-    <pre class="example">{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "circle:green" }</pre>
-    <pre class="example">{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "circle:green", "background-color": "pink" }</pre>
+    <pre class="example">{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "rect:green" }</pre>
+    <pre class="example">{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "circle:green" }</pre>
+    <pre class="example">{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "circle:green", "background-color": "pink" }</pre>
   </div>
 </section>
 
@@ -234,13 +253,13 @@ Is the same as this table config:
   <h2>ImageGrids With Proportion Set</h2>
   <p> When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.</p>
   <div class="row" data-ex-h="50">
-    <pre class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</pre>
+    <pre class="example">{ "variableImage": "circle:lightblue:fromleft", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</pre>
     <pre class="example">{ "variableImage": "circle:lightblue:scale", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</pre>
   </div>
   <div class="row" data-ex-h="50">
-    <pre class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.25" }</pre>
-    <pre class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.75" }</pre>
-    <pre class="example">{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "1" }</pre>
+    <pre class="example">{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.25" }</pre>
+    <pre class="example">{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.75" }</pre>
+    <pre class="example">{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "1" }</pre>
   </div>
 </section>
 

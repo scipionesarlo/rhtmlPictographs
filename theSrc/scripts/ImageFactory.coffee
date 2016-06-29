@@ -20,18 +20,24 @@ class ImageFactory
       width: width
       height: height
     }
+    #so we support some Factories returning both a newImage and an imageBox,
+    # and some factories who dont care just return a newImage
     newImage = ImageFactory.types[config.type](d3Node, config, width, height)
     if _.isObject(newImage) and _.has(newImage, 'newImage')
       imageBox = newImage
       newImage = imageBox.newImage
       delete imageBox.newImage
 
-    if config.verticalclip
-      config.verticalclip = ImageFactory.addVerticalClip d3Node, imageBox
-      newImage.attr 'clip-path', "url(##{config.verticalclip})"
-    if config.horizontalclip
-      config.horizontalclip = ImageFactory.addHorizontalClip d3Node, imageBox
-      newImage.attr 'clip-path', "url(##{config.horizontalclip})"
+    if config.clip
+      clipMaker = switch
+        when config.clip is 'fromLeft' then ImageFactory.addClipFromLeft
+        when config.clip is 'fromRight' then ImageFactory.addClipFromRight
+        when config.clip is 'fromTop' then ImageFactory.addClipFromTop
+        when config.clip is 'fromBottom' then ImageFactory.addClipFromBottom
+
+      clipId = clipMaker d3Node, imageBox
+      newImage.attr 'clip-path', "url(##{clipId})"
+
     if config.radialclip
       config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
       newImage.attr 'clip-path', "url(##{config.radialclip})"
@@ -77,6 +83,8 @@ class ImageFactory
         handler = ImageFactory.keywordHandlers[part]
         if _.isString handler
           config[handler] = true
+        else
+          _.extend config, handler
       else
         unknownParts.push part
 
@@ -194,7 +202,7 @@ class ImageFactory
       .attr 'xlink:href', config.url
       .attr 'class', 'variable-image'
 
-  @addVerticalClip: (d3Node, imageBox) ->
+  @addClipFromBottom: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
     d3Node.append('clipPath')
       .attr 'id', uniqueId
@@ -205,15 +213,37 @@ class ImageFactory
         .attr 'height', (d) -> imageBox.height * d.proportion
     return uniqueId
 
-  @addHorizontalClip: (d3Node, imageBox) ->
+  @addClipFromTop: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
     d3Node.append('clipPath')
-    .attr 'id', uniqueId
-    .append 'rect'
-    .attr 'x', imageBox.x
-    .attr 'y', imageBox.y
-    .attr 'width', (d) -> imageBox.width * d.proportion
-    .attr 'height', imageBox.height
+      .attr 'id', uniqueId
+      .append 'rect'
+        .attr 'x', imageBox.x
+        .attr 'y', (d) -> imageBox.y
+        .attr 'width', imageBox.width
+        .attr 'height', (d) -> imageBox.height * d.proportion
+    return uniqueId
+
+  @addClipFromLeft: (d3Node, imageBox) ->
+    uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
+    d3Node.append('clipPath')
+      .attr 'id', uniqueId
+      .append 'rect'
+        .attr 'x', imageBox.x
+        .attr 'y', imageBox.y
+        .attr 'width', (d) -> imageBox.width * d.proportion
+        .attr 'height', imageBox.height
+    return uniqueId
+
+  @addClipFromRight: (d3Node, imageBox) ->
+    uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')
+    d3Node.append('clipPath')
+      .attr 'id', uniqueId
+      .append 'rect'
+        .attr 'x', (d) -> imageBox.x + imageBox.width * (1 - d.proportion)
+        .attr 'y', imageBox.y
+        .attr 'width', (d) -> imageBox.width * d.proportion
+        .attr 'height', imageBox.height
     return uniqueId
 
   @addRadialClip: (d3Node, imageBox) ->
@@ -290,14 +320,16 @@ class ImageFactory
   }
 
   @keywordHandlers = {
+    vertical: { clip: 'fromBottom' }
+    horizontal: { clip: 'fromLeft'}
+    fromleft: { clip: 'fromLeft' }
+    fromright: { clip: 'fromRight' }
+    frombottom: { clip: 'fromBottom' }
+    fromtop: { clip: 'fromTop' }
     scale: 'scale'
-    verticalclip: 'verticalclip'
-    vertical: 'verticalclip'
     radialclip: 'radialclip'
     radial: 'radialclip'
     pie: 'radialclip'
-    horizontalclip: 'horizontalclip'
-    horizontal: 'horizontalclip'
   }
 
   constructor: () ->

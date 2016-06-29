@@ -6,30 +6,36 @@
 #Intro
 ##This set of examples provides a tool to verify that the different scaling modes are handled correctly in a variety of situations.
 
+#New Hotness
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromleft", "proportion": "=15/16" }')
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromright", "proportion": "=15/16" }')
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:frombottom", "proportion": "=15/16" }')
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromtop", "proportion": "=15/16" }')
+
 #Squares
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:radial", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:horizontal", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:vertical", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:frombottom", "proportion": "=7/8" }')
 
 #Rectangles
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:radial", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:horizontal", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:vertical", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:frombottom", "proportion": "=7/8" }')
 
 #Circles
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:radial", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:horizontal", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:vertical", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:frombottom", "proportion": "=7/8" }')
 
 #Ellipse
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:radial", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:horizontal", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:vertical", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:frombottom", "proportion": "=7/8" }')
 
 #External Image URL
 ##This shows a limitation of scaling an external image that doesn't "fit" the cell.
 ##In these examples a cell of 200x100 (or 100x200) contains an external image of a circle, which is scaled to fit such that the circle has a diameter of 100 and is centred in the cell.
 ##The issue is there is no way to now what proportion of the cell is occupied by the image, so the scaling takes place accross the entire cell, not just for the content occupied by the image.
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:horizontal:/images/blue_circle_512.svg", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:fromleft:/images/blue_circle_512.svg", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:radial:/images/blue_circle_512.svg", "proportion": "=7/8" }')
-rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:vertical:/images/blue_circle_512.svg", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:frombottom:/images/blue_circle_512.svg", "proportion": "=7/8" }')

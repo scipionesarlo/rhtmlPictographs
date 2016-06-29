@@ -17,12 +17,14 @@ describe 'ImageFactory class:', ->
     describe 'keyword handlers:', ->
       describe 'scaling techniques:', ->
         it 'is good', -> @run 'circle:scale', { type: 'circle', scale: true }
-        it 'is good', -> @run 'circle:verticalclip', { type: 'circle', verticalclip: true }
-        it 'is good', -> @run 'circle:vertical', { type: 'circle', verticalclip: true }
-        it 'is good', -> @run 'circle:horizontalclip', { type: 'circle', horizontalclip: true }
-        it 'is good', -> @run 'circle:horizontal', { type: 'circle', horizontalclip: true }
+        it 'is good', -> @run 'circle:vertical', { type: 'circle', clip: 'fromBottom' }
+        it 'is good', -> @run 'circle:horizontal', { type: 'circle', clip: 'fromLeft' }
         it 'is good', -> @run 'circle:radial', { type: 'circle', radialclip: true }
         it 'is good', -> @run 'circle:pie', { type: 'circle', radialclip: true }
+        it 'is good', -> @run 'circle:fromleft', { type: 'circle', clip: 'fromLeft' }
+        it 'is good', -> @run 'circle:fromright', { type: 'circle', clip: 'fromRight' }
+        it 'is good', -> @run 'circle:frombottom', { type: 'circle', clip: 'fromBottom' }
+        it 'is good', -> @run 'circle:fromtop', { type: 'circle', clip: 'fromTop' }
 
     describe 'specify colors:', ->
       it 'is good', -> @run 'circle', { type: 'circle' }

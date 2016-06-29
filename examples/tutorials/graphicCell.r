@@ -48,9 +48,19 @@ rhtmlPictographs::graphic('url:red:/images/dollar_sign_green.svg')
 rhtmlPictographs::graphic('url:red:/images/rocket_black.svg')
 rhtmlPictographs::graphic('url:red:/images/stickman_green.svg')
 
-#Use a proportion
-##Proportions can be provided and visually represented using 4 different techniques:
+#Use a proportion and a scaling technique
+##Proportions can be provided and visually represented using 4 different scaling techniques:
 ##Each technique will work with any of the shape types defined above.
+##There are also some aliases (horizontal=fromleft, vertical=frombottom, pie=radial) that behave the same as above
+rhtmlPictographs::graphic('{ "variableImage": "circle:fromleft", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:fromright", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:frombottom", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:fromtop", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:scale", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:radial", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:horizontal", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:vertical", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:pie", "proportion": "0.75" }')
 
 #Use a fraction in the proportion field
 ##If the proportion string starts with '=', then the remaining string will be interpreted as Javascript, so we can pass in fractions or other mathematical expressions.
@@ -82,9 +92,9 @@ rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "background-co
 #BaseImage
 ## Base image syntax is identical to variableImage syntax.
 ## The base image is rendered "underneath" the variable image.
-rhtmlPictographs::graphic('{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "rect:green" }')
-rhtmlPictographs::graphic('{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "circle:green" }')
-rhtmlPictographs::graphic('{ "variableImage": "rect:horizontal:lightblue", "proportion": "0.66", "baseImage": "circle:green", "background-color": "pink" }')
+rhtmlPictographs::graphic('{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "rect:green" }')
+rhtmlPictographs::graphic('{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "circle:green" }')
+rhtmlPictographs::graphic('{ "variableImage": "rect:fromleft:lightblue", "proportion": "0.66", "baseImage": "circle:green", "background-color": "pink" }')
 
 #ImageGrids Basics
 ## The base and variable image can be repeated, arranged into rows, and have some padding applied.
@@ -104,11 +114,11 @@ rhtmlPictographs::graphic('{ "debugBorder": "anything", "variableImage": "circle
 
 #ImageGrids With Proportion Set
 ## When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:horizontal", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:scale", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.25" }')
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "0.75" }')
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:horizontal", "numImages": "20", "numRows": "2", "proportion": "1" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.25" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.75" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "1" }')
 
 #ImageGrids With Outer Padding
 ##Two types of padding is applied to the graphic cells: outer padding and gutter proportions. This example covers outer padding.

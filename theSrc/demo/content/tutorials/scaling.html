@@ -14,11 +14,22 @@
 </section>
 
 <section>
+  <h2>New Hotness</h2>
+  <div class="row" data-ex-h="200">
+    <pre class="example">{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromleft", "proportion": "=15/16" }</pre>
+    <pre class="example">{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromright", "proportion": "=15/16" }</pre>
+    <pre class="example">{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:frombottom", "proportion": "=15/16" }</pre>
+    <pre class="example">{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromtop", "proportion": "=15/16" }</pre>
+  </div>
+</section>
+
+
+<section>
   <h2>Squares</h2>
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:radial", "proportion": "=7/8" }</pre>
-    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:horizontal", "proportion": "=7/8" }</pre>
-    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:vertical", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "square:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
 
@@ -26,8 +37,8 @@
   <h2>Rectangles</h2>
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:radial", "proportion": "=7/8" }</pre>
-    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:horizontal", "proportion": "=7/8" }</pre>
-    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:vertical", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "rect:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
 
@@ -35,8 +46,8 @@
   <h2>Circles</h2>
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:radial", "proportion": "=7/8" }</pre>
-    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:horizontal", "proportion": "=7/8" }</pre>
-    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:vertical", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "circle:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
 
@@ -44,8 +55,8 @@
   <h2>Ellipse</h2>
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:radial", "proportion": "=7/8" }</pre>
-    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:horizontal", "proportion": "=7/8" }</pre>
-    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:vertical", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "ellipse:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
 
@@ -55,9 +66,9 @@
   <p>In these examples a cell of 200x100 (or 100x200) contains an external image of a circle, which is scaled to fit such that the circle has a diameter of 100 and is centred in the cell.</p>
   <p>The issue is there is no way to now what proportion of the cell is occupied by the image, so the scaling takes place accross the entire cell, not just for the content occupied by the image.</p>
   <div class="row" data-ex-w="200">
-    <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:horizontal:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
+    <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:fromleft:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
     <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:radial:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
-    <div class="example for-consideration" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:vertical:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
+    <div class="example for-consideration" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:frombottom:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
   </div>
 </section>
 

@@ -3,7 +3,7 @@ var ImageFactory;
 
 ImageFactory = (function() {
   ImageFactory.addImageTo = function(config, width, height) {
-    var d3Node, imageBox, newImage;
+    var clipId, clipMaker, d3Node, imageBox, newImage;
     d3Node = d3.select(this);
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
@@ -24,13 +24,21 @@ ImageFactory = (function() {
       newImage = imageBox.newImage;
       delete imageBox.newImage;
     }
-    if (config.verticalclip) {
-      config.verticalclip = ImageFactory.addVerticalClip(d3Node, imageBox);
-      newImage.attr('clip-path', "url(#" + config.verticalclip + ")");
-    }
-    if (config.horizontalclip) {
-      config.horizontalclip = ImageFactory.addHorizontalClip(d3Node, imageBox);
-      newImage.attr('clip-path', "url(#" + config.horizontalclip + ")");
+    if (config.clip) {
+      clipMaker = (function() {
+        switch (false) {
+          case config.clip !== 'fromLeft':
+            return ImageFactory.addClipFromLeft;
+          case config.clip !== 'fromRight':
+            return ImageFactory.addClipFromRight;
+          case config.clip !== 'fromTop':
+            return ImageFactory.addClipFromTop;
+          case config.clip !== 'fromBottom':
+            return ImageFactory.addClipFromBottom;
+        }
+      })();
+      clipId = clipMaker(d3Node, imageBox);
+      newImage.attr('clip-path', "url(#" + clipId + ")");
     }
     if (config.radialclip) {
       config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
@@ -78,6 +86,8 @@ ImageFactory = (function() {
         handler = ImageFactory.keywordHandlers[part];
         if (_.isString(handler)) {
           config[handler] = true;
+        } else {
+          _.extend(config, handler);
         }
       } else {
         unknownParts.push(part);
@@ -232,7 +242,7 @@ ImageFactory = (function() {
     }).attr('xlink:href', config.url).attr('class', 'variable-image');
   };
 
-  ImageFactory.addVerticalClip = function(d3Node, imageBox) {
+  ImageFactory.addClipFromBottom = function(d3Node, imageBox) {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
     d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', imageBox.x).attr('y', function(d) {
@@ -243,10 +253,32 @@ ImageFactory = (function() {
     return uniqueId;
   };
 
-  ImageFactory.addHorizontalClip = function(d3Node, imageBox) {
+  ImageFactory.addClipFromTop = function(d3Node, imageBox) {
+    var uniqueId;
+    uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
+    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', imageBox.x).attr('y', function(d) {
+      return imageBox.y;
+    }).attr('width', imageBox.width).attr('height', function(d) {
+      return imageBox.height * d.proportion;
+    });
+    return uniqueId;
+  };
+
+  ImageFactory.addClipFromLeft = function(d3Node, imageBox) {
     var uniqueId;
     uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
     d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', imageBox.x).attr('y', imageBox.y).attr('width', function(d) {
+      return imageBox.width * d.proportion;
+    }).attr('height', imageBox.height);
+    return uniqueId;
+  };
+
+  ImageFactory.addClipFromRight = function(d3Node, imageBox) {
+    var uniqueId;
+    uniqueId = ("clip-id-" + (Math.random())).replace(/\./g, '');
+    d3Node.append('clipPath').attr('id', uniqueId).append('rect').attr('x', function(d) {
+      return imageBox.x + imageBox.width * (1 - d.proportion);
+    }).attr('y', imageBox.y).attr('width', function(d) {
       return imageBox.width * d.proportion;
     }).attr('height', imageBox.height);
     return uniqueId;
@@ -319,14 +351,28 @@ ImageFactory = (function() {
   };
 
   ImageFactory.keywordHandlers = {
+    vertical: {
+      clip: 'fromBottom'
+    },
+    horizontal: {
+      clip: 'fromLeft'
+    },
+    fromleft: {
+      clip: 'fromLeft'
+    },
+    fromright: {
+      clip: 'fromRight'
+    },
+    frombottom: {
+      clip: 'fromBottom'
+    },
+    fromtop: {
+      clip: 'fromTop'
+    },
     scale: 'scale',
-    verticalclip: 'verticalclip',
-    vertical: 'verticalclip',
     radialclip: 'radialclip',
     radial: 'radialclip',
-    pie: 'radialclip',
-    horizontalclip: 'horizontalclip',
-    horizontal: 'horizontalclip'
+    pie: 'radialclip'
   };
 
   function ImageFactory() {}

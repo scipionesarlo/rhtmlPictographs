@@ -17,9 +17,10 @@ class Pictograph extends RhtmlSvgWidget
     delete @config.height
 
     unless @config['table']?
-      tableOfOneGraphic =
-        rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
-      @config['table'] = tableOfOneGraphic
+      @config =
+        'table-id': @config['table-id']
+        table:
+          rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
 
     @config['resizable'] = true if @config['resizable'] is 'true'
     @config['resizable'] = false if @config['resizable'] is 'false'

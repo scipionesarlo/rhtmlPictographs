@@ -82,7 +82,7 @@ describe 'Pictograph class:', ->
         @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
 
         @instantiateAndSetConfigTo
-          variableImage: 'images/foo'
+          table: rows: [ [ 'url:/images/foo' ] ]
           css: {
             "cssLocation1" : { "cssAttr1" : "cssValue1", "cssAttr2" : "cssValue2" }
             "cssLocation2" : { "cssAttr3" : "cssValue3", "cssAttr4" : "cssValue4" }
@@ -94,10 +94,10 @@ describe 'Pictograph class:', ->
       afterEach ->
         BaseCell.prototype.setCss.restore()
 
-      it 'set css attr1 on css location 1', -> @verifyCss "cssLocation1", "cssAttr1", "cssValue1"
-      it 'set css attr2 on css location 1', -> @verifyCss "cssLocation1", "cssAttr2", "cssValue2"
-      it 'set css attr3 on css location 2', -> @verifyCss "cssLocation2", "cssAttr3", "cssValue3"
-      it 'set css attr4 on css location 2', -> @verifyCss "cssLocation2", "cssAttr4", "cssValue4"
+      it 'set css attr1 on css location 1', -> @verifyCss 'cssLocation1', 'cssAttr1', 'cssValue1'
+      it 'set css attr2 on css location 1', -> @verifyCss 'cssLocation1', 'cssAttr2', 'cssValue2'
+      it 'set css attr3 on css location 2', -> @verifyCss 'cssLocation2', 'cssAttr3', 'cssValue3'
+      it 'set css attr4 on css location 2', -> @verifyCss 'cssLocation2', 'cssAttr4', 'cssValue4'
 
   describe '_computeTableLayout():', ->
 

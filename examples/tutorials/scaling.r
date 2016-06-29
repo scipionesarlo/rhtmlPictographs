@@ -6,7 +6,7 @@
 #Intro
 ##This set of examples provides a tool to verify that the different scaling modes are handled correctly in a variety of situations.
 
-#New Hotness
+#Different fill directions
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromleft", "proportion": "=15/16" }')
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:fromright", "proportion": "=15/16" }')
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "variableImage": "square:frombottom", "proportion": "=15/16" }')

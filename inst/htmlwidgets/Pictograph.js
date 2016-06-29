@@ -21,21 +21,23 @@ Pictograph = (function(_super) {
   };
 
   Pictograph.prototype._processConfig = function() {
-    var fakeHeight, fakeWidth, pictographDefaults, tableOfOneGraphic;
+    var fakeHeight, fakeWidth, pictographDefaults;
     delete this.config.width;
     delete this.config.height;
     if (this.config['table'] == null) {
-      tableOfOneGraphic = {
-        rows: [
-          [
-            {
-              type: 'graphic',
-              value: _.omit(this.config, ['table-id'])
-            }
+      this.config = {
+        'table-id': this.config['table-id'],
+        table: {
+          rows: [
+            [
+              {
+                type: 'graphic',
+                value: _.omit(this.config, ['table-id'])
+              }
+            ]
           ]
-        ]
+        }
       };
-      this.config['table'] = tableOfOneGraphic;
     }
     if (this.config['resizable'] === 'true') {
       this.config['resizable'] = true;

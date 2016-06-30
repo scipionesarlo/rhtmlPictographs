@@ -1,8 +1,34 @@
 
 class GraphicCell extends BaseCell
 
+  @validRootAttributes = [
+    'background-color',
+    'baseImage',
+    'columnGutter',
+    'debugBorder',
+    'font-color',
+    'font-family',
+    'font-size',
+    'font-weight',
+    'numCols',
+    'numImages',
+    'numRows',
+    'padding',
+    'proportion',
+    'rowGutter',
+    'text-footer',
+    'text-header',
+    'text-overlay',
+    'variableImage'
+  ]
+
   setConfig: (config) ->
     @config = _.cloneDeep config
+
+    invalidRootAttributes = _.difference _.keys(@config), GraphicCell.validRootAttributes
+    if invalidRootAttributes.length > 0
+      throw new Error "Invalid attribute(s): #{JSON.stringify invalidRootAttributes}"
+
     throw new Error "Must specify 'variableImage'" unless @config.variableImage?
 
     if _.isString(@config['proportion']) and @config['proportion'].startsWith('=')

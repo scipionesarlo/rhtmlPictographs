@@ -6,6 +6,10 @@ var Pictograph,
 Pictograph = (function(_super) {
   __extends(Pictograph, _super);
 
+  Pictograph.validRootAttributes = ['background-color', 'css', 'font-color', 'font-family', 'font-size', 'font-weight', 'table', 'table-id', 'resizable', 'preserveAspectRatio'];
+
+  Pictograph.validTableAttributes = ['colors', 'columnGutterLength', 'colWidths', 'lines', 'rowGutterLength', 'rowHeights', 'rows'];
+
   function Pictograph(el, width, height) {
     Pictograph.__super__.constructor.call(this, el, width, height);
   }
@@ -21,23 +25,31 @@ Pictograph = (function(_super) {
   };
 
   Pictograph.prototype._processConfig = function() {
-    var fakeHeight, fakeWidth, pictographDefaults;
+    var fakeHeight, fakeWidth, invalidRootAttributes, invalidTableAttributes, keysToKeepInPictograph, newConfig, pictographDefaults;
     delete this.config.width;
     delete this.config.height;
     if (this.config['table'] == null) {
-      this.config = {
-        'table-id': this.config['table-id'],
-        table: {
-          rows: [
-            [
-              {
-                type: 'graphic',
-                value: _.omit(this.config, ['table-id'])
-              }
-            ]
+      keysToKeepInPictograph = _.difference(Pictograph.validRootAttributes, GraphicCell.validRootAttributes);
+      newConfig = _.pick(this.config, keysToKeepInPictograph);
+      newConfig.table = {
+        rows: [
+          [
+            {
+              type: 'graphic',
+              value: _.omit(this.config, keysToKeepInPictograph)
+            }
           ]
-        }
+        ]
       };
+      this.config = newConfig;
+    }
+    invalidRootAttributes = _.difference(_.keys(this.config), Pictograph.validRootAttributes);
+    if (invalidRootAttributes.length > 0) {
+      throw new Error("Invalid attribute(s): " + (JSON.stringify(invalidRootAttributes)));
+    }
+    invalidTableAttributes = _.difference(_.keys(this.config.table), Pictograph.validTableAttributes);
+    if (invalidTableAttributes.length > 0) {
+      throw new Error("Invalid table attribute(s): " + (JSON.stringify(invalidTableAttributes)));
     }
     if (this.config['resizable'] === 'true') {
       this.config['resizable'] = true;
@@ -61,6 +73,9 @@ Pictograph = (function(_super) {
       'font-size': '24px',
       'font-color': 'black'
     };
+    if (this.config.table.rows == null) {
+      throw new Error("Must specify 'table.rows'");
+    }
     this.numTableRows = this.config.table.rows.length;
     this.numTableCols = Math.max.apply(null, this.config.table.rows.map(function(row) {
       return row.length;

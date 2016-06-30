@@ -1,6 +1,29 @@
 
 class Pictograph extends RhtmlSvgWidget
 
+  @validRootAttributes = [
+    'background-color'
+    'css'
+    'font-color'
+    'font-family'
+    'font-size'
+    'font-weight'
+    'table'
+    'table-id'
+    'resizable'
+    'preserveAspectRatio'
+  ]
+
+  @validTableAttributes = [
+    'colors'
+    'columnGutterLength'
+    'colWidths'
+    'lines'
+    'rowGutterLength'
+    'rowHeights'
+    'rows'
+  ]
+
   constructor: (el, width, height) ->
     super el, width, height
 
@@ -17,10 +40,20 @@ class Pictograph extends RhtmlSvgWidget
     delete @config.height
 
     unless @config['table']?
-      @config =
-        'table-id': @config['table-id']
-        table:
-          rows: [[{type: 'graphic', value: _.omit(@config, ['table-id']) }]]
+
+      keysToKeepInPictograph = _.difference Pictograph.validRootAttributes, GraphicCell.validRootAttributes
+
+      newConfig = _.pick @config, keysToKeepInPictograph
+      newConfig.table = rows: [[ { type: 'graphic', value: _.omit(@config, keysToKeepInPictograph) } ]]
+      @config = newConfig
+
+    invalidRootAttributes = _.difference _.keys(@config), Pictograph.validRootAttributes
+    if invalidRootAttributes.length > 0
+      throw new Error "Invalid attribute(s): #{JSON.stringify invalidRootAttributes}"
+
+    invalidTableAttributes = _.difference _.keys(@config.table), Pictograph.validTableAttributes
+    if invalidTableAttributes.length > 0
+      throw new Error "Invalid table attribute(s): #{JSON.stringify invalidTableAttributes}"
 
     @config['resizable'] = true if @config['resizable'] is 'true'
     @config['resizable'] = false if @config['resizable'] is 'false'
@@ -37,6 +70,8 @@ class Pictograph extends RhtmlSvgWidget
       'font-size': '24px'
       'font-color': 'black'
     }
+
+    throw new Error "Must specify 'table.rows'" unless @config.table.rows?
 
     @numTableRows = @config.table.rows.length
     @numTableCols = Math.max.apply(null, @config.table.rows.map( (row) -> row.length ))

@@ -99,6 +99,14 @@ describe 'Pictograph class:', ->
       it 'set css attr3 on css location 2', -> @verifyCss 'cssLocation2', 'cssAttr3', 'cssValue3'
       it 'set css attr4 on css location 2', -> @verifyCss 'cssLocation2', 'cssAttr4', 'cssValue4'
 
+    it 'fails on unknown root attributes', ->
+      badConfig = { table: { rows: [[]] }, foo: 'bar' }
+      expect(=> @instantiateAndSetConfigTo badConfig).to.throw(/foo/)
+
+    it 'fails on unknown table attributes', ->
+      badConfig = { table: { rows: [[]], foo: 'bar' } }
+      expect(=> @instantiateAndSetConfigTo badConfig).to.throw(/foo/)
+
   describe '_computeTableLayout():', ->
 
     beforeEach ->

@@ -10,9 +10,15 @@ GraphicCell = (function(_super) {
     return GraphicCell.__super__.constructor.apply(this, arguments);
   }
 
+  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
+
   GraphicCell.prototype.setConfig = function(config) {
-    var key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _results;
+    var invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _results;
     this.config = _.cloneDeep(config);
+    invalidRootAttributes = _.difference(_.keys(this.config), GraphicCell.validRootAttributes);
+    if (invalidRootAttributes.length > 0) {
+      throw new Error("Invalid attribute(s): " + (JSON.stringify(invalidRootAttributes)));
+    }
     if (this.config.variableImage == null) {
       throw new Error("Must specify 'variableImage'");
     }

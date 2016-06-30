@@ -136,6 +136,10 @@ describe 'GraphicCell class', ->
 
       expect(@instance.config).not.to.have.property 'mittens'
 
+    it 'rejects unknown root attributes', ->
+      @unknownVariables = { foo: 'bar' }
+      expect(=> @withConfig @unknownVariables).to.throw(/foo/)
+
     describe 'variableImage:', ->
       it 'is required', ->
         thrower = () =>

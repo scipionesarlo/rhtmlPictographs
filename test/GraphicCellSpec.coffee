@@ -160,7 +160,6 @@ describe 'GraphicCell class', ->
         expect( => @withConfig {}, 0, 1).to.throw new RegExp /width/
         expect( => @withConfig {}, 1, 0).to.throw new RegExp /height/
 
-
     describe 'numRows/numCols/numImages:', ->
 
       describe 'defaults:', ->
@@ -216,7 +215,7 @@ describe 'GraphicCell class', ->
         expect(@instance.config.padding).to.deep.equal { top: 10, right: 15, bottom: 20, left: 25 }
 
       it 'rejects non Integer padding values', ->
-        expect( => @withConfig { padding: 'twelve 15 20 25' }).to.throw()
+        expect( => @withConfig { padding: 'twelve 15 20 25' }).to.throw(/Invalid padding/)
 
     describe 'text handling:', ->
 
@@ -228,6 +227,11 @@ describe 'GraphicCell class', ->
 
       describe 'text-footer', ->
         maketextHandlingTestsFor 'text-footer'
+
+    describe 'layout:', ->
+
+      it 'rejects invalid values', ->
+        expect( => @withConfig { layout: 'good layout' }).to.throw(/Invalid layout/)
 
   describe '_computeDimensions():', ->
     beforeEach ->
@@ -298,7 +302,7 @@ describe 'GraphicCell class', ->
   describe 'e2e tests:', ->
 
     beforeEach ->
-      @makeGraphic = (config) ->
+      @makeGraphic = (config, width=500, height=500) ->
         unique = "#{Math.random()}".replace(/\./g,'')
         $('body').append("<div class=\"#{unique}\">")
 
@@ -311,7 +315,7 @@ describe 'GraphicCell class', ->
 
         @svg = d3.select(anonSvg[0])
 
-        @instance = new GraphicCell @svg, ['test-svg'], 500, 500
+        @instance = new GraphicCell @svg, ['test-svg'], width, height
         @instance.setConfig config
         @instance.draw()
 
@@ -360,13 +364,17 @@ describe 'GraphicCell class', ->
           proportion: 0.875
           numImages: 4
           variableImage: 'circle:frombottom:blue'
-        }
+          columnGutter: 0
+          rowGutter: 0
+        }, width=200, height=200
 
-      it 'applies a clip path to hide part of the fourth graphic', ->
-        firstImageClipHeight = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('height'))
-        fourthImageClipHeight = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('height'))
+      it 'applies a clip path to hide part of the top right (01) graphic', ->
+        height00 = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('height')).toFixed(0)
+        height01 = parseFloat($(".#{@uniqueClass} .node-xy-0-1 clippath rect").attr('height')).toFixed(0)
+        height10 = parseFloat($(".#{@uniqueClass} .node-xy-1-0 clippath rect").attr('height')).toFixed(0)
+        height11 = parseFloat($(".#{@uniqueClass} .node-xy-1-1 clippath rect").attr('height')).toFixed(0)
 
-        expect(fourthImageClipHeight / firstImageClipHeight).to.be.closeTo(0.5, 0.001);
+        expect("#{height00} #{height01} #{height10} #{height11}").to.equal '100 50 100 100'
 
     describe 'multi circle proportion scaled graphic:', ->
 

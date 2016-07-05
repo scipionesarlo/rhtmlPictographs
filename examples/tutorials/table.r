@@ -33,6 +33,9 @@ rhtmlPictographs::graphic('{ "table": { "rowGutterLength": 10, "columnGutterLeng
 ##Currently there is no way to apply padding to a single line, but this can be added in the future.
 ##Example 2 shows the use of a different line style. Any combination of SVG style that applies to SVG paths can be provided.
 ##Currently there is no way to apply unique styles to each line, only to all the lines. This can be added in the future.
+## * A horizontal line at 0 will run left to right along the top of the first row.
+## * A horizontal line at 0.5 will run left to right through the middle of the first row.
+## * A vertical line at 1 will run top to bottom along the right side of the first column.
 rhtmlPictographs::graphic('{ "table": { "rowGutterLength": 10, "columnGutterLength": 10, "rowHeights": [100, 200], "colWidths": [50, 100, 200], "lines": { "horizontal": [ 0, 1, 2 ], "vertical": [ 0, 1, 2, 3 ], "style": "stroke:black;stroke-width:4" }, "rows": [ ["circle:none", "circle:none", "circle:none"], ["circle:none", "circle:none", "circle:none"] ] } } ')
 rhtmlPictographs::graphic('{ "table": { "rowGutterLength": 10, "columnGutterLength": 10, "rowHeights": [100, 200], "colWidths": [50, 100, 200], "lines": { "horizontal": [ 0.25, 0.5, 1.5 ], "vertical": [ 0.5, 1.5, 2.5 ], "padding-left": 50, "padding-right": 50, "padding-top": 30, "padding-bottom": 30 }, "rows": [ ["circle:none", "circle:none", "circle:none"], ["circle:none", "circle:none", "circle:none"] ] } } ')
 rhtmlPictographs::graphic('{ "table": { "rowGutterLength": 30, "columnGutterLength": 30, "rowHeights": [85, 185], "colWidths": [35, 70, 185], "lines": { "horizontal": [ 1 ], "vertical": [ 1, 2 ], "style": "stroke:red;stroke-width:6;stroke-linecap:round;stroke-dasharray:20 10", "padding-left": 5, "padding-right": 5, "padding-top": 5, "padding-bottom": 5 }, "rows": [ ["rect:lightblue", "rect:lightblue", "rect:lightblue"], ["rect:lightblue", "rect:lightblue", "rect:lightblue"] ] } } ')

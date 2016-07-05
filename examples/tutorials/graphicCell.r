@@ -17,6 +17,16 @@ rhtmlPictographs::graphic('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA
 ##Graphic cell strings always start with a type and then have zero or more keywords after the type. Colons are used to seperate the parts of the string.
 ##The following ordering rules apply:
 ##Some quick examples, note that what each keyword does is described below:
+## * The string must start with a valid type: [circle, ellipse, square, rect, url, data].
+## * url and data types must end with the actual URL. In other words, the last part of the string must be the URL/data string.
+## * Otherwise the order of the tokens does not matter.
+## * If a keyword is not recognized (e.g., red, pink, lightblue) we assume its a color and use it as a color.
+## * There can be at most one unrecognized keywords. For example "circle:fromleft:red" is valid but "circle:fromleft:red:blue" is invalid.
+## * circle:blue
+## * circle:blue:radial
+## * circle:radial:blue
+## * url:blue:http://somesvg.com/that_i_will_recolor_to_blue.svg
+## * data:scale:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzklEQVRYhe2XQQ=
 
 #Add colors to shapes
 rhtmlPictographs::graphic('circle')
@@ -52,6 +62,10 @@ rhtmlPictographs::graphic('url:red:/images/stickman_green.svg')
 ##Proportions can be provided and visually represented using 4 different scaling techniques:
 ##Each technique will work with any of the shape types defined above.
 ##There are also some aliases (horizontal=fromleft, vertical=frombottom, pie=radial) that behave the same as above
+## * Scaling the size of the image
+## * Horizontal clipping
+## * Vertical clipping
+## * Radial clipping (like a pie graph)
 rhtmlPictographs::graphic('{ "variableImage": "circle:fromleft", "proportion": "0.75" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:fromright", "proportion": "0.75" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:frombottom", "proportion": "0.75" }')
@@ -114,6 +128,7 @@ rhtmlPictographs::graphic('{ "debugBorder": "anything", "variableImage": "circle
 
 #ImageGrids With Proportion Set
 ## When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.
+## There are some nuances around layout and clippin, which are covered in the Multi Image Scaling and Layout advanced topic.
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:scale", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.25" }')

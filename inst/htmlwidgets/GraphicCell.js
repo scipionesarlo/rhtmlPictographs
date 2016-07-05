@@ -10,10 +10,10 @@ GraphicCell = (function(_super) {
     return GraphicCell.__super__.constructor.apply(this, arguments);
   }
 
-  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
+  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'layout', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
 
   GraphicCell.prototype.setConfig = function(config) {
-    var invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, _ref, _results;
+    var invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, validLayoutValues, _ref;
     this.config = _.cloneDeep(config);
     invalidRootAttributes = _.difference(_.keys(this.config), GraphicCell.validRootAttributes);
     if (invalidRootAttributes.length > 0) {
@@ -52,22 +52,24 @@ GraphicCell = (function(_super) {
         bottom: parseInt(paddingBottom.replace(/(px|em)/, '')),
         left: parseInt(paddingLeft.replace(/(px|em)/, ''))
       };
-      _results = [];
       for (key in this.config.padding) {
         if (_.isNaN(this.config.padding[key])) {
           throw new Error("Invalid padding " + this.config.padding + ": " + key + " must be Integer");
-        } else {
-          _results.push(void 0);
         }
       }
-      return _results;
     } else {
-      return this.config.padding = {
+      this.config.padding = {
         top: 0,
         right: 0,
         bottom: 0,
         left: 0
       };
+    }
+    if (this.config.layout) {
+      validLayoutValues = d3.layout.grid().validDirections();
+      if (!validLayoutValues.includes(this.config.layout)) {
+        throw new Error("Invalid layout " + this.config.layout + ". Valid values: [" + (validLayoutValues.join('|')) + "]");
+      }
     }
   };
 
@@ -138,6 +140,23 @@ GraphicCell = (function(_super) {
     }
     if (this.config['numCols'] != null) {
       gridLayout.cols(this.config['numCols']);
+    }
+    if (_.isString(this.config.variableImage)) {
+      if (this.config.variableImage.match(/fromleft/)) {
+        gridLayout.direction('right,down');
+      }
+      if (this.config.variableImage.match(/fromright/)) {
+        gridLayout.direction('left,down');
+      }
+      if (this.config.variableImage.match(/fromtop/)) {
+        gridLayout.direction('right,down');
+      }
+      if (this.config.variableImage.match(/frombottom/)) {
+        gridLayout.direction('right,up');
+      }
+    }
+    if (this.config.layout) {
+      gridLayout.direction(this.config.layout);
     }
     enteringLeafNodes = graphicContainer.selectAll(".node").data(gridLayout(d3Data)).enter().append("g").attr("class", function(d) {
       var cssLocation;

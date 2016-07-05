@@ -39,7 +39,7 @@ processAndSaveDemo = ({demoName, content}) ->
 
   sections = $('section')
   sections.each (sectionIndex, sectionElement) ->
-    titles = $(this).find(('h2'))
+    titles = $(this).find(('h2, h3'))
     titles.each (titleIndex, titleElement) ->
       title = $(this).text()
       rFileContents.push("##{title}")
@@ -48,6 +48,11 @@ processAndSaveDemo = ({demoName, content}) ->
     notes.each (noteIndex, pElement) ->
       note = $(this).text()
       rFileContents.push("###{note}")
+
+    notes = $(this).find(('li'))
+    notes.each (noteIndex, liElement) ->
+      listItem = $(this).text()
+      rFileContents.push("## * #{listItem}")
 
 
     examples = $(this).find('.example')

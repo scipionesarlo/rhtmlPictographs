@@ -11,6 +11,21 @@
 ## If we need more control than that, we can set value to an object of keys, or an array of objects with keys
 ##The following parameters can be set once for the label cell:
 ##The following parameters can be set for each label:
+## * padding-top: Sets padding above the first label
+## * padding-inner: Sets padding between labels
+## * padding-bottom: Sets padding below the last label
+## * padding-left: Sets padding on left of label IF label is left aligned
+## * padding-right: Sets padding on right of label ID label is right aligned
+## * vertical-align: Sets the vertical alignment of the group of labels in the cell. Valid values are 'top', 'center', and 'bottom'.
+## * background-color: Sets the background color.
+## * text: The text of the label
+## * font-family: A browser supported font - see mozilla docs
+## * font-color: Sets the color of the font
+## * font-size: Size of the font - see mozilla docs
+## * font-weight: Weight of the font - see mozilla docs
+## * font-variant: can be used to set small-caps - see example below - see mozilla docs
+## * horizontal-align: set to left, center, or right. It aligns the text horizontally
+## * any other valid CSS property that is valid on SVG Text
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ "label:A label" ] ] } }')
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": "A label" } ] ] } }')
 rhtmlPictographs::graphic('{ "table": { "rows": [ [ { "type": "label", "value": [ "Line 1", "Line 2" ] } ] ] } }')

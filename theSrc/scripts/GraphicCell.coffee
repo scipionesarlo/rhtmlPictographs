@@ -10,6 +10,7 @@ class GraphicCell extends BaseCell
     'font-family',
     'font-size',
     'font-weight',
+    'layout',
     'numCols',
     'numImages',
     'numRows',
@@ -67,6 +68,11 @@ class GraphicCell extends BaseCell
 
     else
       @config.padding = { top: 0, right: 0, bottom: 0, left: 0 }
+
+    if @config.layout
+      validLayoutValues = d3.layout.grid().validDirections()
+      unless validLayoutValues.includes @config.layout
+        throw new Error "Invalid layout #{@config.layout}. Valid values: [#{validLayoutValues.join('|')}]"
 
   _processTextConfig: (key) ->
     if @config[key]?
@@ -126,6 +132,19 @@ class GraphicCell extends BaseCell
 
     gridLayout.rows(@config['numRows']) if @config['numRows']?
     gridLayout.cols(@config['numCols']) if @config['numCols']?
+
+    if _.isString @config.variableImage
+      if @config.variableImage.match /fromleft/
+        gridLayout.direction('right,down')
+      if @config.variableImage.match /fromright/
+        gridLayout.direction('left,down')
+      if @config.variableImage.match /fromtop/
+        gridLayout.direction('right,down')
+      if @config.variableImage.match /frombottom/
+        gridLayout.direction('right,up')
+
+    if @config.layout
+      gridLayout.direction @config.layout
 
     enteringLeafNodes = graphicContainer.selectAll(".node")
       .data gridLayout(d3Data)

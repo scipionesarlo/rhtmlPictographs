@@ -10,7 +10,7 @@ GraphicCell = (function(_super) {
     return GraphicCell.__super__.constructor.apply(this, arguments);
   }
 
-  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'layout', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
+  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'layout', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'image-background-color', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
 
   GraphicCell.prototype.setConfig = function(config) {
     var invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, validLayoutValues, _ref;
@@ -122,6 +122,7 @@ GraphicCell = (function(_super) {
   GraphicCell.prototype._draw = function() {
     var backgroundRect, d3Data, enteringLeafNodes, graphicContainer, gridLayout, imageHeight, imageWidth, textSpanWidth, yMidpoint;
     this._computeDimensions();
+    this.parentSvg.append("svg:rect").attr('width', this.width).attr('height', this.height).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
     if (this.config['text-header'] != null) {
       textSpanWidth = this.dimensions.headerXOffset + this.dimensions.headerWidth;
       yMidpoint = this.dimensions.headerYOffset + this.dimensions.headerHeight / 2;
@@ -167,7 +168,7 @@ GraphicCell = (function(_super) {
     });
     imageWidth = gridLayout.nodeSize()[0];
     imageHeight = gridLayout.nodeSize()[1];
-    backgroundRect = enteringLeafNodes.append("svg:rect").attr('width', imageWidth).attr('height', imageHeight).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
+    backgroundRect = enteringLeafNodes.append("svg:rect").attr('width', imageWidth).attr('height', imageHeight).attr('class', 'single-image-background-rect').attr('fill', this.config['image-background-color'] || 'none');
     if (this.config['debugBorder'] != null) {
       backgroundRect.attr('stroke', 'black').attr('stroke-width', '1');
     }

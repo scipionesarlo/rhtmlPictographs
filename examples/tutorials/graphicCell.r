@@ -101,7 +101,9 @@ rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "proportion": 
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "percentage", "text-overlay" : "percentage", "text-footer" : "percentage" }')
 
 #Background Color
+##By design, background color covers the entire cell and does not respect padding
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "background-color":"green" }')
+rhtmlPictographs::graphic('{ "padding": "10 10 10 10", "variableImage": "circle:lightblue", "background-color":"green" }')
 
 #BaseImage
 ## Base image syntax is identical to variableImage syntax.
@@ -122,13 +124,13 @@ rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "numImages": "
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }')
 
 #ImageGrids Debug Borders
-## If you are having trouble with placement or sizing, temporarily add a background color or enable dbebug borders to get a visual aid.
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }')
+## If you are having trouble with placement or sizing, temporarily add a image-background-color or enable dbebug borders to get a visual aid.
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }')
 rhtmlPictographs::graphic('{ "debugBorder": "anything", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }')
 
 #ImageGrids With Proportion Set
 ## When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.
-## There are some nuances around layout and clippin, which are covered in the Multi Image Scaling and Layout advanced topic.
+## There are some nuances around layout and clipping, which are covered in the Multi Image Scaling and Layout advanced topic.
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:scale", "numImages": "3", "numRows": "1", "proportion": "=5/6" }')
 rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numImages": "20", "numRows": "2", "proportion": "0.25" }')
@@ -141,14 +143,14 @@ rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue:fromleft", "numI
 ##It closely resembles the CSS padding attribute in that it is an array of 4 numbers: Top Right Bottom Left.
 
   
-    { "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }
-    { "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }
-    { "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }
+    { "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }
+    { "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }
+    { "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }
   
 
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }')
 
 #ImageGrids With Gutter Proportions
 ##Two types of padding is applied to the graphic cells: outer padding and gutter proportions. This example covers gutter proportions.
@@ -156,14 +158,14 @@ rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "ci
 ##Gutter Proportions (specified using rowGutter and columnGutter) specify the proportion of the total width/hieght to be used by the gutter vs the image itself.
 ##A gutter proportion of 0.5 means that the gutter should be as big as the image. A gutter proportion of 0 means no gutter. A gutter proportion of 1 means all gutter (you wouldn't use this). The default gutter proportions are rowGutter: 0.05 and columnGutter: 0.05.
 ##For more info, the two gutter params set the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter":"0" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.1", "columnGutter": "0" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.5", "columnGutter": "0" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.9", "columnGutter": "0" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.1" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.5" }')
-rhtmlPictographs::graphic('{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.9" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter":"0" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.1", "columnGutter": "0" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.5", "columnGutter": "0" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.9", "columnGutter": "0" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.1" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.5" }')
+rhtmlPictographs::graphic('{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.9" }')
 
 #Customization via CSS
 ## CSS customizations can be provided, keeping in mind that the CSS must be valid in an SVG context.

@@ -205,8 +205,10 @@ Is the same as this table config:
 
 <section>
   <h2>Background Color</h2>
+  <p>By design, background color covers the entire cell and does not respect padding</p>
   <div class="row">
     <pre class="example">{ "variableImage": "circle:lightblue", "background-color":"green" }</pre>
+    <pre class="example">{ "padding": "10 10 10 10", "variableImage": "circle:lightblue", "background-color":"green" }</pre>
   </div>
 </section>
 
@@ -242,9 +244,9 @@ Is the same as this table config:
 
 <section>
   <h2>ImageGrids Debug Borders</h2>
-  <p> If you are having trouble with placement or sizing, temporarily add a background color or enable dbebug borders to get a visual aid.</p>
+  <p> If you are having trouble with placement or sizing, temporarily add a <em>image-background-color</em> or enable dbebug borders to get a visual aid.</p>
   <div class="row" data-ex-w="400" data-ex-h="200">
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }</pre>
     <pre class="example">{ "debugBorder": "anything", "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }</pre>
   </div>
 </section>
@@ -252,7 +254,7 @@ Is the same as this table config:
 <section>
   <h2>ImageGrids With Proportion Set</h2>
   <p> When multiple images are specified and a proportion is used, the proportion is applied to the area of all the images. As a result, some images will be rendered completely where others will be partially or not at all.</p>
-  <p> There are some nuances around layout and clippin, which are covered in the <a href="/demo/content/tutorials/multi_image_scaling.html">Multi Image Scaling and Layout</a> advanced topic.</p>
+  <p> There are some nuances around layout and clipping, which are covered in the <a href="/demo/content/tutorials/multi_image_scaling.html">Multi Image Scaling and Layout</a> advanced topic.</p>
   <div class="row" data-ex-h="50">
     <pre class="example">{ "variableImage": "circle:lightblue:fromleft", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</pre>
     <pre class="example">{ "variableImage": "circle:lightblue:scale", "numImages": "3", "numRows": "1", "proportion": "=5/6" }</pre>
@@ -271,9 +273,9 @@ Is the same as this table config:
   <p>It closely resembles the CSS padding attribute in that it is an array of <b><em>4 numbers: Top Right Bottom Left</em></b>.
 
   <div class="row">
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</pre>
   </div>
 </section>
 
@@ -286,18 +288,18 @@ Is the same as this table config:
   <p>For more info, the two gutter params set the padding value of the call to .rangebands : https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_rangeBands</p>
 
   <div class="row">
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter":"0" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter":"0" }</pre>
   </div>
   <div class="row">
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.1", "columnGutter": "0" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.5", "columnGutter": "0" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.9", "columnGutter": "0" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.1", "columnGutter": "0" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.5", "columnGutter": "0" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0.9", "columnGutter": "0" }</pre>
   </div>
   <div class="row">
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.1" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.5" }</pre>
-    <pre class="example">{ "background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.9" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.1" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.5" }</pre>
+    <pre class="example">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "rowGutter": "0", "columnGutter": "0.9" }</pre>
   </div>
 </section>
 

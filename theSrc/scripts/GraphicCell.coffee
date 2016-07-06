@@ -17,6 +17,7 @@ class GraphicCell extends BaseCell
     'padding',
     'proportion',
     'rowGutter',
+    'image-background-color',
     'text-footer',
     'text-header',
     'text-overlay',
@@ -108,6 +109,12 @@ class GraphicCell extends BaseCell
   _draw: () ->
     @_computeDimensions()
 
+    @parentSvg.append("svg:rect")
+    .attr 'width', @width
+    .attr 'height', @height
+    .attr 'class', 'background-rect'
+    .attr 'fill', @config['background-color'] || 'none'
+
     if @config['text-header']?
       textSpanWidth = @dimensions.headerXOffset + @dimensions.headerWidth
       yMidpoint = @dimensions.headerYOffset + @dimensions.headerHeight / 2
@@ -161,8 +168,8 @@ class GraphicCell extends BaseCell
     backgroundRect = enteringLeafNodes.append("svg:rect")
       .attr 'width', imageWidth
       .attr 'height', imageHeight
-      .attr 'class', 'background-rect'
-      .attr 'fill', @config['background-color'] || 'none'
+      .attr 'class', 'single-image-background-rect'
+      .attr 'fill', @config['image-background-color'] || 'none'
 
     if @config['debugBorder']?
       backgroundRect

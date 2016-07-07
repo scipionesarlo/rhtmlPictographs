@@ -1,4 +1,3 @@
-
 class LabelCell extends BaseCell
 
   setConfig: (@config) ->
@@ -38,7 +37,6 @@ class LabelCell extends BaseCell
     unless @config['vertical-align'] in ['top', 'center', 'bottom']
       throw new Error "Invalid vertical align #{@config['vertical-align']} : must be one of ['top', 'center', 'bottom']"
 
-    @allocatedVerticalSpace = 0
     _.forEach @labels, (labelConfig, index) =>
       labelConfig['class'] ?= "label-#{index}"
 
@@ -57,9 +55,13 @@ class LabelCell extends BaseCell
         return if labelKey in ['class', 'text', 'horizontal-align']
         @setCss(labelConfig['class'], labelKey, labelValue)
 
-      @allocatedVerticalSpace += parseInt(labelConfig['font-size'].replace(/(px|em)/, ''))
+  computeAllocatedVerticalSpace: () ->
+    allocatedVerticalSpace = @config['padding-inner'] * @labels.length - 1
+    _.forEach @labels, (labelConfig, index) =>
+      labelFontSize = @getAdjustedTextSize labelConfig['font-size']
+      allocatedVerticalSpace += labelFontSize
 
-    @allocatedVerticalSpace += @config['padding-inner'] * @labels.length - 1
+    @allocatedVerticalSpace = allocatedVerticalSpace
 
   computeHorizontalOffset: (horizontalAlign) ->
     return switch
@@ -70,7 +72,6 @@ class LabelCell extends BaseCell
   computeInitialVerticalOffset: (verticalAlign) ->
     freeVertSpace = @height - @config['padding-top'] - @config['padding-bottom'] - @allocatedVerticalSpace
     if freeVertSpace < 0
-      console.log freeVertSpace
       console.error "Label is using too much vertical space"
       freeVertSpace = 0
 
@@ -87,24 +88,30 @@ class LabelCell extends BaseCell
         .attr 'height', @height
         .attr 'fill', @config['background-color']
 
+    @computeAllocatedVerticalSpace()
     currentY = @computeInitialVerticalOffset @config['vertical-align']
 
     _.forEach @labels, (labelConfig) =>
-      fontSize = parseInt labelConfig['font-size'].replace(/(px|em)/, '')
 
+      fontSize = @getAdjustedTextSize labelConfig['font-size']
       xOffset = @computeHorizontalOffset labelConfig['horizontal-align']
 
-      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2
+      @_addTextTo @parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2, fontSize
 
       currentY += fontSize + @config['padding-inner']
 
-  _addTextTo: (parent, text, myClass, textAnchor, x, y) ->
+  _addTextTo: (parent, text, myClass, textAnchor, x, y, fontSize) ->
     parent.append('svg:text')
       .attr 'class', myClass
       .attr 'x', x # note this is the midpoint not the top/bottom (thats why we divide by 2)
       .attr 'y', y # same midpoint consideration
       .attr 'text-anchor', textAnchor
       #alignment-baseline and dominant-baseline should do same thing but are both may be necessary for browser compatability
+      .style 'font-size', fontSize
       .style 'alignment-baseline', 'central'
       .style 'dominant-baseline', 'central'
       .text text
+
+  _resize: () ->
+    @parentSvg.selectAll('*').remove()
+    @_draw()

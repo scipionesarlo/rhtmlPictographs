@@ -88,9 +88,6 @@ GraphicCell = (function(_super) {
       if ((textConfig != null) && textConfig['text'].match(/^proportion$/)) {
         textConfig['text'] = "" + (this.config.proportion.toFixed(3).replace(/0+$/, ''));
       }
-      if (textConfig['font-size'] == null) {
-        textConfig['font-size'] = BaseCell.getDefault('font-size');
-      }
       if (textConfig['horizontal-align'] == null) {
         textConfig['horizontal-align'] = 'middle';
       }
@@ -108,7 +105,10 @@ GraphicCell = (function(_super) {
       if ((_ref3 = textConfig['horizontal-align']) !== 'start' && _ref3 !== 'middle' && _ref3 !== 'end') {
         throw new Error("Invalid horizontal align " + textConfig['horizontal-align'] + " : must be one of ['left', 'center', 'right']");
       }
-      _ref4 = ['font-family', 'font-size', 'font-weight', 'font-color'];
+      if (textConfig['font-size'] == null) {
+        textConfig['font-size'] = BaseCell.getDefault('font-size');
+      }
+      _ref4 = ['font-family', 'font-weight', 'font-color'];
       for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
         cssAttribute = _ref4[_i];
         if (textConfig[cssAttribute] != null) {
@@ -188,8 +188,8 @@ GraphicCell = (function(_super) {
 
   GraphicCell.prototype._computeDimensions = function() {
     this.dimensions = {};
-    this.dimensions.headerHeight = 0 + (this.config['text-header'] != null ? parseInt(this.config['text-header']['font-size'].replace(/(px|em)/, '')) : 0);
-    this.dimensions.footerHeight = 0 + (this.config['text-footer'] != null ? parseInt(this.config['text-footer']['font-size'].replace(/(px|em)/, '')) : 0);
+    this.dimensions.headerHeight = 0 + (this.config['text-header'] != null ? this.getAdjustedTextSize(this.config['text-header']['font-size']) : 0);
+    this.dimensions.footerHeight = 0 + (this.config['text-footer'] != null ? this.getAdjustedTextSize(this.config['text-footer']['font-size']) : 0);
     this.dimensions.headerWidth = this.width - this.config.padding.left - this.config.padding.right;
     this.dimensions.headerXOffset = 0 + this.config.padding.left;
     this.dimensions.headerYOffset = 0 + this.config.padding.top;
@@ -214,7 +214,7 @@ GraphicCell = (function(_super) {
           return textSpanWidth - textConfig['padding-right'];
       }
     })();
-    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', yMidpoint).attr('text-anchor', textConfig['horizontal-align']).style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(textConfig.text);
+    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', yMidpoint).attr('text-anchor', textConfig['horizontal-align']).style('font-size', this.getAdjustedTextSize(textConfig['font-size'])).style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(textConfig.text);
   };
 
   GraphicCell.prototype._generateDataArray = function(proportion, numImages) {
@@ -230,6 +230,11 @@ GraphicCell = (function(_super) {
       });
     }
     return d3Data;
+  };
+
+  GraphicCell.prototype._resize = function() {
+    this.parentSvg.selectAll('*').remove();
+    return this._draw();
   };
 
   return GraphicCell;

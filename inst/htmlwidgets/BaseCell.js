@@ -16,12 +16,14 @@ BaseCell = (function() {
     return this.defaults = {};
   };
 
-  function BaseCell(parentSvg, myCssSelector, width, height) {
+  function BaseCell(parentSvg, myCssSelector, width, height, pictographSizeInfo) {
     this.parentSvg = parentSvg;
     this.width = width;
     this.height = height;
+    this.pictographSizeInfo = pictographSizeInfo != null ? pictographSizeInfo : {};
     this._verifyKeyIsPositiveInt(this, 'width');
     this._verifyKeyIsPositiveInt(this, 'height');
+    this.requiresResize = false;
     this.cssBucket = {};
     if (_.isString(myCssSelector)) {
       this.myCssSelector = [myCssSelector];
@@ -109,6 +111,26 @@ BaseCell = (function() {
 
   BaseCell.prototype._draw = function() {
     throw new Error("BaseCell._draw must be overridden by child");
+  };
+
+  BaseCell.prototype._resize = function() {
+    throw new Error("BaseCell._resize must be overridden by child");
+  };
+
+  BaseCell.prototype.getAdjustedTextSize = function(textSizeInput) {
+    if (textSizeInput.indexOf('px') !== -1) {
+      this.requiresResize = true;
+      return this.pictographSizeInfo.ratios.textSize * parseInt(textSizeInput.replace(/(px|em)/, ''));
+    } else {
+      return parseInt(textSizeInput);
+    }
+  };
+
+  BaseCell.prototype.resize = function(pictographSizeInfo) {
+    this.pictographSizeInfo = pictographSizeInfo;
+    if (this.requiresResize) {
+      return this._resize();
+    }
   };
 
   BaseCell.prototype._generateDynamicCss = function() {

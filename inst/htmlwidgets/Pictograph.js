@@ -12,7 +12,65 @@ Pictograph = (function(_super) {
 
   function Pictograph(el, width, height) {
     Pictograph.__super__.constructor.call(this, el, width, height);
+    this._initializeSizing(width, height);
   }
+
+  Pictograph.prototype._initializeSizing = function(initialWidth, initialHeight) {
+    return this.sizes = {
+      specifiedContainerWidth: initialWidth,
+      specifiedContainerHeight: initialHeight,
+      actualWidth: initialWidth,
+      actualHeight: initialHeight,
+      viewBoxWidth: initialWidth,
+      viewBoxHeight: initialHeight,
+      ratios: {
+        textSize: null,
+        containerDelta: {
+          width: null,
+          height: null
+        },
+        containerToViewBox: {
+          width: null,
+          height: null
+        }
+      }
+    };
+  };
+
+  Pictograph.prototype._recomputeSizing = function(newSpecifiedWidth, newSpecifiedHeight) {
+    var newActualHeight, newActualWidth, rootElement;
+    rootElement = $("#" + this.config['table-id']);
+    newActualWidth = rootElement.width();
+    newActualHeight = rootElement.height();
+    this.sizes.ratios.containerToViewBox.width = newActualWidth * 1.0 / this.sizes.viewBoxWidth;
+    this.sizes.ratios.containerToViewBox.height = newActualHeight * 1.0 / this.sizes.viewBoxHeight;
+    this.sizes.ratios.containerDelta.width = newActualWidth * 1.0 / this.sizes.actualWidth;
+    this.sizes.ratios.containerDelta.height = newActualHeight * 1.0 / this.sizes.actualHeight;
+    this.sizes.actualWidth = newActualWidth;
+    this.sizes.actualHeight = newActualHeight;
+    if (newSpecifiedWidth) {
+      this.sizes.newSpecifiedWidth = newSpecifiedWidth;
+    }
+    if (newSpecifiedHeight) {
+      this.sizes.newSpecifiedHeight = newSpecifiedHeight;
+    }
+    return this.sizes.ratios.textSize = 1.0 / Math.min(this.sizes.ratios.containerToViewBox.width, this.sizes.ratios.containerToViewBox.height);
+  };
+
+  Pictograph.prototype.resize = function(newSpecifiedWidth, newSpecifiedHeight) {
+    var cellInstance, _i, _len, _ref, _results;
+    if (this.config['resizable'] === false) {
+      return;
+    }
+    this._recomputeSizing(newSpecifiedWidth, newSpecifiedHeight);
+    _ref = this.cellInstances;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cellInstance = _ref[_i];
+      _results.push(cellInstance.resize(this.sizes));
+    }
+    return _results;
+  };
 
   Pictograph.prototype.setConfig = function(config) {
     this.config = config;
@@ -106,9 +164,10 @@ Pictograph = (function(_super) {
       return function(defaultValue, cssAttribute) {
         var cssValue;
         cssValue = _this.config[cssAttribute] ? _this.config[cssAttribute] : defaultValue;
-        _this.cssCollector.setCss('', cssAttribute, cssValue);
         if (cssAttribute === 'font-size') {
           return BaseCell.setDefault(cssAttribute, "" + cssValue);
+        } else {
+          return _this.cssCollector.setCss('', cssAttribute, cssValue);
         }
       };
     })(this));
@@ -294,9 +353,10 @@ Pictograph = (function(_super) {
   };
 
   Pictograph.prototype._redraw = function() {
-    var addLines, enteringCells, tableCells, tableId;
+    var addLines, cellInstances, enteringCells, sizes, tableCells, tableId;
     this.cssCollector.draw();
     this._computeTableLayout();
+    this._recomputeSizing();
     tableCells = _.flatten(this.config.table.rows);
     addLines = (function(_this) {
       return function(lineType, data) {
@@ -324,20 +384,25 @@ Pictograph = (function(_super) {
       return "translate(" + d.x + "," + d.y + ")";
     });
     tableId = this.config['table-id'];
+    this.cellInstances = [];
+    cellInstances = this.cellInstances;
+    sizes = this.sizes;
     enteringCells.each(function(d, i) {
       var cssWrapperClass, graphic, label;
       cssWrapperClass = "table-cell-" + d.row + "-" + d.col;
       d3.select(this).classed(cssWrapperClass, true);
       if (d.type === 'graphic') {
         d3.select(this).classed('graphic', true);
-        graphic = new GraphicCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
+        graphic = new GraphicCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height, sizes);
         graphic.setConfig(d.value);
-        return graphic.draw();
+        graphic.draw();
+        return cellInstances.push(graphic);
       } else if (d.type === 'label') {
         d3.select(this).classed('label', true);
-        label = new LabelCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height);
+        label = new LabelCell(d3.select(this), [tableId, cssWrapperClass], d.width, d.height, sizes);
         label.setConfig(d.value);
-        return label.draw();
+        label.draw();
+        return cellInstances.push(label);
       } else if (d.type === 'empty') {
         return d3.select(this).classed('empty', true);
       } else {

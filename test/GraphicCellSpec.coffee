@@ -70,7 +70,6 @@ describe 'GraphicCell class', ->
           'padding-right': 1
         }
 
-        @wasSet 'font-size'
         @wasSet 'font-family'
         @wasSet 'font-color'
         @wasSet 'font-weight'
@@ -122,7 +121,8 @@ describe 'GraphicCell class', ->
 
   beforeEach ->
     @withConfig = (config, width=100, height=100) ->
-      @instance = new GraphicCell 'dummySvg', ['parentSelector'], width, height
+      sizes = ratios: textSize: 1
+      @instance = new GraphicCell 'dummySvg', ['parentSelector'], width, height, sizes
 
       config.variableImage ?= 'image1'
       @instance.setConfig config

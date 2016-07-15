@@ -59,8 +59,7 @@ LabelCell = (function(_super) {
     if ((_ref1 = this.config['vertical-align']) !== 'top' && _ref1 !== 'center' && _ref1 !== 'bottom') {
       throw new Error("Invalid vertical align " + this.config['vertical-align'] + " : must be one of ['top', 'center', 'bottom']");
     }
-    this.allocatedVerticalSpace = 0;
-    _.forEach(this.labels, (function(_this) {
+    return _.forEach(this.labels, (function(_this) {
       return function(labelConfig, index) {
         var _ref2, _ref3, _ref4, _ref5;
         if (labelConfig['class'] == null) {
@@ -84,16 +83,27 @@ LabelCell = (function(_super) {
         if (labelConfig['font-size'] == null) {
           labelConfig['font-size'] = BaseCell.getDefault('font-size');
         }
-        _.forEach(labelConfig, function(labelValue, labelKey) {
+        return _.forEach(labelConfig, function(labelValue, labelKey) {
           if (labelKey === 'class' || labelKey === 'text' || labelKey === 'horizontal-align') {
             return;
           }
           return _this.setCss(labelConfig['class'], labelKey, labelValue);
         });
-        return _this.allocatedVerticalSpace += parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
       };
     })(this));
-    return this.allocatedVerticalSpace += this.config['padding-inner'] * this.labels.length - 1;
+  };
+
+  LabelCell.prototype.computeAllocatedVerticalSpace = function() {
+    var allocatedVerticalSpace;
+    allocatedVerticalSpace = this.config['padding-inner'] * this.labels.length - 1;
+    _.forEach(this.labels, (function(_this) {
+      return function(labelConfig, index) {
+        var labelFontSize;
+        labelFontSize = _this.getAdjustedTextSize(labelConfig['font-size']);
+        return allocatedVerticalSpace += labelFontSize;
+      };
+    })(this));
+    return this.allocatedVerticalSpace = allocatedVerticalSpace;
   };
 
   LabelCell.prototype.computeHorizontalOffset = function(horizontalAlign) {
@@ -111,7 +121,6 @@ LabelCell = (function(_super) {
     var freeVertSpace;
     freeVertSpace = this.height - this.config['padding-top'] - this.config['padding-bottom'] - this.allocatedVerticalSpace;
     if (freeVertSpace < 0) {
-      console.log(freeVertSpace);
       console.error("Label is using too much vertical space");
       freeVertSpace = 0;
     }
@@ -130,20 +139,26 @@ LabelCell = (function(_super) {
     if (this.config['background-color']) {
       this.parentSvg.append('svg:rect').attr('class', 'background').attr('width', this.width).attr('height', this.height).attr('fill', this.config['background-color']);
     }
+    this.computeAllocatedVerticalSpace();
     currentY = this.computeInitialVerticalOffset(this.config['vertical-align']);
     return _.forEach(this.labels, (function(_this) {
       return function(labelConfig) {
         var fontSize, xOffset;
-        fontSize = parseInt(labelConfig['font-size'].replace(/(px|em)/, ''));
+        fontSize = _this.getAdjustedTextSize(labelConfig['font-size']);
         xOffset = _this.computeHorizontalOffset(labelConfig['horizontal-align']);
-        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2);
+        _this._addTextTo(_this.parentSvg, labelConfig['text'], labelConfig['class'], labelConfig['horizontal-align'], xOffset, currentY + fontSize / 2, fontSize);
         return currentY += fontSize + _this.config['padding-inner'];
       };
     })(this));
   };
 
-  LabelCell.prototype._addTextTo = function(parent, text, myClass, textAnchor, x, y) {
-    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).attr('text-anchor', textAnchor).style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
+  LabelCell.prototype._addTextTo = function(parent, text, myClass, textAnchor, x, y, fontSize) {
+    return parent.append('svg:text').attr('class', myClass).attr('x', x).attr('y', y).attr('text-anchor', textAnchor).style('font-size', fontSize).style('alignment-baseline', 'central').style('dominant-baseline', 'central').text(text);
+  };
+
+  LabelCell.prototype._resize = function() {
+    this.parentSvg.selectAll('*').remove();
+    return this._draw();
   };
 
   return LabelCell;

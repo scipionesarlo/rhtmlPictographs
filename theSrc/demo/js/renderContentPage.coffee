@@ -3,7 +3,7 @@ exampleCounter = 0
 
 makeFormHtml = () ->
   '''
-    <form class="resize-form" style="padding-top:10px" >
+    <form class="resize-form" style="padding-top:10px">
       <div style="display:block">
         <label for="width-input">New Width:</label>
         <input type="text" id="width-input" class="width-input" value="200"/>
@@ -16,6 +16,15 @@ makeFormHtml = () ->
         <button class="resize-button">Resize</button>
       </div>
     </form>
+  '''
+
+getRelativeResizersHtml = () ->
+  # we are inside a pre so you cant newline these ...
+  '''
+  <div style="text-align:center;width:100%">
+    <button class="relative-resize-button more-button">+25</button> <button class="relative-resize-button less-button">-25</button>
+    <button class="relative-resize-button more-width-button">+25 W</button> <button class="relative-resize-button less-width-button">-25 W</button> <button class="relative-resize-button more-height-button">+25 H</button> <button class="relative-resize-button less-height-button">-25 H</button>
+  </div>
   '''
 
 addExampleTo = (rowConfig) ->
@@ -50,6 +59,33 @@ addExampleTo = (rowConfig) ->
   innerInnerExampleDiv = $('<div>')
 
   element.append configDiv.append(configPre)
+
+  if (exampleConfig.resizeControls)
+    relativeResizers = $(getRelativeResizersHtml())
+    element.append(relativeResizers)
+
+    newResizeHandler = (additionalWidth, additionalHeight) ->
+      return (event) ->
+        event.preventDefault()
+        newWidth = $(".#{exampleNumber} .inner-example").width() + additionalWidth;
+        newHeight = $(".#{exampleNumber} .inner-example").height() + additionalHeight;
+
+        #TODO inner-example could be named better
+        $(".#{exampleNumber} .inner-example")
+        .css 'width', newWidth
+        .css 'height', newHeight
+
+        instance.resize newWidth, newHeight
+
+      return false
+
+    $(".#{exampleNumber} .more-button").bind 'click', newResizeHandler 25, 25
+    $(".#{exampleNumber} .less-button").bind 'click', newResizeHandler -25, -25
+    $(".#{exampleNumber} .more-width-button").bind 'click', newResizeHandler 25, 0
+    $(".#{exampleNumber} .less-width-button").bind 'click', newResizeHandler -25, 0
+    $(".#{exampleNumber} .more-height-button").bind 'click', newResizeHandler 0, 25
+    $(".#{exampleNumber} .less-height-button").bind 'click', newResizeHandler 0, -25
+
   element.append innerExampleDiv.append(innerInnerExampleDiv)
 
   instance = new Pictograph innerInnerExampleDiv, exampleConfig.exW, exampleConfig.exH

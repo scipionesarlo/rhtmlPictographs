@@ -26,6 +26,55 @@ class Pictograph extends RhtmlSvgWidget
 
   constructor: (el, width, height) ->
     super el, width, height
+    @_initializeSizing width, height
+
+  #Push to SVG class
+  _initializeSizing: (initialWidth, initialHeight) ->
+    @sizes =
+      specifiedContainerWidth: initialWidth
+      specifiedContainerHeight: initialHeight
+
+      actualWidth: initialWidth # we will override this with data from jquery
+      actualHeight: initialHeight # we will override this with data from jquery
+
+      viewBoxWidth: initialWidth
+      viewBoxHeight: initialHeight
+
+      ratios:
+        textSize: null
+        containerDelta: #NB this represents "on each resize how did size change"
+          width: null
+          height: null
+        containerToViewBox: #NB this is ratio between current Actual, and the viewBox
+          width: null
+          height: null
+
+  _recomputeSizing: (newSpecifiedWidth, newSpecifiedHeight) ->
+    rootElement = $("##{@config['table-id']}")
+    newActualWidth = rootElement.width()
+    newActualHeight = rootElement.height()
+
+    @sizes.ratios.containerToViewBox.width = newActualWidth * 1.0 / @sizes.viewBoxWidth
+    @sizes.ratios.containerToViewBox.height = newActualHeight * 1.0 / @sizes.viewBoxHeight
+    @sizes.ratios.containerDelta.width = newActualWidth * 1.0 / @sizes.actualWidth
+    @sizes.ratios.containerDelta.height = newActualHeight * 1.0 / @sizes.actualHeight
+
+    @sizes.actualWidth = newActualWidth
+    @sizes.actualHeight = newActualHeight
+    @sizes.newSpecifiedWidth = newSpecifiedWidth if newSpecifiedWidth
+    @sizes.newSpecifiedHeight = newSpecifiedHeight if newSpecifiedHeight
+
+    #TODO do I need to check for preserveAspectRatio and if == node then always take height ?
+    @sizes.ratios.textSize = 1.0 / Math.min(@sizes.ratios.containerToViewBox.width, @sizes.ratios.containerToViewBox.height)
+
+
+  resize: (newSpecifiedWidth, newSpecifiedHeight) ->
+    return if @config['resizable'] is false
+
+    @_recomputeSizing newSpecifiedWidth, newSpecifiedHeight
+
+    for cellInstance in @cellInstances
+      cellInstance.resize @sizes
 
   # NB I am overriding this method from the baseclass so I can support string input
   setConfig: (@config) ->
@@ -91,13 +140,15 @@ class Pictograph extends RhtmlSvgWidget
 
     _.forEach pictographDefaults, (defaultValue, cssAttribute) =>
       cssValue = if @config[cssAttribute] then @config[cssAttribute] else defaultValue
-      @cssCollector.setCss '', cssAttribute, cssValue
 
       #NB font-size must be explicitly provided to child cells, because it is required for calculating height offsets
       # whereas other css values we can leave them implicitly set via CSS inheritance
       # also font-size must be a string (containing a number), so cast it to string
+      # TODO explain why font-size cant be used here.
       if cssAttribute is 'font-size'
         BaseCell.setDefault cssAttribute, "#{cssValue}"
+      else
+        @cssCollector.setCss '', cssAttribute, cssValue
 
     if @config['css']
       _.forEach @config['css'], (cssBlock, cssLocationString) =>
@@ -245,6 +296,7 @@ class Pictograph extends RhtmlSvgWidget
   _redraw: () ->
     @cssCollector.draw()
     @_computeTableLayout()
+    @_recomputeSizing()
 
     tableCells = _.flatten(@config.table.rows)
 
@@ -279,6 +331,9 @@ class Pictograph extends RhtmlSvgWidget
           return "translate(" + d.x + "," + d.y + ")"
 
     tableId = @config['table-id']
+    @cellInstances = []
+    cellInstances = @cellInstances
+    sizes = @sizes
     enteringCells.each (d, i) ->
 
       cssWrapperClass = "table-cell-#{d.row}-#{d.col}"
@@ -286,15 +341,17 @@ class Pictograph extends RhtmlSvgWidget
 
       if d.type is 'graphic'
         d3.select(this).classed 'graphic', true
-        graphic = new GraphicCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
+        graphic = new GraphicCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height, sizes
         graphic.setConfig d.value
         graphic.draw()
+        cellInstances.push graphic
 
       else if d.type is 'label'
         d3.select(this).classed 'label', true
-        label = new LabelCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height
+        label = new LabelCell d3.select(this), [tableId, cssWrapperClass], d.width, d.height, sizes
         label.setConfig d.value
         label.draw()
+        cellInstances.push label
 
       else if d.type is 'empty'
         d3.select(this).classed 'empty', true

@@ -8,9 +8,11 @@ class BaseCell
 
   #@TODO I want to pull all the CssCollector bits into a seperate module and have BaseCell Extend that class
 
-  constructor: (@parentSvg, myCssSelector, @width, @height) ->
+  constructor: (@parentSvg, myCssSelector, @width, @height, @pictographSizeInfo={}) ->
     @_verifyKeyIsPositiveInt @, 'width'
     @_verifyKeyIsPositiveInt @, 'height'
+
+    @requiresResize = false
 
     @cssBucket = {}
 
@@ -79,6 +81,20 @@ class BaseCell
 
   _draw: () ->
     throw new Error "BaseCell._draw must be overridden by child"
+
+  _resize: () ->
+    throw new Error "BaseCell._resize must be overridden by child"
+
+  getAdjustedTextSize: (textSizeInput) ->
+    if (textSizeInput.indexOf('px') != -1)
+      @requiresResize = true
+      @pictographSizeInfo.ratios.textSize * parseInt textSizeInput.replace(/(px|em)/, '')
+    else
+      parseInt textSizeInput
+
+  resize: (pictographSizeInfo) ->
+    @pictographSizeInfo = pictographSizeInfo
+    @_resize() if @requiresResize
 
   _generateDynamicCss: () ->
 

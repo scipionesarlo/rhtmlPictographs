@@ -72,8 +72,7 @@ describe 'Pictograph class:', ->
 
       it 'sets font-family to something', -> @cssWasSet 'font-family'
       it 'sets font-weight to something', -> @cssWasSet 'font-weight'
-      it 'sets font-size to something', -> @cssWasSet 'font-size'
-      it 'sets font-size to something', -> @defaultWasSet 'font-size'
+      it 'sets font-size default to something', -> @defaultWasSet 'font-size'
       it 'sets font-color to something', -> @cssWasSet 'font-color'
 
     describe 'setting custom css:', ->

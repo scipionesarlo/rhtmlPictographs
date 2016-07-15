@@ -43,3 +43,7 @@ pre.config {
     margin-left: auto;
     margin-right: auto;
 }
+
+.relative-resize-button {
+    margin: 5px;
+}

@@ -87,8 +87,6 @@ class GraphicCell extends BaseCell
       if textConfig? and textConfig['text'].match(/^proportion$/)
         textConfig['text'] = "#{(@config.proportion).toFixed(3).replace(/0+$/, '')}"
 
-      #font-size must be present to compute dimensions
-      textConfig['font-size'] ?= BaseCell.getDefault('font-size')
 
       textConfig['horizontal-align'] ?= 'middle'
       textConfig['horizontal-align'] = 'middle' if textConfig['horizontal-align'] in ['center', 'centre']
@@ -101,7 +99,9 @@ class GraphicCell extends BaseCell
       unless textConfig['horizontal-align'] in ['start', 'middle', 'end']
         throw new Error "Invalid horizontal align #{textConfig['horizontal-align']} : must be one of ['left', 'center', 'right']"
 
-      for cssAttribute in ['font-family', 'font-size', 'font-weight', 'font-color']
+      #font-size must be present to compute dimensions
+      textConfig['font-size'] ?= BaseCell.getDefault('font-size')
+      for cssAttribute in ['font-family', 'font-weight', 'font-color']
         @setCss(key, cssAttribute, textConfig[cssAttribute]) if textConfig[cssAttribute]?
 
       @config[key] = textConfig
@@ -195,8 +195,8 @@ class GraphicCell extends BaseCell
     @dimensions = {}
 
     #need these first to calc graphicHeight
-    @dimensions.headerHeight = 0 + (if @config['text-header']? then parseInt(@config['text-header']['font-size'].replace(/(px|em)/, '')) else 0)
-    @dimensions.footerHeight = 0 + (if @config['text-footer']? then parseInt(@config['text-footer']['font-size'].replace(/(px|em)/, '')) else 0)
+    @dimensions.headerHeight = 0 + (if @config['text-header']? then @getAdjustedTextSize(@config['text-header']['font-size']) else 0)
+    @dimensions.footerHeight = 0 + (if @config['text-footer']? then @getAdjustedTextSize(@config['text-footer']['font-size']) else 0)
 
     @dimensions.headerWidth = @width - @config.padding.left - @config.padding.right
     @dimensions.headerXOffset = 0 + @config.padding.left
@@ -224,6 +224,7 @@ class GraphicCell extends BaseCell
       .attr 'y', yMidpoint
       .attr 'text-anchor', textConfig['horizontal-align']
       #alignment-baseline and dominant-baseline should do same thing but are both may be necessary for browser compatability
+      .style 'font-size', @getAdjustedTextSize textConfig['font-size']
       .style 'alignment-baseline', 'central'
       .style 'dominant-baseline', 'central'
       .text textConfig.text
@@ -237,3 +238,7 @@ class GraphicCell extends BaseCell
       remainingArea -= proportionForImageI
       d3Data.push { proportion: proportionForImageI, i: i }
     return d3Data
+
+  _resize: () ->
+    @parentSvg.selectAll('*').remove()
+    @_draw()

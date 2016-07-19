@@ -54,7 +54,9 @@ Pictograph = (function(_super) {
     if (newSpecifiedHeight) {
       this.sizes.newSpecifiedHeight = newSpecifiedHeight;
     }
-    return this.sizes.ratios.textSize = 1.0 / Math.min(this.sizes.ratios.containerToViewBox.width, this.sizes.ratios.containerToViewBox.height);
+    this.sizes.ratios.textSize = 1.0 / Math.min(this.sizes.ratios.containerToViewBox.width, this.sizes.ratios.containerToViewBox.height);
+    console.log("pictograph recompute size complete:");
+    return console.log(JSON.stringify(this.sizes, {}, 2));
   };
 
   Pictograph.prototype.resize = function(newSpecifiedWidth, newSpecifiedHeight) {

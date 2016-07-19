@@ -67,6 +67,8 @@ class Pictograph extends RhtmlSvgWidget
     #TODO do I need to check for preserveAspectRatio and if == node then always take height ?
     @sizes.ratios.textSize = 1.0 / Math.min(@sizes.ratios.containerToViewBox.width, @sizes.ratios.containerToViewBox.height)
 
+    console.log("pictograph recompute size complete:")
+    console.log(JSON.stringify @sizes, {}, 2)
 
   resize: (newSpecifiedWidth, newSpecifiedHeight) ->
     return if @config['resizable'] is false

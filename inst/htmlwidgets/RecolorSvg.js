@@ -18,10 +18,12 @@ RecolorSvg = (function() {
     return _.reduce(regexes, reducer, inputString);
   };
 
-  RecolorSvg.recolor = function(svgObject, newColor, width, height) {
+  RecolorSvg.recolor = function(svgObject, newColor, x, y, width, height) {
     var currentHeight, currentWidth, svgString;
     currentWidth = svgObject.attr('width');
     currentHeight = svgObject.attr('height');
+    svgObject.attr('x', x);
+    svgObject.attr('y', y);
     svgObject.attr('width', width);
     svgObject.attr('height', height);
     if (currentWidth && currentHeight && !svgObject.attr('viewBox')) {

@@ -29,6 +29,7 @@
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:radial", "proportion": "=7/8" }</pre>
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:scale", "proportion": "=7/8" }</pre>
     <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
@@ -38,6 +39,7 @@
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:radial", "proportion": "=7/8" }</pre>
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:scale", "proportion": "=7/8" }</pre>
     <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
@@ -47,6 +49,7 @@
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "circle:lightblue", "variableImage": "circle:radial", "proportion": "=7/8" }</pre>
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "circle:lightblue", "variableImage": "circle:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "circle:lightblue", "variableImage": "circle:scale", "proportion": "=7/8" }</pre>
     <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "circle:lightblue", "variableImage": "circle:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
@@ -56,6 +59,7 @@
   <div class="row" data-ex-w="200">
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "ellipse:lightblue", "variableImage": "ellipse:radial", "proportion": "=7/8" }</pre>
     <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "ellipse:lightblue", "variableImage": "ellipse:fromleft", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "ellipse:lightblue", "variableImage": "ellipse:scale", "proportion": "=7/8" }</pre>
     <pre class="example" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "ellipse:lightblue", "variableImage": "ellipse:frombottom", "proportion": "=7/8" }</pre>
   </div>
 </section>
@@ -68,9 +72,21 @@
   <div class="row" data-ex-w="200">
     <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:fromleft:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
     <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:radial:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
+    <div class="example for-consideration">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:scale:/images/blue_circle_512.svg", "proportion": "=5/8" }</div>
     <div class="example for-consideration" data-ex-w="100" data-ex-h="200">{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:frombottom:/images/blue_circle_512.svg", "proportion": "=7/8" }</div>
   </div>
 </section>
+
+<section>
+  <h2>Recolored SVG</h2>
+  <div class="row" data-ex-w="100">
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:radial:red:/images/blue_circle_512.svg", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:fromleft:red:/images/blue_circle_512.svg", "proportion": "=7/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:scale:red:/images/blue_circle_512.svg", "proportion": "=6/8" }</pre>
+    <pre class="example">{ "numImages": 1, "background-color": "#dddddd", "variableImage": "url:frombottom:red:/images/blue_circle_512.svg", "proportion": "=7/8" }</pre>
+  </div>
+</section>
+
 
 <script src="/external/lodash.min.js"></script>
 <script src="/external/jquery.min.js"></script>

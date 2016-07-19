@@ -3,7 +3,7 @@
 
 class ImageFactory
 
-  @addImageTo: (config, width, height) ->
+  @addImageTo: (config, width, height, dataAttributes) ->
     d3Node = d3.select(this)
 
     if _.isString config
@@ -12,36 +12,35 @@ class ImageFactory
       unless config.type of ImageFactory.types
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
-    #why imageBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
-    #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
-    imageBox = {
-      x: 0
-      y: 0
-      width: width
-      height: height
-    }
-    #so we support some Factories returning both a newImage and an imageBox,
-    # and some factories who dont care just return a newImage
-    newImage = ImageFactory.types[config.type](d3Node, config, width, height)
-    if _.isObject(newImage) and _.has(newImage, 'newImage')
-      imageBox = newImage
-      newImage = imageBox.newImage
-      delete imageBox.newImage
+    newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
+    newImagePromise.then (newImageData) ->
+      #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
+      #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
+      imageBox = newImageData.unscaledBox || {
+        x: 0,
+        y: 0,
+        width: width
+        height: height
+      }
+      newImage = newImageData.newImage
 
-    if config.clip
-      clipMaker = switch
-        when config.clip is 'fromLeft' then ImageFactory.addClipFromLeft
-        when config.clip is 'fromRight' then ImageFactory.addClipFromRight
-        when config.clip is 'fromTop' then ImageFactory.addClipFromTop
-        when config.clip is 'fromBottom' then ImageFactory.addClipFromBottom
+      if config.clip
+        clipMaker = switch
+          when config.clip is 'fromLeft' then ImageFactory.addClipFromLeft
+          when config.clip is 'fromRight' then ImageFactory.addClipFromRight
+          when config.clip is 'fromTop' then ImageFactory.addClipFromTop
+          when config.clip is 'fromTop' then ImageFactory.addClipFromTop
+          when config.clip is 'fromBottom' then ImageFactory.addClipFromBottom
 
-      clipId = clipMaker d3Node, imageBox
-      newImage.attr 'clip-path', "url(##{clipId})"
+        clipId = clipMaker d3Node, imageBox
+        newImage.attr 'clip-path', "url(##{clipId})"
 
-    if config.radialclip
-      config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
-      newImage.attr 'clip-path', "url(##{config.radialclip})"
+      if config.radialclip
+        config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
+        newImage.attr 'clip-path', "url(##{config.radialclip})"
 
+    .catch (error) ->
+      console.log "newImage fail : #{error}"
 
     return null
 
@@ -107,12 +106,13 @@ class ImageFactory
       .attr 'r', (d) -> ratio(d.proportion) * diameter / 2
       .style 'fill', color
 
-    return {
+    return Promise.resolve {
       newImage: newImage
-      x: (width - diameter) / 2
-      y: (height - diameter) / 2
-      width: diameter
-      height: diameter
+      unscaledBox:
+        x: (width - diameter) / 2
+        y: (height - diameter) / 2
+        width: diameter
+        height: diameter
     }
 
   @addEllipseTo: (d3Node, config, width, height) ->
@@ -121,13 +121,15 @@ class ImageFactory
 
     color = ColorFactory.getColor config.color
 
-    return d3Node.append("svg:ellipse")
+    newImage = d3Node.append("svg:ellipse")
       .classed('ellipse', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
       .attr 'rx', (d) -> width * ratio(d.proportion) / 2
       .attr 'ry', (d) -> height * ratio(d.proportion) / 2
       .style 'fill', color
+
+    return Promise.resolve { newImage: newImage }
 
   @addSquareTo: (d3Node, config, width, height) ->
     ratio = (p) -> return if config.scale then p else 1
@@ -143,12 +145,13 @@ class ImageFactory
       .attr 'height', (d) -> ratio(d.proportion) * length
       .style 'fill', color
 
-    return {
+    return Promise.resolve {
       newImage: newImage
-      x: (width - length) / 2
-      y: (height - length) / 2
-      width: length
-      height: length
+      unscaledBox:
+        x: (width - length) / 2
+        y: (height - length) / 2
+        width: length
+        height: length
     }
 
   @addRectTo: (d3Node, config, width, height) ->
@@ -157,7 +160,7 @@ class ImageFactory
 
     color = ColorFactory.getColor config.color
 
-    return d3Node.append("svg:rect")
+    newImage = d3Node.append("svg:rect")
       .classed('rect', true)
       .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
       .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
@@ -165,42 +168,56 @@ class ImageFactory
       .attr 'height', (d) -> height * ratio(d.proportion)
       .style 'fill', color
 
-  @addRecoloredSvgTo: (d3Node, config, width, height) ->
+    return Promise.resolve { newImage: newImage }
 
-    newColor = ColorFactory.getColor config.color
-
-    onDownloadSuccess = (data) ->
-      svg = jQuery(data).find('svg');
-      cleanedSvgString = RecolorSvg.recolor(svg,newColor, width, height)
-      d3Node.html(cleanedSvgString)
-
-    onDownloadFail = (data) ->
-      throw new Error "could not download #{config.url}"
-
-    jQuery.ajax({url: config.url, dataType: 'xml' })
-      .done(onDownloadSuccess)
-      .fail(onDownloadFail)
-
-  @addExternalImage: (d3Node, config, width, height) ->
+  @addExternalImage: (d3Node, config, width, height, dataAttributes) ->
     if config.color
       if config.url.match(/\.svg$/)
-        return ImageFactory.addRecoloredSvgTo d3Node, config, width, height
+        return ImageFactory.addRecoloredSvgTo d3Node, config, width, height, dataAttributes
       else
         throw new Error "Cannot recolor #{config.url}: unsupported image type for recoloring"
     else
-      return ImageFactory._addExternalImage d3Node, config, width, height
+      return ImageFactory._addExternalImage d3Node, config, width, height, dataAttributes
+
+  # TODO this is extremely inefficient for multiImage graphics - SO BAD !
+  @addRecoloredSvgTo: (d3Node, config, width, height, dataAttributes) ->
+    newColor = ColorFactory.getColor config.color
+    return new Promise (resolve, reject) ->
+      onDownloadSuccess = (data) ->
+        svg = jQuery(data).find('svg')
+
+        ratio = if config.scale then dataAttributes.proportion else 1
+
+        x = width * (1 - ratio) / 2
+        y = height * (1 - ratio) / 2
+        width = width * ratio
+        height = height * ratio
+
+        cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height)
+
+        return resolve { newImage: d3Node.html(cleanedSvgString) }
+
+      onDownloadFail = (data) ->
+        return reject new Error "could not download #{config.url}"
+
+      # TODO Does jQuery.ajax make the promise ?
+      jQuery.ajax({url: config.url, dataType: 'xml' })
+        .done(onDownloadSuccess)
+        .fail(onDownloadFail)
 
   @_addExternalImage: (d3Node, config, width, height) ->
     ratio = (p) ->
       return if config.scale then p else 1
 
-    return d3Node.append("svg:image")
+    newImage = d3Node.append("svg:image")
       .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
       .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
       .attr 'width', (d) -> width * ratio(d.proportion)
       .attr 'height', (d) -> height * ratio(d.proportion)
       .attr 'xlink:href', config.url
       .attr 'class', 'variable-image'
+
+    return Promise.resolve { newImage: newImage }
 
   @addClipFromBottom: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')

@@ -2,8 +2,8 @@
 var ImageFactory;
 
 ImageFactory = (function() {
-  ImageFactory.addImageTo = function(config, width, height) {
-    var clipId, clipMaker, d3Node, imageBox, newImage;
+  ImageFactory.addImageTo = function(config, width, height, dataAttributes) {
+    var d3Node, newImagePromise;
     d3Node = d3.select(this);
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
@@ -12,38 +12,41 @@ ImageFactory = (function() {
         throw new Error("Invalid image creation config : unknown image type " + config.type);
       }
     }
-    imageBox = {
-      x: 0,
-      y: 0,
-      width: width,
-      height: height
-    };
-    newImage = ImageFactory.types[config.type](d3Node, config, width, height);
-    if (_.isObject(newImage) && _.has(newImage, 'newImage')) {
-      imageBox = newImage;
-      newImage = imageBox.newImage;
-      delete imageBox.newImage;
-    }
-    if (config.clip) {
-      clipMaker = (function() {
-        switch (false) {
-          case config.clip !== 'fromLeft':
-            return ImageFactory.addClipFromLeft;
-          case config.clip !== 'fromRight':
-            return ImageFactory.addClipFromRight;
-          case config.clip !== 'fromTop':
-            return ImageFactory.addClipFromTop;
-          case config.clip !== 'fromBottom':
-            return ImageFactory.addClipFromBottom;
-        }
-      })();
-      clipId = clipMaker(d3Node, imageBox);
-      newImage.attr('clip-path', "url(#" + clipId + ")");
-    }
-    if (config.radialclip) {
-      config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
-      newImage.attr('clip-path', "url(#" + config.radialclip + ")");
-    }
+    newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
+    newImagePromise.then(function(newImageData) {
+      var clipId, clipMaker, imageBox, newImage;
+      imageBox = newImageData.unscaledBox || {
+        x: 0,
+        y: 0,
+        width: width,
+        height: height
+      };
+      newImage = newImageData.newImage;
+      if (config.clip) {
+        clipMaker = (function() {
+          switch (false) {
+            case config.clip !== 'fromLeft':
+              return ImageFactory.addClipFromLeft;
+            case config.clip !== 'fromRight':
+              return ImageFactory.addClipFromRight;
+            case config.clip !== 'fromTop':
+              return ImageFactory.addClipFromTop;
+            case config.clip !== 'fromTop':
+              return ImageFactory.addClipFromTop;
+            case config.clip !== 'fromBottom':
+              return ImageFactory.addClipFromBottom;
+          }
+        })();
+        clipId = clipMaker(d3Node, imageBox);
+        newImage.attr('clip-path', "url(#" + clipId + ")");
+      }
+      if (config.radialclip) {
+        config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
+        return newImage.attr('clip-path', "url(#" + config.radialclip + ")");
+      }
+    })["catch"](function(error) {
+      return console.log("newImage fail : " + error);
+    });
     return null;
   };
 
@@ -116,17 +119,19 @@ ImageFactory = (function() {
     newImage = d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
       return ratio(d.proportion) * diameter / 2;
     }).style('fill', color);
-    return {
+    return Promise.resolve({
       newImage: newImage,
-      x: (width - diameter) / 2,
-      y: (height - diameter) / 2,
-      width: diameter,
-      height: diameter
-    };
+      unscaledBox: {
+        x: (width - diameter) / 2,
+        y: (height - diameter) / 2,
+        width: diameter,
+        height: diameter
+      }
+    });
   };
 
   ImageFactory.addEllipseTo = function(d3Node, config, width, height) {
-    var color, ratio;
+    var color, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -135,11 +140,14 @@ ImageFactory = (function() {
       }
     };
     color = ColorFactory.getColor(config.color);
-    return d3Node.append("svg:ellipse").classed('ellipse', true).attr('cx', width / 2).attr('cy', height / 2).attr('rx', function(d) {
+    newImage = d3Node.append("svg:ellipse").classed('ellipse', true).attr('cx', width / 2).attr('cy', height / 2).attr('rx', function(d) {
       return width * ratio(d.proportion) / 2;
     }).attr('ry', function(d) {
       return height * ratio(d.proportion) / 2;
     }).style('fill', color);
+    return Promise.resolve({
+      newImage: newImage
+    });
   };
 
   ImageFactory.addSquareTo = function(d3Node, config, width, height) {
@@ -162,17 +170,19 @@ ImageFactory = (function() {
     }).attr('height', function(d) {
       return ratio(d.proportion) * length;
     }).style('fill', color);
-    return {
+    return Promise.resolve({
       newImage: newImage,
-      x: (width - length) / 2,
-      y: (height - length) / 2,
-      width: length,
-      height: length
-    };
+      unscaledBox: {
+        x: (width - length) / 2,
+        y: (height - length) / 2,
+        width: length,
+        height: length
+      }
+    });
   };
 
   ImageFactory.addRectTo = function(d3Node, config, width, height) {
-    var color, ratio;
+    var color, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -181,7 +191,7 @@ ImageFactory = (function() {
       }
     };
     color = ColorFactory.getColor(config.color);
-    return d3Node.append("svg:rect").classed('rect', true).attr('x', function(d) {
+    newImage = d3Node.append("svg:rect").classed('rect', true).attr('x', function(d) {
       return width * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
       return height * (1 - ratio(d.proportion)) / 2;
@@ -190,40 +200,53 @@ ImageFactory = (function() {
     }).attr('height', function(d) {
       return height * ratio(d.proportion);
     }).style('fill', color);
+    return Promise.resolve({
+      newImage: newImage
+    });
   };
 
-  ImageFactory.addRecoloredSvgTo = function(d3Node, config, width, height) {
-    var newColor, onDownloadFail, onDownloadSuccess;
-    newColor = ColorFactory.getColor(config.color);
-    onDownloadSuccess = function(data) {
-      var cleanedSvgString, svg;
-      svg = jQuery(data).find('svg');
-      cleanedSvgString = RecolorSvg.recolor(svg, newColor, width, height);
-      return d3Node.html(cleanedSvgString);
-    };
-    onDownloadFail = function(data) {
-      throw new Error("could not download " + config.url);
-    };
-    return jQuery.ajax({
-      url: config.url,
-      dataType: 'xml'
-    }).done(onDownloadSuccess).fail(onDownloadFail);
-  };
-
-  ImageFactory.addExternalImage = function(d3Node, config, width, height) {
+  ImageFactory.addExternalImage = function(d3Node, config, width, height, dataAttributes) {
     if (config.color) {
       if (config.url.match(/\.svg$/)) {
-        return ImageFactory.addRecoloredSvgTo(d3Node, config, width, height);
+        return ImageFactory.addRecoloredSvgTo(d3Node, config, width, height, dataAttributes);
       } else {
         throw new Error("Cannot recolor " + config.url + ": unsupported image type for recoloring");
       }
     } else {
-      return ImageFactory._addExternalImage(d3Node, config, width, height);
+      return ImageFactory._addExternalImage(d3Node, config, width, height, dataAttributes);
     }
   };
 
+  ImageFactory.addRecoloredSvgTo = function(d3Node, config, width, height, dataAttributes) {
+    var newColor;
+    newColor = ColorFactory.getColor(config.color);
+    return new Promise(function(resolve, reject) {
+      var onDownloadFail, onDownloadSuccess;
+      onDownloadSuccess = function(data) {
+        var cleanedSvgString, ratio, svg, x, y;
+        svg = jQuery(data).find('svg');
+        ratio = config.scale ? dataAttributes.proportion : 1;
+        x = width * (1 - ratio) / 2;
+        y = height * (1 - ratio) / 2;
+        width = width * ratio;
+        height = height * ratio;
+        cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height);
+        return resolve({
+          newImage: d3Node.html(cleanedSvgString)
+        });
+      };
+      onDownloadFail = function(data) {
+        return reject(new Error("could not download " + config.url));
+      };
+      return jQuery.ajax({
+        url: config.url,
+        dataType: 'xml'
+      }).done(onDownloadSuccess).fail(onDownloadFail);
+    });
+  };
+
   ImageFactory._addExternalImage = function(d3Node, config, width, height) {
-    var ratio;
+    var newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -231,7 +254,7 @@ ImageFactory = (function() {
         return 1;
       }
     };
-    return d3Node.append("svg:image").attr('x', function(d) {
+    newImage = d3Node.append("svg:image").attr('x', function(d) {
       return width * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
       return height * (1 - ratio(d.proportion)) / 2;
@@ -240,6 +263,9 @@ ImageFactory = (function() {
     }).attr('height', function(d) {
       return height * ratio(d.proportion);
     }).attr('xlink:href', config.url).attr('class', 'variable-image');
+    return Promise.resolve({
+      newImage: newImage
+    });
   };
 
   ImageFactory.addClipFromBottom = function(d3Node, imageBox) {

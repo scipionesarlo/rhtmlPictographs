@@ -18,11 +18,13 @@ class RecolorSvg
 
     _.reduce(regexes, reducer, inputString)
 
-  @recolor: (svgObject, newColor, width, height) ->
+  @recolor: (svgObject, newColor, x, y, width, height) ->
 
     currentWidth = svgObject.attr 'width'
     currentHeight = svgObject.attr 'height'
 
+    svgObject.attr 'x', x
+    svgObject.attr 'y', y
     svgObject.attr 'width', width
     svgObject.attr 'height', height
 

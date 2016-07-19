@@ -6,6 +6,7 @@ dependencies:
    script:
      - jquery.min.js
      - lodash.min.js
+     - es6-promise.min.js
      - d3.min.js
      - d3-grid.js
      - rHtmlStatefulWidget.js

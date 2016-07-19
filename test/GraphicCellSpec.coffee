@@ -323,12 +323,15 @@ describe 'GraphicCell class', ->
 
     describe 'node classes:', ->
 
-      beforeEach ->
+      beforeEach (done) ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
           variableImage: 'circle:blue'
         }
+        # 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
+        # the 0 sec timeout effectively says clear the call stack before proceeding
+        setTimeout done, 0
 
         it 'generates correct node classes', ->
           expect($(".#{@uniqueClass} .node").length).to.equal 4
@@ -345,12 +348,15 @@ describe 'GraphicCell class', ->
 
     describe 'multi image clipped from left graphic:', ->
 
-      beforeEach ->
+      beforeEach (done) ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
           variableImage: 'circle:fromleft:blue'
         }
+        # 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
+        # the 0 sec timeout effectively says clear the call stack before proceeding
+        setTimeout done, 0
 
       it 'applies a clip path to hide part of the fourth graphic', ->
         firstImageClipWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('width'))
@@ -359,7 +365,7 @@ describe 'GraphicCell class', ->
         expect(fourthImageClipWidth / firstImageClipWidth).to.be.closeTo(0.5, 0.001);
 
     describe 'multi image vertical clipped graphic:', ->
-      beforeEach ->
+      beforeEach (done) ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
@@ -367,6 +373,9 @@ describe 'GraphicCell class', ->
           columnGutter: 0
           rowGutter: 0
         }, width=200, height=200
+        # 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
+        # the 0 sec timeout effectively says clear the call stack before proceeding
+        setTimeout done, 0
 
       it 'applies a clip path to hide part of the top right (01) graphic', ->
         height00 = parseFloat($(".#{@uniqueClass} .node-xy-0-0 clippath rect").attr('height')).toFixed(0)
@@ -378,12 +387,16 @@ describe 'GraphicCell class', ->
 
     describe 'multi circle proportion scaled graphic:', ->
 
-      beforeEach ->
+      beforeEach (done) ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
           variableImage: 'circle:scale:blue'
         }
+        # 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
+        # the 0 sec timeout effectively says clear the call stack before proceeding
+        setTimeout done, 0
+
 
       it 'shrinks the circle', ->
         firstImageRadius = parseFloat($(".#{@uniqueClass} .node-xy-0-0 circle").attr('r'))
@@ -393,12 +406,15 @@ describe 'GraphicCell class', ->
 
     describe 'multi image proportion scaled graphic:', ->
 
-      beforeEach ->
+      beforeEach (done) ->
         @uniqueClass = @makeGraphic {
           proportion: 0.875
           numImages: 4
           variableImage: 'url:scale:/image1.jpg'
         }
+        # 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
+        # the 0 sec timeout effectively says clear the call stack before proceeding
+        setTimeout done, 0
 
       it 'applies a clip path to hide part of the fourth image', ->
         firstImageWidth = parseFloat($(".#{@uniqueClass} .node-xy-0-0 image").attr('width'))

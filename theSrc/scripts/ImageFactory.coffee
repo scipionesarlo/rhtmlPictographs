@@ -3,8 +3,21 @@
 
 class ImageFactory
 
-  @addImageTo: (config, width, height, dataAttributes) ->
-    d3Node = d3.select(this)
+  # NB there is a chance that setting timeouts in the browser will mess with automation scripts, so consider this timeout in that scenario
+  # NB the timeout cn be set very low. Even at 0 all image requests for a Pictograph will share the same promise,
+  # because all calls to getOrDownload take place before the JS "next tick"
+  # NB Main benefit of setting higher is to aid during redraws etc.
+  @imageDownloadPromises = {}
+  @getOrDownload: (url) ->
+    unless url of ImageFactory.imageDownloadPromises
+      ImageFactory.imageDownloadPromises[url] = jQuery.ajax({url: url, dataType: 'text' })
+      setTimeout () ->
+        delete ImageFactory.imageDownloadPromises[url]
+      , 10000
+
+    return ImageFactory.imageDownloadPromises[url]
+
+  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
 
     if _.isString config
       config = ImageFactory.parseConfigString config
@@ -13,7 +26,7 @@ class ImageFactory
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    newImagePromise.then (newImageData) ->
+    return newImagePromise.then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
@@ -39,10 +52,10 @@ class ImageFactory
         config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
         newImage.attr 'clip-path', "url(##{config.radialclip})"
 
+      return newImage
+
     .catch (error) ->
       console.log "newImage fail : #{error}"
-
-    return null
 
   @parseConfigString: (configString) ->
     unless configString.length > 0
@@ -182,12 +195,13 @@ class ImageFactory
   # TODO this is extremely inefficient for multiImage graphics - SO BAD !
   @addRecoloredSvgTo: (d3Node, config, width, height, dataAttributes) ->
     newColor = ColorFactory.getColor config.color
+
     return new Promise (resolve, reject) ->
-      onDownloadSuccess = (data) ->
+      onDownloadSuccess = (xmlString) ->
+        data = jQuery.parseXML xmlString
         svg = jQuery(data).find('svg')
 
         ratio = if config.scale then dataAttributes.proportion else 1
-
         x = width * (1 - ratio) / 2
         y = height * (1 - ratio) / 2
         width = width * ratio
@@ -195,15 +209,9 @@ class ImageFactory
 
         cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height)
 
-        return resolve { newImage: d3Node.html(cleanedSvgString) }
+        return resolve { newImage: d3Node.append('g').html(cleanedSvgString) }
 
-      onDownloadFail = (data) ->
-        return reject new Error "could not download #{config.url}"
-
-      # TODO Does jQuery.ajax make the promise ?
-      jQuery.ajax({url: config.url, dataType: 'xml' })
-        .done(onDownloadSuccess)
-        .fail(onDownloadFail)
+      return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject)
 
   @_addExternalImage: (d3Node, config, width, height) ->
     ratio = (p) ->

@@ -120,7 +120,7 @@ GraphicCell = (function(_super) {
   };
 
   GraphicCell.prototype._draw = function() {
-    var backgroundRect, d3Data, enteringLeafNodes, graphicContainer, gridLayout, imageHeight, imageWidth, textSpanWidth, yMidpoint;
+    var backgroundRect, baseImageCompletePromise, baseImageConfig, baseImageRenderPromises, d3Data, enteringLeafNodes, graphicContainer, gridLayout, imageHeight, imageWidth, textSpanWidth, variableImageCompletePromise, variableImageConfig, yMidpoint;
     this._computeDimensions();
     this.parentSvg.append("svg:rect").attr('width', this.width).attr('height', this.height).attr('class', 'background-rect').attr('fill', this.config['background-color'] || 'none');
     if (this.config['text-header'] != null) {
@@ -172,18 +172,43 @@ GraphicCell = (function(_super) {
     if (this.config['debugBorder'] != null) {
       backgroundRect.attr('stroke', 'black').attr('stroke-width', '1');
     }
+    baseImageCompletePromise = Promise.resolve();
     if (this.config.baseImage != null) {
-      enteringLeafNodes.each(_.partial(ImageFactory.addImageTo, this.config.baseImage, imageWidth, imageHeight));
+      baseImageConfig = this.config.baseImage;
+      baseImageRenderPromises = [];
+      enteringLeafNodes.each(function(dataAttributes) {
+        var d3Node;
+        d3Node = d3.select(this);
+        return baseImageRenderPromises.push(ImageFactory.addImageTo(d3Node, baseImageConfig, imageWidth, imageHeight, dataAttributes));
+      });
+      baseImageCompletePromise = Promise.all(baseImageRenderPromises);
     }
-    enteringLeafNodes.each(_.partial(ImageFactory.addImageTo, this.config.variableImage, imageWidth, imageHeight));
-    if (this.config['tooltip']) {
-      enteringLeafNodes.append("svg:title").text(this.config['tooltip']);
+    variableImageCompletePromise = Promise.resolve();
+    if (this.config.variableImage != null) {
+      variableImageConfig = this.config.variableImage;
+      variableImageCompletePromise = baseImageCompletePromise.then(function() {
+        var variableImageRenderPromises;
+        variableImageRenderPromises = [];
+        enteringLeafNodes.each(function(dataAttributes) {
+          var d3Node;
+          d3Node = d3.select(this);
+          return variableImageRenderPromises.push(ImageFactory.addImageTo(d3Node, variableImageConfig, imageWidth, imageHeight, dataAttributes));
+        });
+        return Promise.all(variableImageRenderPromises);
+      });
     }
-    if (this.config['text-overlay'] != null) {
-      textSpanWidth = gridLayout.nodeSize()[0];
-      yMidpoint = gridLayout.nodeSize()[1] / 2;
-      return this._addTextTo(enteringLeafNodes, 'text-overlay', this.config['text-overlay'], textSpanWidth, yMidpoint);
-    }
+    return variableImageCompletePromise.then((function(_this) {
+      return function() {
+        if (_this.config['tooltip']) {
+          enteringLeafNodes.append("svg:title").text(_this.config['tooltip']);
+        }
+        if (_this.config['text-overlay'] != null) {
+          textSpanWidth = gridLayout.nodeSize()[0];
+          yMidpoint = gridLayout.nodeSize()[1] / 2;
+          return _this._addTextTo(enteringLeafNodes, 'text-overlay', _this.config['text-overlay'], textSpanWidth, yMidpoint);
+        }
+      };
+    })(this));
   };
 
   GraphicCell.prototype._computeDimensions = function() {

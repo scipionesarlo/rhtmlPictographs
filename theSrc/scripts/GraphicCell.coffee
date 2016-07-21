@@ -176,19 +176,38 @@ class GraphicCell extends BaseCell
         .attr 'stroke', 'black'
         .attr 'stroke-width', '1'
 
+    #NB To adhere to SVG "last drawn goes on top policy", we must delay variable image rendering until base image drawn
+    #the baseImageCompletePrpmise will not resolve until base images are "appended"
+    baseImageCompletePromise = Promise.resolve()
     if @config.baseImage?
-      enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.baseImage, imageWidth, imageHeight)
+      baseImageConfig = @config.baseImage
+      baseImageRenderPromises = []
+      enteringLeafNodes.each (dataAttributes) ->
+        d3Node = d3.select(this)
+        baseImageRenderPromises.push ImageFactory.addImageTo(d3Node, baseImageConfig, imageWidth, imageHeight, dataAttributes)
+      baseImageCompletePromise = Promise.all(baseImageRenderPromises)
 
-    enteringLeafNodes.each _.partial(ImageFactory.addImageTo, @config.variableImage, imageWidth, imageHeight)
+    variableImageCompletePromise = Promise.resolve()
+    if @config.variableImage?
+      variableImageConfig = @config.variableImage
+      variableImageCompletePromise = baseImageCompletePromise.then () ->
+        variableImageRenderPromises = []
+        enteringLeafNodes.each (dataAttributes) ->
+          d3Node = d3.select(this)
+          variableImageRenderPromises.push ImageFactory.addImageTo(d3Node, variableImageConfig, imageWidth, imageHeight, dataAttributes)
+        return Promise.all(variableImageRenderPromises)
+      
+    #NB To adhere to SVG "last drawn goes on top policy", we must delay text-overlay image rendering until variable image drawn
+    #the variableImageCompletePrpmise will not resolve until base images are "appended"
+    variableImageCompletePromise.then () =>
+      if @config['tooltip']
+        enteringLeafNodes.append("svg:title")
+          .text @config['tooltip']
 
-    if @config['tooltip']
-      enteringLeafNodes.append("svg:title")
-        .text @config['tooltip']
-
-    if @config['text-overlay']?
-      textSpanWidth = gridLayout.nodeSize()[0]
-      yMidpoint = gridLayout.nodeSize()[1] / 2
-      @_addTextTo enteringLeafNodes, 'text-overlay', @config['text-overlay'], textSpanWidth, yMidpoint
+      if @config['text-overlay']?
+        textSpanWidth = gridLayout.nodeSize()[0]
+        yMidpoint = gridLayout.nodeSize()[1] / 2
+        @_addTextTo enteringLeafNodes, 'text-overlay', @config['text-overlay'], textSpanWidth, yMidpoint
 
   _computeDimensions: () ->
 

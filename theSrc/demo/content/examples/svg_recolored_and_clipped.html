@@ -7,118 +7,98 @@
 <body>
 <!-- NB Important dev note: This file is used to auto generate r files in the examples directory. If you modify ensure you maintain the format of sections, containing h2, p, and div.example elements -->
 <a href="/index.html">Back to Index</a>
-<h1>EXAMPLE TEMPLATE</h1>
+<h1>SVGs being recolored and clipped</h1>
 
 <section>
-  <div class="row" data-ex-w="200" data-ex-h="100">
+  <div class="row" data-ex-w="305" data-ex-h="220">
     <pre class="example hide-config">
 {
-  "width": 130,
-  "height": 65,
+  "font-size": "12px",
   "background-color": "transparent",
   "table": {
-    "rowHeights": [
-      17.5,
-      15,
-      17.5
-    ],
+    "rowHeights": [ 50, 50, 50 ],
+    "colWidths": [ 120, 180 ],
     "rowGutterLength": 5,
     "columnGutterLength": 5,
-    "colWidths": [
-      45,
-      75
-    ],
     "rows": [
       [
         {
           "type": "label",
-          "value": {
-            "text": "First",
-            "padding-top": 2.500000,
-            "padding-bottom": 0.000000,
-            "font-family": "arial",
-            "font-size": "10.000000px",
-            "font-weight": "normal",
-            "font-color": "#2C2C2C",
-            "horizontal-align": "right",
-            "vertical-align": "center"
-          }
+          "value": { "text": "First", "horizontal-align": "right", "vertical-align": "center" }
         },
         {
           "type": "graphic",
           "value": {
-            "proportion": 0.300000,
-            "numImages": 5.000000,
-            "variableImage": "url:fromleft:blue:https://dl.dropboxusercontent.com/s/maqihgi1e3swt0b/train.svg",
-            "numRows": 1,
-            "columnGutter": 0.000000,
-            "rowGutter": 0.000000,
-            "padding": "2.500000 0.000000 0.000000 0.000000"
+            "proportion": 0.3,
+            "numImages": 5.0,
+            "variableImage": "url:fromleft:green:https://dl.dropboxusercontent.com/u/539177224/train_grey.svg",
+            "numRows": 1
           }
         }
       ],
       [
         {
           "type": "label",
-          "value": {
-            "text": "Second",
-            "padding-top": 0.000000,
-            "padding-bottom": 0.000000,
-            "font-family": "arial",
-            "font-size": "10.000000px",
-            "font-weight": "normal",
-            "font-color": "#2C2C2C",
-            "horizontal-align": "right",
-            "vertical-align": "center"
-          }
+          "value": { "text": "Second", "horizontal-align": "right", "vertical-align": "center" }
         },
         {
           "type": "graphic",
           "value": {
-            "proportion": 0.500000,
-            "numImages": 5.000000,
-            "variableImage": "url:fromleft:blue:https://dl.dropboxusercontent.com/s/maqihgi1e3swt0b/train.svg",
-            "numRows": 1,
-            "columnGutter": 0.000000,
-            "rowGutter": 0.000000,
-            "padding": "0.000000 0.000000 0.000000 0.000000"
+            "proportion": 0.5,
+            "numImages": 5.0,
+            "variableImage": "url:fromleft:orange:https://dl.dropboxusercontent.com/u/539177224/train_grey.svg",
+            "numRows": 1
           }
         }
       ],
       [
         {
           "type": "label",
-          "value": {
-            "text": "Third",
-            "padding-top": 0.000000,
-            "padding-bottom": 2.500000,
-            "font-family": "arial",
-            "font-size": "10.000000px",
-            "font-weight": "normal",
-            "font-color": "#2C2C2C",
-            "horizontal-align": "right",
-            "vertical-align": "center"
-          }
+          "value": { "text": "Third", "horizontal-align": "right", "vertical-align": "center" }
         },
         {
           "type": "graphic",
           "value": {
-            "proportion": 0.700000,
-            "numImages": 5.000000,
-            "variableImage": "url:fromleft:blue:https://dl.dropboxusercontent.com/s/maqihgi1e3swt0b/train.svg",
-            "numRows": 1,
-            "columnGutter": 0.000000,
-            "rowGutter": 0.000000,
-            "padding": "0.000000 0.000000 2.500000 0.000000"
+            "proportion": 0.7,
+            "numImages": 5.0,
+            "variableImage": "url:fromleft:red:https://dl.dropboxusercontent.com/u/539177224/train_grey.svg",
+            "numRows": 1
           }
         }
       ]
     ]
   }
 }
+    </pre>
+  </div>
 
-</pre>
-</div>
+  <div class="row" data-ex-w="200" data-ex-h="100">
+    <pre class="example hide-config">
+{
+  "font-size": "10",
+  "proportion": 0.5,
+  "numImages": 5,
+  "numRows": 1,
+  "variableImage": "url:fromleft:red:https://dl.dropboxusercontent.com/u/539177224/star_filled.svg",
+  "baseImage": "url:red:https://dl.dropboxusercontent.com/u/539177224/star_unfilled.svg",
+  "text-overlay": "!!",
+  "background-color": "transparent",
+  "resizable": "false"
+}
+    </pre>
+    <pre class="example hide-config">
+{
+  "proportion": 0.5,
+  "numImages": 5,
+  "numRows": 1,
+  "variableImage": "url:fromleft:https://dl.dropboxusercontent.com/u/539177224/star_filled.svg",
+  "baseImage": "url:https://dl.dropboxusercontent.com/u/539177224/star_unfilled.svg",
+  "background-color": "transparent",
+  "resizable": "false"
+}
+    </pre>
+  </div>
+
 </section>
 
 <script src="/external/lodash.min.js"></script>

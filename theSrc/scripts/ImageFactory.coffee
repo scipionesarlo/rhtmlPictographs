@@ -17,8 +17,7 @@ class ImageFactory
 
     return ImageFactory.imageDownloadPromises[url]
 
-  @addImageTo: (config, width, height, dataAttributes) ->
-    d3Node = d3.select(this)
+  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
 
     if _.isString config
       config = ImageFactory.parseConfigString config
@@ -27,7 +26,7 @@ class ImageFactory
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    newImagePromise.then (newImageData) ->
+    return newImagePromise.then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
@@ -53,10 +52,10 @@ class ImageFactory
         config.radialclip = ImageFactory.addRadialClip d3Node, imageBox
         newImage.attr 'clip-path', "url(##{config.radialclip})"
 
+      return newImage
+
     .catch (error) ->
       console.log "newImage fail : #{error}"
-
-    return null
 
   @parseConfigString: (configString) ->
     unless configString.length > 0
@@ -210,7 +209,7 @@ class ImageFactory
 
         cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height)
 
-        return resolve { newImage: d3Node.html(cleanedSvgString) }
+        return resolve { newImage: d3Node.append('g').html(cleanedSvgString) }
 
       return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject)
 

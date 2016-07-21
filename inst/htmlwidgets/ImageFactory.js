@@ -17,9 +17,8 @@ ImageFactory = (function() {
     return ImageFactory.imageDownloadPromises[url];
   };
 
-  ImageFactory.addImageTo = function(config, width, height, dataAttributes) {
-    var d3Node, newImagePromise;
-    d3Node = d3.select(this);
+  ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
+    var newImagePromise;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -28,7 +27,7 @@ ImageFactory = (function() {
       }
     }
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
-    newImagePromise.then(function(newImageData) {
+    return newImagePromise.then(function(newImageData) {
       var clipId, clipMaker, imageBox, newImage;
       imageBox = newImageData.unscaledBox || {
         x: 0,
@@ -57,12 +56,12 @@ ImageFactory = (function() {
       }
       if (config.radialclip) {
         config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
-        return newImage.attr('clip-path', "url(#" + config.radialclip + ")");
+        newImage.attr('clip-path', "url(#" + config.radialclip + ")");
       }
+      return newImage;
     })["catch"](function(error) {
       return console.log("newImage fail : " + error);
     });
-    return null;
   };
 
   ImageFactory.parseConfigString = function(configString) {
@@ -248,7 +247,7 @@ ImageFactory = (function() {
         height = height * ratio;
         cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height);
         return resolve({
-          newImage: d3Node.html(cleanedSvgString)
+          newImage: d3Node.append('g').html(cleanedSvgString)
         });
       };
       return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject);

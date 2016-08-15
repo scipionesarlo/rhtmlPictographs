@@ -34,8 +34,11 @@ class ImageFactory
       tempImg = document.createElement 'img'
       tempImg.setAttribute 'src', config.url
       document.body.appendChild(tempImg)
-      console.log tempImg
       aspectRatio = tempImg.height/tempImg.width
+      console.log tempImg
+      console.log tempImg.height
+      console.log tmpImg.width
+      console.log aspectRatio
       tempImg.remove()
       if aspectRatio > 1
         config.imageBoxWidth = height / aspectRatio

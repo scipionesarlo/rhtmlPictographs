@@ -37,7 +37,7 @@ class ImageFactory
       aspectRatio = tempImg.height/tempImg.width
       console.log tempImg
       console.log tempImg.height
-      console.log tmpImg.width
+      console.log tempImg.width
       console.log aspectRatio
       tempImg.remove()
       if aspectRatio > 1

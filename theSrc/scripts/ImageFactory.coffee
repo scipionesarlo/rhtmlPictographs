@@ -18,10 +18,6 @@ class ImageFactory
     return ImageFactory.imageDownloadPromises[url]
 
   @addImageTo: (d3Node, config, width, height, dataAttributes) ->
-    console.log 'addImageTo'
-
-    console.log 'here'
-    console.log config
     if _.isString config
       config = ImageFactory.parseConfigString config
     else
@@ -34,7 +30,9 @@ class ImageFactory
     config.imageBoxX = 0
     config.imageBoxY = 0
     if config.type is 'url'
+      console.log 'here'
       tempImg = document.createElement 'img'
+      console.log tempImg
       tempImg.setAttribute 'src', config.url
       document.body.appendChild(tempImg)
       aspectRatio = tempImg.height/tempImg.width

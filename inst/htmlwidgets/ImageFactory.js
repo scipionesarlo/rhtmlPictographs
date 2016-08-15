@@ -19,9 +19,6 @@ ImageFactory = (function() {
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
     var aspectRatio, newImagePromise, tempImg;
-    console.log('addImageTo');
-    console.log('here');
-    console.log(config);
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -34,7 +31,9 @@ ImageFactory = (function() {
     config.imageBoxX = 0;
     config.imageBoxY = 0;
     if (config.type === 'url') {
+      console.log('here');
       tempImg = document.createElement('img');
+      console.log(tempImg);
       tempImg.setAttribute('src', config.url);
       document.body.appendChild(tempImg);
       aspectRatio = tempImg.height / tempImg.width;

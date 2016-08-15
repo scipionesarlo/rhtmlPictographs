@@ -32,9 +32,9 @@ class ImageFactory
     if config.type is 'url'
       console.log 'here'
       tempImg = document.createElement 'img'
-      console.log tempImg
       tempImg.setAttribute 'src', config.url
       document.body.appendChild(tempImg)
+      console.log tempImg
       aspectRatio = tempImg.height/tempImg.width
       tempImg.remove()
       if aspectRatio > 1
@@ -47,6 +47,7 @@ class ImageFactory
         config.imageBoxHeight = width*aspectRatio
         config.imageBoxY = (height - config.imageBoxHeight)/2
         config.imageBoxX = 0
+      console.log config
 
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
     return newImagePromise.then (newImageData) ->

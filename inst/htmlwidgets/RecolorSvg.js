@@ -26,6 +26,7 @@ RecolorSvg = (function() {
     svgObject.attr('y', y);
     svgObject.attr('width', width);
     svgObject.attr('height', height);
+    svgObject.attr('preserveAspectRatio', 'xMidYMid meet');
     if (currentWidth && currentHeight && !svgObject.attr('viewBox')) {
       svgObject.attr('viewBox', "0 0 " + (currentWidth.replace(/(px|em)/, '')) + " " + (currentHeight.replace(/(px|em)/, '')));
     }

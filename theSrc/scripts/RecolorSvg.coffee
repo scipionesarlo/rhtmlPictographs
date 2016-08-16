@@ -27,6 +27,7 @@ class RecolorSvg
     svgObject.attr 'y', y
     svgObject.attr 'width', width
     svgObject.attr 'height', height
+    svgObject.attr 'preserveAspectRatio', 'xMidYMid meet'
 
     if currentWidth and currentHeight and !svgObject.attr('viewBox')
       svgObject.attr 'viewBox', "0 0 #{currentWidth.replace(/(px|em)/, '')} #{currentHeight.replace(/(px|em)/, '')}"
@@ -34,4 +35,3 @@ class RecolorSvg
     svgString = $('<div />').append(svgObject).html();
 
     return RecolorSvg.fillReplacer svgString, newColor
-

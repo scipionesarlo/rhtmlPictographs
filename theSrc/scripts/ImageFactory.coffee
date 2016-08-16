@@ -18,22 +18,48 @@ class ImageFactory
     return ImageFactory.imageDownloadPromises[url]
 
   @addImageTo: (d3Node, config, width, height, dataAttributes) ->
-
     if _.isString config
       config = ImageFactory.parseConfigString config
     else
       unless config.type of ImageFactory.types
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
+    # we need to get the aspect ratio for the clip, this is an ugly but effective way
+    # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
+    config.imageBoxHeight = height
+    config.imageBoxWidth = width
+    config.imageBoxX = 0
+    config.imageBoxY = 0
+    p = null
+    if config.type is 'url'
+      p = new Promise((resolve, reject) ->
+        tmpImg = document.createElement('img')
+        tmpImg.setAttribute 'src', config.url
+        document.body.appendChild(tmpImg)
+        tmpImg.onload = () ->
+          aspectRatio = tmpImg.height/tmpImg.width
+          if aspectRatio > 1
+            config.imageBoxWidth = height / aspectRatio
+            config.imageBoxHeight = height
+            config.imageBoxX = (width - config.imageBoxWidth)/2
+            config.imageBoxY = 0
+          else
+            config.imageBoxWidth = width
+            config.imageBoxHeight = width*aspectRatio
+            config.imageBoxY = (height - config.imageBoxHeight)/2
+            config.imageBoxX = 0
+          tmpImg.remove()
+          resolve()
+          )
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    return newImagePromise.then (newImageData) ->
+    return p.then( -> newImagePromise).then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
-        x: 0,
-        y: 0,
-        width: width
-        height: height
+        x: config.imageBoxX,
+        y: config.imageBoxY,
+        width: config.imageBoxWidth
+        height: config.imageBoxHeight
       }
       newImage = newImageData.newImage
 
@@ -220,10 +246,11 @@ class ImageFactory
     newImage = d3Node.append("svg:image")
       .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
       .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
-      .attr 'width', (d) -> width * ratio(d.proportion)
-      .attr 'height', (d) -> height * ratio(d.proportion)
       .attr 'xlink:href', config.url
       .attr 'class', 'variable-image'
+      .attr 'width', (d) -> width * ratio(d.proportion)
+      .attr 'height', (d) -> height * ratio(d.proportion)
+      .attr 'preserveAspectRatio', 'xMidYMid meet'
 
     return Promise.resolve { newImage: newImage }
 

@@ -196,7 +196,7 @@ class GraphicCell extends BaseCell
           d3Node = d3.select(this)
           variableImageRenderPromises.push ImageFactory.addImageTo(d3Node, variableImageConfig, imageWidth, imageHeight, dataAttributes)
         return Promise.all(variableImageRenderPromises)
-      
+
     #NB To adhere to SVG "last drawn goes on top policy", we must delay text-overlay image rendering until variable image drawn
     #the variableImageCompletePrpmise will not resolve until base images are "appended"
     variableImageCompletePromise.then () =>

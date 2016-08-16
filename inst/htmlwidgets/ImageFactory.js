@@ -18,7 +18,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
-    var newImagePromise, tmpImg;
+    var newImagePromise, p;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -30,29 +30,36 @@ ImageFactory = (function() {
     config.imageBoxWidth = width;
     config.imageBoxX = 0;
     config.imageBoxY = 0;
+    p = null;
     if (config.type === 'url') {
-      tmpImg = document.createElement('img');
-      tmpImg.setAttribute('src', config.url);
-      document.body.appendChild(tmpImg);
-      tmpImg.onload = function() {
-        var aspectRatio;
-        aspectRatio = tmpImg.height / tmpImg.width;
-        if (aspectRatio > 1) {
-          config.imageBoxWidth = height / aspectRatio;
-          config.imageBoxHeight = height;
-          config.imageBoxX = (width - config.imageBoxWidth) / 2;
-          config.imageBoxY = 0;
-        } else {
-          config.imageBoxWidth = width;
-          config.imageBoxHeight = width * aspectRatio;
-          config.imageBoxY = (height - config.imageBoxHeight) / 2;
-          config.imageBoxX = 0;
-        }
-        return tmpImg.remove();
-      };
+      p = new Promise(function(resolve, reject) {
+        var tmpImg;
+        tmpImg = document.createElement('img');
+        tmpImg.setAttribute('src', config.url);
+        document.body.appendChild(tmpImg);
+        return tmpImg.onload = function() {
+          var aspectRatio;
+          aspectRatio = tmpImg.height / tmpImg.width;
+          if (aspectRatio > 1) {
+            config.imageBoxWidth = height / aspectRatio;
+            config.imageBoxHeight = height;
+            config.imageBoxX = (width - config.imageBoxWidth) / 2;
+            config.imageBoxY = 0;
+          } else {
+            config.imageBoxWidth = width;
+            config.imageBoxHeight = width * aspectRatio;
+            config.imageBoxY = (height - config.imageBoxHeight) / 2;
+            config.imageBoxX = 0;
+          }
+          tmpImg.remove();
+          return resolve();
+        };
+      });
     }
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
-    return newImagePromise.then(function(newImageData) {
+    return p.then(function() {
+      return newImagePromise;
+    }).then(function(newImageData) {
       var clipId, clipMaker, imageBox, newImage;
       imageBox = newImageData.unscaledBox || {
         x: config.imageBoxX,

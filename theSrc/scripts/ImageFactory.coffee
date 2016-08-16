@@ -25,31 +25,34 @@ class ImageFactory
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
     # we need to get the aspect ratio for the clip, this is an ugly but effective way
-    # There is a potential timing issue here with newImagePromise - observed in Firefox
+    # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
     config.imageBoxHeight = height
     config.imageBoxWidth = width
     config.imageBoxX = 0
     config.imageBoxY = 0
+    p = null
     if config.type is 'url'
-      tmpImg = document.createElement('img')
-      tmpImg.setAttribute 'src', config.url
-      document.body.appendChild(tmpImg)
-      tmpImg.onload = () ->
-        aspectRatio = tmpImg.height/tmpImg.width
-        if aspectRatio > 1
-          config.imageBoxWidth = height / aspectRatio
-          config.imageBoxHeight = height
-          config.imageBoxX = (width - config.imageBoxWidth)/2
-          config.imageBoxY = 0
-        else
-          config.imageBoxWidth = width
-          config.imageBoxHeight = width*aspectRatio
-          config.imageBoxY = (height - config.imageBoxHeight)/2
-          config.imageBoxX = 0
-        tmpImg.remove()
-
+      p = new Promise((resolve, reject) ->
+        tmpImg = document.createElement('img')
+        tmpImg.setAttribute 'src', config.url
+        document.body.appendChild(tmpImg)
+        tmpImg.onload = () ->
+          aspectRatio = tmpImg.height/tmpImg.width
+          if aspectRatio > 1
+            config.imageBoxWidth = height / aspectRatio
+            config.imageBoxHeight = height
+            config.imageBoxX = (width - config.imageBoxWidth)/2
+            config.imageBoxY = 0
+          else
+            config.imageBoxWidth = width
+            config.imageBoxHeight = width*aspectRatio
+            config.imageBoxY = (height - config.imageBoxHeight)/2
+            config.imageBoxX = 0
+          tmpImg.remove()
+          resolve()
+          )
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    return newImagePromise.then (newImageData) ->
+    return p.then( -> newImagePromise).then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {

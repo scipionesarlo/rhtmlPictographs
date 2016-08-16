@@ -18,7 +18,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
-    var aspectRatio, newImagePromise, tempImg;
+    var newImagePromise, tmpImg;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -31,28 +31,25 @@ ImageFactory = (function() {
     config.imageBoxX = 0;
     config.imageBoxY = 0;
     if (config.type === 'url') {
-      console.log('here');
-      tempImg = document.createElement('img');
-      tempImg.setAttribute('src', config.url);
-      document.body.appendChild(tempImg);
-      aspectRatio = tempImg.height / tempImg.width;
-      console.log(tempImg);
-      console.log(tempImg.height);
-      console.log(tempImg.width);
-      console.log(aspectRatio);
-      tempImg.remove();
-      if (aspectRatio > 1) {
-        config.imageBoxWidth = height / aspectRatio;
-        config.imageBoxHeight = height;
-        config.imageBoxX = (width - config.imageBoxWidth) / 2;
-        config.imageBoxY = 0;
-      } else {
-        config.imageBoxWidth = width;
-        config.imageBoxHeight = width * aspectRatio;
-        config.imageBoxY = (height - config.imageBoxHeight) / 2;
-        config.imageBoxX = 0;
-      }
-      console.log(config);
+      tmpImg = document.createElement('img');
+      tmpImg.setAttribute('src', config.url);
+      document.body.appendChild(tmpImg);
+      tmpImg.onload = function() {
+        var aspectRatio;
+        aspectRatio = tmpImg.height / tmpImg.width;
+        if (aspectRatio > 1) {
+          config.imageBoxWidth = height / aspectRatio;
+          config.imageBoxHeight = height;
+          config.imageBoxX = (width - config.imageBoxWidth) / 2;
+          config.imageBoxY = 0;
+        } else {
+          config.imageBoxWidth = width;
+          config.imageBoxHeight = width * aspectRatio;
+          config.imageBoxY = (height - config.imageBoxHeight) / 2;
+          config.imageBoxX = 0;
+        }
+        return tmpImg.remove();
+      };
     }
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
     return newImagePromise.then(function(newImageData) {

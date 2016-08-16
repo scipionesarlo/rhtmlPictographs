@@ -25,32 +25,28 @@ class ImageFactory
         throw new Error "Invalid image creation config : unknown image type #{config.type}"
 
     # we need to get the aspect ratio for the clip, this is an ugly but effective way
+    # There is a potential timing issue here with newImagePromise - observed in Firefox
     config.imageBoxHeight = height
     config.imageBoxWidth = width
     config.imageBoxX = 0
     config.imageBoxY = 0
     if config.type is 'url'
-      console.log 'here'
-      tempImg = document.createElement 'img'
-      tempImg.setAttribute 'src', config.url
-      document.body.appendChild(tempImg)
-      aspectRatio = tempImg.height/tempImg.width
-      console.log tempImg
-      console.log tempImg.height
-      console.log tempImg.width
-      console.log aspectRatio
-      tempImg.remove()
-      if aspectRatio > 1
-        config.imageBoxWidth = height / aspectRatio
-        config.imageBoxHeight = height
-        config.imageBoxX = (width - config.imageBoxWidth)/2
-        config.imageBoxY = 0
-      else
-        config.imageBoxWidth = width
-        config.imageBoxHeight = width*aspectRatio
-        config.imageBoxY = (height - config.imageBoxHeight)/2
-        config.imageBoxX = 0
-      console.log config
+      tmpImg = document.createElement('img')
+      tmpImg.setAttribute 'src', config.url
+      document.body.appendChild(tmpImg)
+      tmpImg.onload = () ->
+        aspectRatio = tmpImg.height/tmpImg.width
+        if aspectRatio > 1
+          config.imageBoxWidth = height / aspectRatio
+          config.imageBoxHeight = height
+          config.imageBoxX = (width - config.imageBoxWidth)/2
+          config.imageBoxY = 0
+        else
+          config.imageBoxWidth = width
+          config.imageBoxHeight = width*aspectRatio
+          config.imageBoxY = (height - config.imageBoxHeight)/2
+          config.imageBoxX = 0
+        tmpImg.remove()
 
     newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
     return newImagePromise.then (newImageData) ->

@@ -19,39 +19,43 @@ ImageFactory = (function() {
 
   ImageFactory.imageSvgDimensions = {};
 
-  ImageFactory.getImageDimensions = function(config, width, height) {
-    if (!(config.url in ImageFactory.imageSvgDimensions)) {
-      ImageFactory.imageSvgDimensions[config.url] = new Promise(function(resolve, reject) {
+  ImageFactory.getImageDimensions = function(url, imageBoxDim, width, height) {
+    if (!url) {
+      return new Promise(function(resolve, reject) {
+        return resolve(imageBoxDim);
+      });
+    }
+    if (!(url in ImageFactory.imageSvgDimensions)) {
+      ImageFactory.imageSvgDimensions[url] = new Promise(function(resolve, reject) {
         var tmpImg;
         tmpImg = document.createElement('img');
-        tmpImg.setAttribute('src', config.url);
+        tmpImg.setAttribute('src', url);
         document.body.appendChild(tmpImg);
         return tmpImg.onload = function() {
           var aspectRatio;
           aspectRatio = tmpImg.getBoundingClientRect().height / tmpImg.getBoundingClientRect().width;
-          config.loadHeight = tmpImg.getBoundingClientRect().height;
-          config.loadWidth = tmpImg.getBoundingClientRect().width;
           if (aspectRatio > 1) {
-            config.imageBoxWidth = height / aspectRatio;
-            config.imageBoxHeight = height;
-            config.imageBoxX = (width - config.imageBoxWidth) / 2;
-            config.imageBoxY = 0;
+            imageBoxDim.width = height / aspectRatio;
+            imageBoxDim.height = height;
+            imageBoxDim.x = (width - imageBoxDim.width) / 2;
+            imageBoxDim.y = 0;
           } else {
-            config.imageBoxWidth = width;
-            config.imageBoxHeight = width * aspectRatio;
-            config.imageBoxY = (height - config.imageBoxHeight) / 2;
-            config.imageBoxX = 0;
+            imageBoxDim.width = width;
+            imageBoxDim.height = width * aspectRatio;
+            imageBoxDim.y = (height - imageBoxDim.height) / 2;
+            imageBoxDim.x = 0;
           }
-          config.aspectRatio = aspectRatio;
+          imageBoxDim.aspectRatio = aspectRatio;
           tmpImg.remove();
-          return resolve();
+          return resolve(imageBoxDim);
         };
       });
     }
-    return ImageFactory.imageSvgDimensions[config.url];
+    return ImageFactory.imageSvgDimensions[url];
   };
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
+    var imageBoxDim;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -59,19 +63,23 @@ ImageFactory = (function() {
         throw new Error("Invalid image creation config : unknown image type " + config.type);
       }
     }
-    config.imageBoxHeight = height;
-    config.imageBoxWidth = width;
-    config.imageBoxX = 0;
-    config.imageBoxY = 0;
-    return ImageFactory.getImageDimensions(config, width, height).then(function() {
+    imageBoxDim = {
+      height: height,
+      width: width,
+      x: 0,
+      y: 0
+    };
+    config.imageBoxDim = imageBoxDim;
+    return ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height).then(function(newImageBoxDim) {
+      config.imageBoxDim = newImageBoxDim;
       return ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
     }).then(function(newImageData) {
       var clipId, clipMaker, imageBox, newImage;
       imageBox = newImageData.unscaledBox || {
-        x: config.imageBoxX,
-        y: config.imageBoxY,
-        width: config.imageBoxWidth,
-        height: config.imageBoxHeight
+        x: config.imageBoxDim.x,
+        y: config.imageBoxDim.y,
+        width: config.imageBoxDim.width,
+        height: config.imageBoxDim.height
       };
       newImage = newImageData.newImage;
       if (config.clip) {

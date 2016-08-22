@@ -41,7 +41,7 @@ Is the same as this table config:
   <li> If its a string, then use it as a table cell definition : <span class="config-only">rhtmlPictographs::graphic('{"table":{ "rows": [[ "CONFIG" ]] }}')</span></li>
   <li> If its an JSON object, then use it as a table cell definition as follows : <span class="config-only">rhtmlPictographs::graphic('{"table":{ "rows": [[ { "type": "graphic", "value": CONFIG } ]] }}')</span></li>
 </ul>
-<!--
+
 <section>
   <h2>Shapes</h2>
   <p> Several basic SVG shapes are supported, as well as the use of external image URLs, and image 'data URIs' (where the image is encoded in base64).</p>
@@ -124,7 +124,7 @@ Is the same as this table config:
     <div class="example">url:red:/images/rocket_black.svg</div>
     <div class="example">url:red:/images/stickman_green.svg</div>
   </div>
-</section> -->
+</section>
 
 <section>
   <h2>Use a proportion and a scaling technique</h2>
@@ -138,12 +138,12 @@ Is the same as this table config:
   <p>Each technique will work with any of the shape types defined above.</p>
 
   <div class="row" data-ex-h="100" data-ex-w="100">
-    <!-- <div class="example">{"proportion":0.1,"numImages":1,"variableImage":"url:fromleft:black:https://dl.dropboxusercontent.com/u/539177224/stickman_grey.svg","baseImage":"url:https://dl.dropboxusercontent.com/u/539177224/stickman_grey.svg","width":100,"height":200,"background-color":"transparent","columnGutter":0,"rowGutter":0,"padding":"0 0 0 0","resizable":"false"}</div> -->
-    <!-- <div class="example">{"proportion":0.4,"numImages":10,"numRows":2,"variableImage":"url:fromleft:black:https://dl.dropboxusercontent.com/u/539177224/star_grey.svg","baseImage":"url:https://dl.dropboxusercontent.com/u/539177224/star_grey.svg","width":250,"height":100,"background-color":"transparent","columnGutter":0,"rowGutter":0,"padding":"0 0 0 0","resizable":"false"}</div> -->
-    <div class="example">{"proportion":0.49,"numImages":10,"numRows":2,"variableImage":"url:fromleft:black:https://dl.dropboxusercontent.com/u/539177224/thumbsup_grey.svg","baseImage":"url:red:https://dl.dropboxusercontent.com/u/539177224/thumbsup_grey.svg","width":240,"height":110,"background-color":"transparent","columnGutter":0,"rowGutter":0,"padding":"5 10 5 0","resizable":"false"}</div>
-    <!-- <div class="example">{ "variableImage": "circle:fromtop", "proportion": "0.75" }</div> -->
+    <div class="example">{ "variableImage": "circle:fromleft", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:fromright", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:frombottom", "proportion": "0.75" }</div>
+    <div class="example">{ "variableImage": "circle:fromtop", "proportion": "0.75" }</div>
   </div>
-  <!-- <div class="row" data-ex-h="100" data-ex-w="100">
+  <div class="row" data-ex-h="100" data-ex-w="100">
     <div class="example">{ "variableImage": "circle:scale", "proportion": "0.75" }</div>
     <div class="example">{ "variableImage": "circle:radial", "proportion": "0.75" }</div>
   </div>
@@ -153,10 +153,10 @@ Is the same as this table config:
     <div class="example">{ "variableImage": "circle:horizontal", "proportion": "0.75" }</div>
     <div class="example">{ "variableImage": "circle:vertical", "proportion": "0.75" }</div>
     <div class="example">{ "variableImage": "circle:pie", "proportion": "0.75" }</div>
-  </div> -->
+  </div>
 
 </section>
-<!--
+
 <section>
   <h2>Use a fraction in the proportion field</h2>
   <p>If the proportion string starts with '=', then the remaining string will be interpreted as Javascript, so we can pass in fractions or other mathematical expressions.</p>
@@ -310,7 +310,7 @@ Is the same as this table config:
   <div class="row">
     <pre class="example">{ "variableImage": "circle:lightblue", "numImages": "4", "css": { ".node-xy-1-1 circle" : { "stroke" : "black" } } }</pre>
   </div>
-</section> -->
+</section>
 
 <script src="/external/lodash.min.js"></script>
 <script src="/external/jquery.min.js"></script>

@@ -18,7 +18,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
-    var newImagePromise, p;
+    var p;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -39,7 +39,9 @@ ImageFactory = (function() {
         document.body.appendChild(tmpImg);
         return tmpImg.onload = function() {
           var aspectRatio;
-          aspectRatio = tmpImg.height / tmpImg.width;
+          aspectRatio = tmpImg.getBoundingClientRect().height / tmpImg.getBoundingClientRect().width;
+          config.loadHeight = tmpImg.getBoundingClientRect().height;
+          config.loadWidth = tmpImg.getBoundingClientRect().width;
           if (aspectRatio > 1) {
             config.imageBoxWidth = height / aspectRatio;
             config.imageBoxHeight = height;
@@ -51,14 +53,14 @@ ImageFactory = (function() {
             config.imageBoxY = (height - config.imageBoxHeight) / 2;
             config.imageBoxX = 0;
           }
+          config.aspectRatio = aspectRatio;
           tmpImg.remove();
           return resolve();
         };
       });
     }
-    newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
     return p.then(function() {
-      return newImagePromise;
+      return ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
     }).then(function(newImageData) {
       var clipId, clipMaker, imageBox, newImage;
       imageBox = newImageData.unscaledBox || {

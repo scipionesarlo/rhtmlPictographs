@@ -37,7 +37,9 @@ class ImageFactory
         tmpImg.setAttribute 'src', config.url
         document.body.appendChild(tmpImg)
         tmpImg.onload = () ->
-          aspectRatio = tmpImg.height/tmpImg.width
+          aspectRatio = tmpImg.getBoundingClientRect().height/tmpImg.getBoundingClientRect().width
+          config.loadHeight = tmpImg.getBoundingClientRect().height
+          config.loadWidth = tmpImg.getBoundingClientRect().width
           if aspectRatio > 1
             config.imageBoxWidth = height / aspectRatio
             config.imageBoxHeight = height
@@ -48,11 +50,13 @@ class ImageFactory
             config.imageBoxHeight = width*aspectRatio
             config.imageBoxY = (height - config.imageBoxHeight)/2
             config.imageBoxX = 0
+          config.aspectRatio = aspectRatio
           tmpImg.remove()
           resolve()
           )
-    newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    return p.then( -> newImagePromise).then (newImageData) ->
+    return p.then( ->
+      ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
+    ).then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
@@ -221,6 +225,7 @@ class ImageFactory
   # TODO this is extremely inefficient for multiImage graphics - SO BAD !
   @addRecoloredSvgTo: (d3Node, config, width, height, dataAttributes) ->
     newColor = ColorFactory.getColor config.color
+
 
     return new Promise (resolve, reject) ->
       onDownloadSuccess = (xmlString) ->

@@ -14,25 +14,12 @@ class ImageFactory
       setTimeout () ->
         delete ImageFactory.imageDownloadPromises[url]
       , 10000
-
     return ImageFactory.imageDownloadPromises[url]
 
-  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
-    if _.isString config
-      config = ImageFactory.parseConfigString config
-    else
-      unless config.type of ImageFactory.types
-        throw new Error "Invalid image creation config : unknown image type #{config.type}"
-
-    # we need to get the aspect ratio for the clip, this is an ugly but effective way
-    # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
-    config.imageBoxHeight = height
-    config.imageBoxWidth = width
-    config.imageBoxX = 0
-    config.imageBoxY = 0
-    p = null
-    if config.type is 'url'
-      p = new Promise((resolve, reject) ->
+  @imageSvgDimensions = {}
+  @getImageDimensions: (config, width, height) ->
+    unless config.url of ImageFactory.imageSvgDimensions
+      ImageFactory.imageSvgDimensions[config.url] = new Promise((resolve, reject) ->
         tmpImg = document.createElement('img')
         tmpImg.setAttribute 'src', config.url
         document.body.appendChild(tmpImg)
@@ -54,7 +41,23 @@ class ImageFactory
           tmpImg.remove()
           resolve()
           )
-    return p.then( ->
+    return ImageFactory.imageSvgDimensions[config.url]
+
+  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
+    if _.isString config
+      config = ImageFactory.parseConfigString config
+    else
+      unless config.type of ImageFactory.types
+        throw new Error "Invalid image creation config : unknown image type #{config.type}"
+
+    # we need to get the aspect ratio for the clip, this is an ugly but effective way
+    # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
+    config.imageBoxHeight = height
+    config.imageBoxWidth = width
+    config.imageBoxX = 0
+    config.imageBoxY = 0
+
+    return ImageFactory.getImageDimensions(config, width, height).then( ->
       ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
     ).then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.

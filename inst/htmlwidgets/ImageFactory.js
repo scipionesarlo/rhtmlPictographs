@@ -17,22 +17,11 @@ ImageFactory = (function() {
     return ImageFactory.imageDownloadPromises[url];
   };
 
-  ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
-    var p;
-    if (_.isString(config)) {
-      config = ImageFactory.parseConfigString(config);
-    } else {
-      if (!(config.type in ImageFactory.types)) {
-        throw new Error("Invalid image creation config : unknown image type " + config.type);
-      }
-    }
-    config.imageBoxHeight = height;
-    config.imageBoxWidth = width;
-    config.imageBoxX = 0;
-    config.imageBoxY = 0;
-    p = null;
-    if (config.type === 'url') {
-      p = new Promise(function(resolve, reject) {
+  ImageFactory.imageSvgDimensions = {};
+
+  ImageFactory.getImageDimensions = function(config, width, height) {
+    if (!(config.url in ImageFactory.imageSvgDimensions)) {
+      ImageFactory.imageSvgDimensions[config.url] = new Promise(function(resolve, reject) {
         var tmpImg;
         tmpImg = document.createElement('img');
         tmpImg.setAttribute('src', config.url);
@@ -59,7 +48,22 @@ ImageFactory = (function() {
         };
       });
     }
-    return p.then(function() {
+    return ImageFactory.imageSvgDimensions[config.url];
+  };
+
+  ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
+    if (_.isString(config)) {
+      config = ImageFactory.parseConfigString(config);
+    } else {
+      if (!(config.type in ImageFactory.types)) {
+        throw new Error("Invalid image creation config : unknown image type " + config.type);
+      }
+    }
+    config.imageBoxHeight = height;
+    config.imageBoxWidth = width;
+    config.imageBoxX = 0;
+    config.imageBoxY = 0;
+    return ImageFactory.getImageDimensions(config, width, height).then(function() {
       return ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
     }).then(function(newImageData) {
       var clipId, clipMaker, imageBox, newImage;

@@ -14,8 +14,34 @@ class ImageFactory
       setTimeout () ->
         delete ImageFactory.imageDownloadPromises[url]
       , 10000
-
     return ImageFactory.imageDownloadPromises[url]
+
+  @imageSvgDimensions = {}
+  @getImageDimensions: (url, imageBoxDim, width, height) ->
+    return new Promise((resolve, reject) -> resolve(imageBoxDim)) unless url
+
+    unless url of ImageFactory.imageSvgDimensions
+      ImageFactory.imageSvgDimensions[url] = new Promise((resolve, reject) ->
+        tmpImg = document.createElement('img')
+        tmpImg.setAttribute 'src', url
+        document.body.appendChild(tmpImg)
+        tmpImg.onload = () ->
+          aspectRatio = tmpImg.getBoundingClientRect().height/tmpImg.getBoundingClientRect().width
+          if aspectRatio > 1
+            imageBoxDim.width = height / aspectRatio
+            imageBoxDim.height = height
+            imageBoxDim.x = (width - imageBoxDim.width)/2
+            imageBoxDim.y = 0
+          else
+            imageBoxDim.width = width
+            imageBoxDim.height = width*aspectRatio
+            imageBoxDim.y = (height - imageBoxDim.height)/2
+            imageBoxDim.x = 0
+          imageBoxDim.aspectRatio = aspectRatio
+          tmpImg.remove()
+          resolve(imageBoxDim)
+          )
+    return ImageFactory.imageSvgDimensions[url]
 
   @addImageTo: (d3Node, config, width, height, dataAttributes) ->
     if _.isString config
@@ -26,40 +52,24 @@ class ImageFactory
 
     # we need to get the aspect ratio for the clip, this is an ugly but effective way
     # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
-    config.imageBoxHeight = height
-    config.imageBoxWidth = width
-    config.imageBoxX = 0
-    config.imageBoxY = 0
-    p = null
-    if config.type is 'url'
-      p = new Promise((resolve, reject) ->
-        tmpImg = document.createElement('img')
-        tmpImg.setAttribute 'src', config.url
-        document.body.appendChild(tmpImg)
-        tmpImg.onload = () ->
-          aspectRatio = tmpImg.height/tmpImg.width
-          if aspectRatio > 1
-            config.imageBoxWidth = height / aspectRatio
-            config.imageBoxHeight = height
-            config.imageBoxX = (width - config.imageBoxWidth)/2
-            config.imageBoxY = 0
-          else
-            config.imageBoxWidth = width
-            config.imageBoxHeight = width*aspectRatio
-            config.imageBoxY = (height - config.imageBoxHeight)/2
-            config.imageBoxX = 0
-          tmpImg.remove()
-          resolve()
-          )
-    newImagePromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    return p.then( -> newImagePromise).then (newImageData) ->
+    imageBoxDim =
+      height: height
+      width: width
+      x: 0
+      y: 0
+    config.imageBoxDim = imageBoxDim
+
+    return ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height).then( (newImageBoxDim) ->
+      config.imageBoxDim = newImageBoxDim
+      ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
+    ).then (newImageData) ->
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
-        x: config.imageBoxX,
-        y: config.imageBoxY,
-        width: config.imageBoxWidth
-        height: config.imageBoxHeight
+        x: config.imageBoxDim.x,
+        y: config.imageBoxDim.y,
+        width: config.imageBoxDim.width
+        height: config.imageBoxDim.height
       }
       newImage = newImageData.newImage
 
@@ -221,6 +231,7 @@ class ImageFactory
   # TODO this is extremely inefficient for multiImage graphics - SO BAD !
   @addRecoloredSvgTo: (d3Node, config, width, height, dataAttributes) ->
     newColor = ColorFactory.getColor config.color
+
 
     return new Promise (resolve, reject) ->
       onDownloadSuccess = (xmlString) ->

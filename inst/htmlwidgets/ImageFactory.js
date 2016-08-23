@@ -55,7 +55,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
-    var imageBoxDim;
+    var getDimensionsPromise, getImageDataPromise, imageBoxDim;
     if (_.isString(config)) {
       config = ImageFactory.parseConfigString(config);
     } else {
@@ -70,11 +70,12 @@ ImageFactory = (function() {
       y: 0
     };
     config.imageBoxDim = imageBoxDim;
-    return ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height).then(function(newImageBoxDim) {
-      config.imageBoxDim = newImageBoxDim;
-      return ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
-    }).then(function(newImageData) {
-      var clipId, clipMaker, imageBox, newImage;
+    getDimensionsPromise = ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height);
+    getImageDataPromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
+    return Promise.all([getDimensionsPromise, getImageDataPromise]).then(function(values) {
+      var clipId, clipMaker, imageBox, newImage, newImageData;
+      config.imageBoxDim = values[0];
+      newImageData = values[1];
       imageBox = newImageData.unscaledBox || {
         x: config.imageBoxDim.x,
         y: config.imageBoxDim.y,

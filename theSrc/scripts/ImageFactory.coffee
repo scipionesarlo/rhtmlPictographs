@@ -59,15 +59,17 @@ class ImageFactory
       y: 0
     config.imageBoxDim = imageBoxDim
 
-    return ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height).then( (newImageBoxDim) ->
-      config.imageBoxDim = newImageBoxDim
-      ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
-    ).then (newImageData) ->
+    getDimensionsPromise = ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height)
+    getImageDataPromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes)
+    return Promise.all([getDimensionsPromise, getImageDataPromise]).then((values) ->
+      config.imageBoxDim = values[0]
+      newImageData = values[1]
+
       #why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
       #when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
       imageBox = newImageData.unscaledBox || {
-        x: config.imageBoxDim.x,
-        y: config.imageBoxDim.y,
+        x: config.imageBoxDim.x
+        y: config.imageBoxDim.y
         width: config.imageBoxDim.width
         height: config.imageBoxDim.height
       }
@@ -89,9 +91,9 @@ class ImageFactory
         newImage.attr 'clip-path', "url(##{config.radialclip})"
 
       return newImage
-
-    .catch (error) ->
-      console.log "newImage fail : #{error}"
+      )
+      .catch (error) ->
+        console.log "newImage fail : #{error}"
 
   @parseConfigString: (configString) ->
     unless configString.length > 0

@@ -310,18 +310,49 @@ ImageFactory = (function() {
         return 1;
       }
     };
-    newImage = d3Node.append("svg:image").attr('x', function(d) {
-      return width * (1 - ratio(d.proportion)) / 2;
-    }).attr('y', function(d) {
-      return height * (1 - ratio(d.proportion)) / 2;
-    }).attr('xlink:href', config.url).attr('class', 'variable-image').attr('width', function(d) {
-      return width * ratio(d.proportion);
-    }).attr('height', function(d) {
-      return height * ratio(d.proportion);
-    }).attr('preserveAspectRatio', 'xMidYMid meet');
-    return Promise.resolve({
-      newImage: newImage
-    });
+    if (config.url.match(/\.svg$/)) {
+      return new Promise(function(resolve, reject) {
+        var onDownloadSuccess;
+        onDownloadSuccess = function(xmlString) {
+          var currentHeight, currentWidth, data, svg, svgString, x, y;
+          data = jQuery.parseXML(xmlString);
+          svg = jQuery(data).find('svg');
+          ratio = config.scale ? dataAttributes.proportion : 1;
+          x = width * (1 - ratio) / 2;
+          y = height * (1 - ratio) / 2;
+          width = width * ratio;
+          height = height * ratio;
+          currentWidth = svg.attr('width');
+          currentHeight = svg.attr('height');
+          svg.attr('x', x);
+          svg.attr('y', y);
+          svg.attr('width', width);
+          svg.attr('height', height);
+          svg.attr('preserveAspectRatio', 'xMidYMid meet');
+          if (currentWidth && currentHeight && !svg.attr('viewBox')) {
+            svg.attr('viewBox', "0 0 " + (currentWidth.replace(/(px|em)/, '')) + " " + (currentHeight.replace(/(px|em)/, '')));
+          }
+          svgString = $('<div />').append(svg).html();
+          return resolve({
+            newImage: d3Node.append('g').html(svgString)
+          });
+        };
+        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject);
+      });
+    } else {
+      newImage = d3Node.append("svg:image").attr('x', function(d) {
+        return width * (1 - ratio(d.proportion)) / 2;
+      }).attr('y', function(d) {
+        return height * (1 - ratio(d.proportion)) / 2;
+      }).attr('xlink:href', config.url).attr('class', 'variable-image').attr('width', function(d) {
+        return width * ratio(d.proportion);
+      }).attr('height', function(d) {
+        return height * ratio(d.proportion);
+      }).attr('preserveAspectRatio', 'xMidYMid meet');
+      return Promise.resolve({
+        newImage: newImage
+      });
+    }
   };
 
   ImageFactory.addClipFromBottom = function(d3Node, imageBox) {

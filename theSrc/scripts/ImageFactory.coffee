@@ -256,16 +256,46 @@ class ImageFactory
     ratio = (p) ->
       return if config.scale then p else 1
 
-    newImage = d3Node.append("svg:image")
-      .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
-      .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
-      .attr 'xlink:href', config.url
-      .attr 'class', 'variable-image'
-      .attr 'width', (d) -> width * ratio(d.proportion)
-      .attr 'height', (d) -> height * ratio(d.proportion)
-      .attr 'preserveAspectRatio', 'xMidYMid meet'
+    if config.url.match(/\.svg$/)
+      return new Promise (resolve, reject) ->
+        onDownloadSuccess = (xmlString) ->
+          data = jQuery.parseXML xmlString
+          svg = jQuery(data).find('svg')
 
-    return Promise.resolve { newImage: newImage }
+          ratio = if config.scale then dataAttributes.proportion else 1
+          x = width * (1 - ratio) / 2
+          y = height * (1 - ratio) / 2
+          width = width * ratio
+          height = height * ratio
+
+          currentWidth = svg.attr 'width'
+          currentHeight = svg.attr 'height'
+
+          svg.attr 'x', x
+          svg.attr 'y', y
+          svg.attr 'width', width
+          svg.attr 'height', height
+          svg.attr 'preserveAspectRatio', 'xMidYMid meet'
+
+          if currentWidth and currentHeight and !svg.attr('viewBox')
+            svg.attr 'viewBox', "0 0 #{currentWidth.replace(/(px|em)/, '')} #{currentHeight.replace(/(px|em)/, '')}"
+
+          svgString = $('<div />').append(svg).html();
+
+          return resolve { newImage: d3Node.append('g').html(svgString) }
+
+        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject)
+    else
+      newImage = d3Node.append("svg:image")
+        .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
+        .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
+        .attr 'xlink:href', config.url
+        .attr 'class', 'variable-image'
+        .attr 'width', (d) -> width * ratio(d.proportion)
+        .attr 'height', (d) -> height * ratio(d.proportion)
+        .attr 'preserveAspectRatio', 'xMidYMid meet'
+
+      return Promise.resolve { newImage: newImage }
 
   @addClipFromBottom: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')

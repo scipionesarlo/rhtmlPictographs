@@ -25,6 +25,10 @@ class ImageFactory
         tmpImg = document.createElement('img')
         tmpImg.setAttribute 'src', url
         document.body.appendChild(tmpImg)
+        tmpImg.onerror = ->
+          tmpImg.remove()
+          reject(new Error("Image not found: #{url}"))
+
         tmpImg.onload = () ->
           aspectRatio = tmpImg.getBoundingClientRect().height/tmpImg.getBoundingClientRect().width
           if aspectRatio > 1
@@ -41,6 +45,8 @@ class ImageFactory
           tmpImg.remove()
           resolve(imageBoxDim)
           )
+
+
     return ImageFactory.imageSvgDimensions[url]
 
   @addImageTo: (d3Node, config, width, height, dataAttributes) ->
@@ -91,9 +97,9 @@ class ImageFactory
         newImage.attr 'clip-path', "url(##{config.radialclip})"
 
       return newImage
-      )
-      .catch (error) ->
-        console.log "newImage fail : #{error}"
+    ).catch (err) ->
+      console.log "image error: #{err.message}"
+      throw err
 
   @parseConfigString: (configString) ->
     unless configString.length > 0
@@ -250,7 +256,11 @@ class ImageFactory
 
         return resolve { newImage: d3Node.append('g').html(cleanedSvgString) }
 
-      return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject)
+      onDownloadFailure = reject(new Error("Downloading svg failed: #{config.url}"))
+
+      return ImageFactory.getOrDownload(config.url)
+                         .done(onDownloadSuccess)
+                         .fail(onDownloadFailure)
 
   @_addExternalImage: (d3Node, config, width, height) ->
     ratio = (p) ->
@@ -284,7 +294,11 @@ class ImageFactory
 
           return resolve { newImage: d3Node.append('g').html(svgString) }
 
-        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject)
+        onDownloadFailure = reject(new Error("Downloading img failed: #{config.url}"))
+
+        return ImageFactory.getOrDownload(config.url)
+                           .done(onDownloadSuccess)
+                           .fail(onDownloadFailure)
     else
       newImage = d3Node.append("svg:image")
         .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2

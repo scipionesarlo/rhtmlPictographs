@@ -178,6 +178,12 @@ class GraphicCell extends BaseCell
 
     #NB To adhere to SVG "last drawn goes on top policy", we must delay variable image rendering until base image drawn
     #the baseImageCompletePrpmise will not resolve until base images are "appended"
+    parentSvg = @parentSvg
+    imageErrorHandler = (error) ->
+      de = new DisplayError parentSvg, error.message
+      de.drawSvg()
+      throw error # This is thrown because we want visual err to user
+
     baseImageCompletePromise = Promise.resolve()
     if @config.baseImage?
       baseImageConfig = @config.baseImage
@@ -185,7 +191,7 @@ class GraphicCell extends BaseCell
       enteringLeafNodes.each (dataAttributes) ->
         d3Node = d3.select(this)
         baseImageRenderPromises.push ImageFactory.addImageTo(d3Node, baseImageConfig, imageWidth, imageHeight, dataAttributes)
-      baseImageCompletePromise = Promise.all(baseImageRenderPromises)
+      baseImageCompletePromise = Promise.all(baseImageRenderPromises).catch(imageErrorHandler)
 
     variableImageCompletePromise = Promise.resolve()
     if @config.variableImage?
@@ -195,7 +201,7 @@ class GraphicCell extends BaseCell
         enteringLeafNodes.each (dataAttributes) ->
           d3Node = d3.select(this)
           variableImageRenderPromises.push ImageFactory.addImageTo(d3Node, variableImageConfig, imageWidth, imageHeight, dataAttributes)
-        return Promise.all(variableImageRenderPromises)
+        return Promise.all(variableImageRenderPromises).catch(imageErrorHandler)
 
     #NB To adhere to SVG "last drawn goes on top policy", we must delay text-overlay image rendering until variable image drawn
     #the variableImageCompletePrpmise will not resolve until base images are "appended"

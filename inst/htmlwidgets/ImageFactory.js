@@ -31,6 +31,10 @@ ImageFactory = (function() {
         tmpImg = document.createElement('img');
         tmpImg.setAttribute('src', url);
         document.body.appendChild(tmpImg);
+        tmpImg.onerror = function() {
+          tmpImg.remove();
+          return reject(new Error("Image not found: " + url));
+        };
         return tmpImg.onload = function() {
           var aspectRatio;
           aspectRatio = tmpImg.getBoundingClientRect().height / tmpImg.getBoundingClientRect().width;
@@ -106,8 +110,9 @@ ImageFactory = (function() {
         newImage.attr('clip-path', "url(#" + config.radialclip + ")");
       }
       return newImage;
-    })["catch"](function(error) {
-      return console.log("newImage fail : " + error);
+    })["catch"](function(err) {
+      console.log("image error: " + err.message);
+      throw err;
     });
   };
 
@@ -282,7 +287,7 @@ ImageFactory = (function() {
     var newColor;
     newColor = ColorFactory.getColor(config.color);
     return new Promise(function(resolve, reject) {
-      var onDownloadSuccess;
+      var onDownloadFailure, onDownloadSuccess;
       onDownloadSuccess = function(xmlString) {
         var cleanedSvgString, data, ratio, svg, x, y;
         data = jQuery.parseXML(xmlString);
@@ -297,7 +302,8 @@ ImageFactory = (function() {
           newImage: d3Node.append('g').html(cleanedSvgString)
         });
       };
-      return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject);
+      onDownloadFailure = reject(new Error("Downloading svg failed: " + config.url));
+      return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(onDownloadFailure);
     });
   };
 
@@ -312,7 +318,7 @@ ImageFactory = (function() {
     };
     if (config.url.match(/\.svg$/)) {
       return new Promise(function(resolve, reject) {
-        var onDownloadSuccess;
+        var onDownloadFailure, onDownloadSuccess;
         onDownloadSuccess = function(xmlString) {
           var currentHeight, currentWidth, data, svg, svgString, x, y;
           data = jQuery.parseXML(xmlString);
@@ -337,7 +343,8 @@ ImageFactory = (function() {
             newImage: d3Node.append('g').html(svgString)
           });
         };
-        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(reject);
+        onDownloadFailure = reject(new Error("Downloading img failed: " + config.url));
+        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(onDownloadFailure);
       });
     } else {
       newImage = d3Node.append("svg:image").attr('x', function(d) {

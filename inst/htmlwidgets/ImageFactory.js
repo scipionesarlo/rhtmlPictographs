@@ -58,15 +58,21 @@ ImageFactory = (function() {
     return ImageFactory.imageSvgDimensions[url];
   };
 
+  ImageFactory.addBaseImageTo = function(d3Node, config, width, height, dataAttributes) {
+    config = ImageFactory.parseConfigString(config);
+    if (_.includes(ImageFactory.basicShapes, config.type)) {
+      config.baseShapeScale = 0.98;
+    }
+    return ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes);
+  };
+
+  ImageFactory.addVarImageTo = function(d3Node, config, width, height, dataAttributes) {
+    config = ImageFactory.parseConfigString(config);
+    return ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes);
+  };
+
   ImageFactory.addImageTo = function(d3Node, config, width, height, dataAttributes) {
     var getDimensionsPromise, getImageDataPromise, imageBoxDim;
-    if (_.isString(config)) {
-      config = ImageFactory.parseConfigString(config);
-    } else {
-      if (!(config.type in ImageFactory.types)) {
-        throw new Error("Invalid image creation config : unknown image type " + config.type);
-      }
-    }
     imageBoxDim = {
       height: height,
       width: width,
@@ -118,6 +124,12 @@ ImageFactory = (function() {
 
   ImageFactory.parseConfigString = function(configString) {
     var config, configParts, handler, hasDot, httpRegex, matchesHttp, part, type, unknownParts;
+    if (!_.isString(configString)) {
+      if (!(configString.type in ImageFactory.types)) {
+        throw new Error("Invalid image creation config : unknown image type " + config.type);
+      }
+      return configString;
+    }
     if (!(configString.length > 0)) {
       throw new Error("Invalid image creation configString '' : empty string");
     }
@@ -172,7 +184,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addCircleTo = function(d3Node, config, width, height) {
-    var color, diameter, newImage, ratio;
+    var baseShapeHiding, color, diameter, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -182,9 +194,10 @@ ImageFactory = (function() {
     };
     diameter = Math.min(width, height);
     color = ColorFactory.getColor(config.color);
+    baseShapeHiding = config.baseShapeScale != null ? config.baseShapeScale : 1;
     newImage = d3Node.append("svg:circle").classed('circle', true).attr('cx', width / 2).attr('cy', height / 2).attr('r', function(d) {
-      return ratio(d.proportion) * diameter / 2;
-    }).style('fill', color);
+      return ratio(d.proportion) * diameter / 2 * baseShapeHiding;
+    }).style('fill', color).attr('shape-rendering', 'crispEdges');
     return Promise.resolve({
       newImage: newImage,
       unscaledBox: {
@@ -197,7 +210,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addEllipseTo = function(d3Node, config, width, height) {
-    var color, newImage, ratio;
+    var baseShapeHiding, color, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -206,18 +219,19 @@ ImageFactory = (function() {
       }
     };
     color = ColorFactory.getColor(config.color);
+    baseShapeHiding = config.baseShapeScale != null ? config.baseShapeScale : 1;
     newImage = d3Node.append("svg:ellipse").classed('ellipse', true).attr('cx', width / 2).attr('cy', height / 2).attr('rx', function(d) {
-      return width * ratio(d.proportion) / 2;
+      return width * ratio(d.proportion) / 2 * baseShapeHiding;
     }).attr('ry', function(d) {
-      return height * ratio(d.proportion) / 2;
-    }).style('fill', color);
+      return height * ratio(d.proportion) / 2 * baseShapeHiding;
+    }).style('fill', color).attr('shape-rendering', 'crispEdges');
     return Promise.resolve({
       newImage: newImage
     });
   };
 
   ImageFactory.addSquareTo = function(d3Node, config, width, height) {
-    var color, length, newImage, ratio;
+    var baseShapeHiding, color, length, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -227,15 +241,16 @@ ImageFactory = (function() {
     };
     length = Math.min(width, height);
     color = ColorFactory.getColor(config.color);
+    baseShapeHiding = config.baseShapeScale != null ? config.baseShapeScale : 1;
     newImage = d3Node.append("svg:rect").classed('square', true).attr('x', function(d) {
-      return (width - length) / 2 + width * (1 - ratio(d.proportion)) / 2;
+      return (width - length * baseShapeHiding) / 2 + width * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
-      return (height - length) / 2 + height * (1 - ratio(d.proportion)) / 2;
+      return (height - length * baseShapeHiding) / 2 + height * (1 - ratio(d.proportion)) / 2;
     }).attr('width', function(d) {
-      return ratio(d.proportion) * length;
+      return ratio(d.proportion) * length * baseShapeHiding;
     }).attr('height', function(d) {
-      return ratio(d.proportion) * length;
-    }).style('fill', color);
+      return ratio(d.proportion) * length * baseShapeHiding;
+    }).style('fill', color).attr('shape-rendering', 'crispEdges');
     return Promise.resolve({
       newImage: newImage,
       unscaledBox: {
@@ -248,7 +263,7 @@ ImageFactory = (function() {
   };
 
   ImageFactory.addRectTo = function(d3Node, config, width, height) {
-    var color, newImage, ratio;
+    var baseShapeHiding, color, newImage, ratio;
     ratio = function(p) {
       if (config.scale) {
         return p;
@@ -257,15 +272,16 @@ ImageFactory = (function() {
       }
     };
     color = ColorFactory.getColor(config.color);
+    baseShapeHiding = config.baseShapeScale != null ? config.baseShapeScale : 1;
     newImage = d3Node.append("svg:rect").classed('rect', true).attr('x', function(d) {
-      return width * (1 - ratio(d.proportion)) / 2;
+      return width * baseShapeHiding * (1 - ratio(d.proportion)) / 2;
     }).attr('y', function(d) {
-      return height * (1 - ratio(d.proportion)) / 2;
+      return height * baseShapeHiding * (1 - ratio(d.proportion)) / 2;
     }).attr('width', function(d) {
-      return width * ratio(d.proportion);
+      return width * ratio(d.proportion) * baseShapeHiding;
     }).attr('height', function(d) {
-      return height * ratio(d.proportion);
-    }).style('fill', color);
+      return height * ratio(d.proportion) * baseShapeHiding;
+    }).style('fill', color).attr('shape-rendering', 'crispEdges');
     return Promise.resolve({
       newImage: newImage
     });
@@ -473,6 +489,8 @@ ImageFactory = (function() {
     url: ImageFactory.addExternalImage,
     data: ImageFactory._addExternalImage
   };
+
+  ImageFactory.basicShapes = ['circle', 'ellipse', 'square', 'rect'];
 
   ImageFactory.keywordHandlers = {
     vertical: {

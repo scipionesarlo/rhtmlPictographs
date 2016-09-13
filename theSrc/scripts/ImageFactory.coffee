@@ -49,13 +49,18 @@ class ImageFactory
 
     return ImageFactory.imageSvgDimensions[url]
 
-  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
-    if _.isString config
-      config = ImageFactory.parseConfigString config
-    else
-      unless config.type of ImageFactory.types
-        throw new Error "Invalid image creation config : unknown image type #{config.type}"
+  @addBaseImageTo: (d3Node, config, width, height, dataAttributes) ->
+    config = ImageFactory.parseConfigString config
 
+    # VIS-121 - Prevent base svgs from peeking out (only for basic shapes)
+    config.baseShapeScale = 0.98 if _.includes(ImageFactory.basicShapes, config.type)
+    ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes)
+
+  @addVarImageTo: (d3Node, config, width, height, dataAttributes) ->
+    config = ImageFactory.parseConfigString config
+    ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes)
+
+  @addImageTo: (d3Node, config, width, height, dataAttributes) ->
     # we need to get the aspect ratio for the clip, this is an ugly but effective way
     # perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
     imageBoxDim =
@@ -102,6 +107,11 @@ class ImageFactory
       throw err
 
   @parseConfigString: (configString) ->
+    unless _.isString configString
+      unless configString.type of ImageFactory.types
+        throw new Error "Invalid image creation config : unknown image type #{config.type}"
+      return configString
+
     unless configString.length > 0
       throw new Error "Invalid image creation configString '' : empty string"
 
@@ -155,13 +165,15 @@ class ImageFactory
     ratio = (p) -> if config.scale then p else 1
     diameter = Math.min(width, height)
     color = ColorFactory.getColor config.color
+    baseShapeHiding = if config.baseShapeScale? then config.baseShapeScale else 1
 
     newImage = d3Node.append("svg:circle")
       .classed('circle', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'r', (d) -> ratio(d.proportion) * diameter / 2
+      .attr 'r', (d) -> ratio(d.proportion) * diameter / 2 * baseShapeHiding
       .style 'fill', color
+      .attr 'shape-rendering', 'crispEdges'
 
     return Promise.resolve {
       newImage: newImage
@@ -177,14 +189,16 @@ class ImageFactory
       return if config.scale then p else 1
 
     color = ColorFactory.getColor config.color
+    baseShapeHiding = if config.baseShapeScale? then config.baseShapeScale else 1
 
     newImage = d3Node.append("svg:ellipse")
       .classed('ellipse', true)
       .attr 'cx', width/2
       .attr 'cy', height/2
-      .attr 'rx', (d) -> width * ratio(d.proportion) / 2
-      .attr 'ry', (d) -> height * ratio(d.proportion) / 2
+      .attr 'rx', (d) -> width * ratio(d.proportion) / 2 * baseShapeHiding
+      .attr 'ry', (d) -> height * ratio(d.proportion) / 2 * baseShapeHiding
       .style 'fill', color
+      .attr 'shape-rendering', 'crispEdges'
 
     return Promise.resolve { newImage: newImage }
 
@@ -193,14 +207,16 @@ class ImageFactory
     length = Math.min(width,height)
 
     color = ColorFactory.getColor config.color
+    baseShapeHiding = if config.baseShapeScale? then config.baseShapeScale else 1
 
     newImage = d3Node.append("svg:rect")
       .classed('square', true)
-      .attr 'x', (d) -> (width - length) / 2 + width * (1 - ratio(d.proportion)) / 2
-      .attr 'y', (d) -> (height - length) / 2 + height * (1 - ratio(d.proportion)) / 2
-      .attr 'width', (d) -> ratio(d.proportion) * length
-      .attr 'height', (d) -> ratio(d.proportion) * length
+      .attr 'x', (d) -> (width - length* baseShapeHiding)/ 2 + width * (1 - ratio(d.proportion)) / 2
+      .attr 'y', (d) -> (height - length* baseShapeHiding) / 2 + height * (1 - ratio(d.proportion)) / 2
+      .attr 'width', (d) -> ratio(d.proportion) * length * baseShapeHiding
+      .attr 'height', (d) -> ratio(d.proportion) * length * baseShapeHiding
       .style 'fill', color
+      .attr 'shape-rendering', 'crispEdges'
 
     return Promise.resolve {
       newImage: newImage
@@ -216,14 +232,16 @@ class ImageFactory
       return if config.scale then p else 1
 
     color = ColorFactory.getColor config.color
+    baseShapeHiding = if config.baseShapeScale? then config.baseShapeScale else 1
 
     newImage = d3Node.append("svg:rect")
       .classed('rect', true)
-      .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
-      .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
-      .attr 'width', (d) -> width * ratio(d.proportion)
-      .attr 'height', (d) -> height * ratio(d.proportion)
+      .attr 'x', (d) -> width * baseShapeHiding * (1 - ratio(d.proportion)) / 2
+      .attr 'y', (d) -> height * baseShapeHiding * (1 - ratio(d.proportion)) / 2
+      .attr 'width', (d) -> width * ratio(d.proportion) * baseShapeHiding
+      .attr 'height', (d) -> height * ratio(d.proportion) * baseShapeHiding
       .style 'fill', color
+      .attr 'shape-rendering', 'crispEdges'
 
     return Promise.resolve { newImage: newImage }
 
@@ -427,6 +445,8 @@ class ImageFactory
     url: ImageFactory.addExternalImage
     data: ImageFactory._addExternalImage
   }
+
+  @basicShapes = ['circle', 'ellipse', 'square', 'rect']
 
   @keywordHandlers = {
     vertical: { clip: 'fromBottom' }

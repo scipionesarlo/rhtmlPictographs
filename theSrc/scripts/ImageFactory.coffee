@@ -16,12 +16,15 @@ class ImageFactory
       , 10000
     return ImageFactory.imageDownloadPromises[url]
 
+# TODO add delete cache timeout to prevent unbounded memory growth
+# TODO seperate out the aspect ratio calculations so that we can reuse the image download request regardless of container dimensions
   @imageSvgDimensions = {}
-  @getImageDimensions: (url, imageBoxDim, width, height) ->
+  @getImageDimensions: (url, imageBoxDim, containerWidth, containerHeight) ->
     return new Promise((resolve, reject) -> resolve(imageBoxDim)) unless url
 
-    unless url of ImageFactory.imageSvgDimensions
-      ImageFactory.imageSvgDimensions[url] = new Promise((resolve, reject) ->
+    cacheKey = "#{url}-#{containerWidth}-#{containerHeight}"
+    unless cacheKey of ImageFactory.imageSvgDimensions
+      ImageFactory.imageSvgDimensions[cacheKey] = new Promise (resolve, reject) ->
         tmpImg = document.createElement('img')
         tmpImg.setAttribute 'src', url
         document.body.appendChild(tmpImg)
@@ -30,24 +33,27 @@ class ImageFactory
           reject(new Error("Image not found: #{url}"))
 
         tmpImg.onload = () ->
-          aspectRatio = tmpImg.getBoundingClientRect().height/tmpImg.getBoundingClientRect().width
-          if aspectRatio > 1
-            imageBoxDim.width = height / aspectRatio
-            imageBoxDim.height = height
-            imageBoxDim.x = (width - imageBoxDim.width)/2
-            imageBoxDim.y = 0
+          # alg from http://stackoverflow.com/a/6565988/3344695
+          imageWidth = tmpImg.getBoundingClientRect().width
+          imageHeight = tmpImg.getBoundingClientRect().height
+          imageAspectRatio = imageWidth / imageHeight
+          containerAspectRatio = containerWidth / containerHeight
+
+          if containerAspectRatio > imageAspectRatio
+            imageBoxDim.width = imageWidth * containerHeight / imageHeight
+            imageBoxDim.height = containerHeight
           else
-            imageBoxDim.width = width
-            imageBoxDim.height = width*aspectRatio
-            imageBoxDim.y = (height - imageBoxDim.height)/2
-            imageBoxDim.x = 0
-          imageBoxDim.aspectRatio = aspectRatio
+            imageBoxDim.width = containerWidth
+            imageBoxDim.height = imageHeight * containerWidth / imageWidth
+
+          imageBoxDim.x = (containerWidth - imageBoxDim.width) / 2
+          imageBoxDim.y = (containerHeight - imageBoxDim.height) / 2
+          imageBoxDim.aspectRatio = imageAspectRatio
+
           tmpImg.remove()
           resolve(imageBoxDim)
-          )
 
-
-    return ImageFactory.imageSvgDimensions[url]
+    return ImageFactory.imageSvgDimensions[cacheKey]
 
   @addBaseImageTo: (d3Node, config, width, height, dataAttributes) ->
     config = ImageFactory.parseConfigString config
@@ -139,6 +145,7 @@ class ImageFactory
 
     if type in ['data']
       config.url = 'data:' + configParts.pop()
+      # TODO this logic needs to check there is something after data:
       unless config.url
         throw new Error "Invalid image creation configString '#{configString}' : data string must have a data url as last string part"
 
@@ -284,50 +291,15 @@ class ImageFactory
     ratio = (p) ->
       return if config.scale then p else 1
 
-    if config.url.match(/\.svg$/)
-      return new Promise (resolve, reject) ->
-        onDownloadSuccess = (xmlString) ->
-          data = jQuery.parseXML xmlString
-          svg = jQuery(data).find('svg')
+    newImage = d3Node.append("svg:image")
+    .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
+    .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
+    .attr 'width', (d) -> width * ratio(d.proportion)
+    .attr 'height', (d) -> height * ratio(d.proportion)
+    .attr 'xlink:href', config.url
+    .attr 'class', 'variable-image'
 
-          ratio = if config.scale then dataAttributes.proportion else 1
-          x = width * (1 - ratio) / 2
-          y = height * (1 - ratio) / 2
-          width = width * ratio
-          height = height * ratio
-
-          currentWidth = svg.attr 'width'
-          currentHeight = svg.attr 'height'
-
-          svg.attr 'x', x
-          svg.attr 'y', y
-          svg.attr 'width', width
-          svg.attr 'height', height
-          svg.attr 'preserveAspectRatio', 'xMidYMid meet'
-
-          if currentWidth and currentHeight and !svg.attr('viewBox')
-            svg.attr 'viewBox', "0 0 #{currentWidth.replace(/(px|em)/, '')} #{currentHeight.replace(/(px|em)/, '')}"
-
-          svgString = $('<div />').append(svg).html();
-
-          return resolve { newImage: d3Node.append('g').html(svgString) }
-
-        onDownloadFailure = -> reject(new Error("Downloading img failed: #{config.url}"))
-
-        return ImageFactory.getOrDownload(config.url)
-                           .done(onDownloadSuccess)
-                           .fail(onDownloadFailure)
-    else
-      newImage = d3Node.append("svg:image")
-        .attr 'x', (d) -> width * (1 - ratio(d.proportion)) / 2
-        .attr 'y', (d) -> height * (1 - ratio(d.proportion)) / 2
-        .attr 'xlink:href', config.url
-        .attr 'class', 'variable-image'
-        .attr 'width', (d) -> width * ratio(d.proportion)
-        .attr 'height', (d) -> height * ratio(d.proportion)
-        .attr 'preserveAspectRatio', 'xMidYMid meet'
-
-      return Promise.resolve { newImage: newImage }
+    return Promise.resolve { newImage: newImage }
 
   @addClipFromBottom: (d3Node, imageBox) ->
     uniqueId = "clip-id-#{Math.random()}".replace(/\./g, '')

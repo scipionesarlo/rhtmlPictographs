@@ -19,14 +19,16 @@ ImageFactory = (function() {
 
   ImageFactory.imageSvgDimensions = {};
 
-  ImageFactory.getImageDimensions = function(url, imageBoxDim, width, height) {
+  ImageFactory.getImageDimensions = function(url, imageBoxDim, containerWidth, containerHeight) {
+    var cacheKey;
     if (!url) {
       return new Promise(function(resolve, reject) {
         return resolve(imageBoxDim);
       });
     }
-    if (!(url in ImageFactory.imageSvgDimensions)) {
-      ImageFactory.imageSvgDimensions[url] = new Promise(function(resolve, reject) {
+    cacheKey = "" + url + "-" + containerWidth + "-" + containerHeight;
+    if (!(cacheKey in ImageFactory.imageSvgDimensions)) {
+      ImageFactory.imageSvgDimensions[cacheKey] = new Promise(function(resolve, reject) {
         var tmpImg;
         tmpImg = document.createElement('img');
         tmpImg.setAttribute('src', url);
@@ -36,26 +38,27 @@ ImageFactory = (function() {
           return reject(new Error("Image not found: " + url));
         };
         return tmpImg.onload = function() {
-          var aspectRatio;
-          aspectRatio = tmpImg.getBoundingClientRect().height / tmpImg.getBoundingClientRect().width;
-          if (aspectRatio > 1) {
-            imageBoxDim.width = height / aspectRatio;
-            imageBoxDim.height = height;
-            imageBoxDim.x = (width - imageBoxDim.width) / 2;
-            imageBoxDim.y = 0;
+          var containerAspectRatio, imageAspectRatio, imageHeight, imageWidth;
+          imageWidth = tmpImg.getBoundingClientRect().width;
+          imageHeight = tmpImg.getBoundingClientRect().height;
+          imageAspectRatio = imageWidth / imageHeight;
+          containerAspectRatio = containerWidth / containerHeight;
+          if (containerAspectRatio > imageAspectRatio) {
+            imageBoxDim.width = imageWidth * containerHeight / imageHeight;
+            imageBoxDim.height = containerHeight;
           } else {
-            imageBoxDim.width = width;
-            imageBoxDim.height = width * aspectRatio;
-            imageBoxDim.y = (height - imageBoxDim.height) / 2;
-            imageBoxDim.x = 0;
+            imageBoxDim.width = containerWidth;
+            imageBoxDim.height = imageHeight * containerWidth / imageWidth;
           }
-          imageBoxDim.aspectRatio = aspectRatio;
+          imageBoxDim.x = (containerWidth - imageBoxDim.width) / 2;
+          imageBoxDim.y = (containerHeight - imageBoxDim.height) / 2;
+          imageBoxDim.aspectRatio = imageAspectRatio;
           tmpImg.remove();
           return resolve(imageBoxDim);
         };
       });
     }
-    return ImageFactory.imageSvgDimensions[url];
+    return ImageFactory.imageSvgDimensions[cacheKey];
   };
 
   ImageFactory.addBaseImageTo = function(d3Node, config, width, height, dataAttributes) {
@@ -334,52 +337,18 @@ ImageFactory = (function() {
         return 1;
       }
     };
-    if (config.url.match(/\.svg$/)) {
-      return new Promise(function(resolve, reject) {
-        var onDownloadFailure, onDownloadSuccess;
-        onDownloadSuccess = function(xmlString) {
-          var currentHeight, currentWidth, data, svg, svgString, x, y;
-          data = jQuery.parseXML(xmlString);
-          svg = jQuery(data).find('svg');
-          ratio = config.scale ? dataAttributes.proportion : 1;
-          x = width * (1 - ratio) / 2;
-          y = height * (1 - ratio) / 2;
-          width = width * ratio;
-          height = height * ratio;
-          currentWidth = svg.attr('width');
-          currentHeight = svg.attr('height');
-          svg.attr('x', x);
-          svg.attr('y', y);
-          svg.attr('width', width);
-          svg.attr('height', height);
-          svg.attr('preserveAspectRatio', 'xMidYMid meet');
-          if (currentWidth && currentHeight && !svg.attr('viewBox')) {
-            svg.attr('viewBox', "0 0 " + (currentWidth.replace(/(px|em)/, '')) + " " + (currentHeight.replace(/(px|em)/, '')));
-          }
-          svgString = $('<div />').append(svg).html();
-          return resolve({
-            newImage: d3Node.append('g').html(svgString)
-          });
-        };
-        onDownloadFailure = function() {
-          return reject(new Error("Downloading img failed: " + config.url));
-        };
-        return ImageFactory.getOrDownload(config.url).done(onDownloadSuccess).fail(onDownloadFailure);
-      });
-    } else {
-      newImage = d3Node.append("svg:image").attr('x', function(d) {
-        return width * (1 - ratio(d.proportion)) / 2;
-      }).attr('y', function(d) {
-        return height * (1 - ratio(d.proportion)) / 2;
-      }).attr('xlink:href', config.url).attr('class', 'variable-image').attr('width', function(d) {
-        return width * ratio(d.proportion);
-      }).attr('height', function(d) {
-        return height * ratio(d.proportion);
-      }).attr('preserveAspectRatio', 'xMidYMid meet');
-      return Promise.resolve({
-        newImage: newImage
-      });
-    }
+    newImage = d3Node.append("svg:image").attr('x', function(d) {
+      return width * (1 - ratio(d.proportion)) / 2;
+    }).attr('y', function(d) {
+      return height * (1 - ratio(d.proportion)) / 2;
+    }).attr('width', function(d) {
+      return width * ratio(d.proportion);
+    }).attr('height', function(d) {
+      return height * ratio(d.proportion);
+    }).attr('xlink:href', config.url).attr('class', 'variable-image');
+    return Promise.resolve({
+      newImage: newImage
+    });
   };
 
   ImageFactory.addClipFromBottom = function(d3Node, imageBox) {

@@ -15,6 +15,10 @@ pre.config {
     margin: 5px;
 }
 
+[snapshot-name], [snapshot-name].row {
+    display: inline-block;
+}
+
 .row {
     display: flex;
     margin-bottom: 10px;
@@ -46,4 +50,25 @@ pre.config {
 
 .relative-resize-button {
     margin: 5px;
+}
+
+.code {
+    font-size: x-small;
+    background-color: #eeeeee;
+    opacity: 0.6;
+    border: #cccccc 1px solid;
+    border-radius: 2px;
+    font-weight: 200;
+    font-family: Arial;
+}
+
+.note {
+    font-size: x-small;
+    font-weight: 200;
+    font-family: Arial;
+}
+
+.emphasis {
+    font-weight: 900;
+    font-family: Arial;
 }

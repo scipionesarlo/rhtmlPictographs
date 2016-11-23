@@ -2,21 +2,28 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Arvo:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
-  <link href='/internal_www/style/internal_www.css' rel='stylesheet' type='text/css'>
+  <link href='/styles/internal_www.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
 
-<div class="row" snapshot-name="grid_basic" data-ex-w="200" data-ex-h="150">
-  <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3" }</div>
-  <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "3" }</div>
-  <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "1" }</div>
-  <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numCols": "3" }</div>
+<br/>
+<div snapshot-name="grid_basic">
+  <div class="row" data-ex-w="200" data-ex-h="150">
+    <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3" }</div>
+    <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "3" }</div>
+    <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numRows": "1" }</div>
+    <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "3", "numCols": "3" }</div>
+  </div>
 </div>
 
-<div class="row" snapshot-name="grid_text" data-ex-w="200" data-ex-h="150">
-  <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }</div>
+<br/>
+<div snapshot-name="grid_text">
+  <div class="row" data-ex-w="200" data-ex-h="150">
+    <div class="example hide-config">{ "variableImage": "circle:lightblue", "numImages": "2", "text-header": "header", "text-overlay": "overlay", "text-footer": "footer" }</div>
+  </div>
 </div>
 
+<br/>
 <div snapshot-name="grid_scaling">
   <div class="row" data-ex-w="200" data-ex-h="150">
     <div class="example hide-config">{ "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromleft:lightblue" } </div>
@@ -32,6 +39,7 @@
   </div>
 </div>
 
+<br/>
 <div snapshot-name="grid_scaling_overrides">
   <div class="row" data-ex-w="200" data-ex-h="150">
     <div class="example hide-config">{ "layout": "right,down", "proportion": "=15/24", "numImages": 6, "numRows": 2, "variableImage": "circle:radial:lightblue" }</div>
@@ -47,12 +55,16 @@
   </div>
 </div>
 
-<div class="row" snapshot-name="grid_padding" data-ex-w="200" data-ex-h="150">
-  <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</div>
-  <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</div>
-  <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</div>
+<br/>
+<div snapshot-name="grid_padding">
+  <div class="row" data-ex-w="200" data-ex-h="150">
+    <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</div>
+    <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 15 15 15" }</div>
+    <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4", "padding": "15 0 15 0" }</div>
+  </div>
 </div>
 
+<br/>
 <div snapshot-name="grid_gutter">
   <div class="row" data-ex-w="200" data-ex-h="150">
     <div class="example hide-config">{ "image-background-color": "#dddddd", "variableImage": "circle:lightblue", "numImages": "4" }</div>
@@ -70,22 +82,6 @@
   </div>
 </div>
 
-<script src="/external/lodash.min.js"></script>
-<script src="/external/jquery.min.js"></script>
-<script src="/external/d3.min.js"></script>
-<script src="/external/d3-grid.js"></script>
-<script src="/external/rHtmlStatefulWidget.js"></script>
-<script src="/external/rHtmlSvgWidget.js"></script>
-
-<script src="/scripts/RecolorSvg.js"></script>
-<script src="/scripts/ColorFactory.js"></script>
-<script src="/scripts/ImageFactory.js"></script>
-<script src="/scripts/DisplayError.js"></script>
-<script src="/scripts/BaseCell.js"></script>
-<script src="/scripts/GraphicCell.js"></script>
-<script src="/scripts/LabelCell.js"></script>
-<script src="/scripts/Pictograph.js"></script>
-
-<script src="/internal_www/js/renderContentPage.js"></script>
+<script src="/js/loadDependenciesAndStartRender.js"></script>
 </body>
 </html>

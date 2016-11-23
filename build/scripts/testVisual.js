@@ -4,21 +4,21 @@ const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
 const recursiveReaddirSync = require('recursive-readdir-sync');
+// NB global.visualDiffConfig is set globally in protractor.conf.js
 
 let snapshotsCount = 0;
 
-// NV global.visualDiffConfig is set globally in protractor.conf.js
 const baseContentPath = path.join(__dirname, '../../theSrc/internal_www/content');
 const requiredConfigKeys = [
   'applitoolsKey',
   'testLabel',
   'browserWidth',
   'browserHeight',
-  'checkRegionTimeout',
+  'defaultMatchTimeout',
   'forceFullPageScreenshot'
 ];
 
-// Why Syncronous ? Until we get deferred test registration working in Jasmine or Mocha we need to get the list of all the content files synchronously
+// Why Synchronous ? Until we get deferred test registration working in Jasmine or Mocha we need to get the list of all the content files synchronously
 // mocha fix (that I cant get to work w/ protractor) : https://github.com/mochajs/mocha/commit/b4312b0e6e6d0c1b88a80683189bba92017a1824
 // jasmine fix - cant find one yet
 const getContentFiles = function() {
@@ -45,6 +45,8 @@ const registerTests = function(pathsToRegister) {
   const eyes = new Eyes();
   eyes.setApiKey(global.visualDiffConfig.applitoolsKey);
   eyes.setForceFullPageScreenshot(global.visualDiffConfig.forceFullPageScreenshot);
+  eyes.setStitchMode(Eyes.StitchMode.CSS);
+  eyes.setDefaultMatchTimeout(global.visualDiffConfig.defaultMatchTimeout);
 
   describe('Take visual regression snapshots', function () {
 
@@ -62,15 +64,22 @@ const registerTests = function(pathsToRegister) {
           { width: global.visualDiffConfig.browserWidth, height: global.visualDiffConfig.browserHeight }
         );
 
-        browser.get(`/internal_www/content/${contentPath}`).then( () => {
+        browser.get(`/content/${contentPath}`).then( () => {
           console.log(`Page ${contentPath} is loaded`);
-
+        }).then( () => {
+          console.log(`Waiting 3 seconds for widgetsPage`);
+          return new Promise( (resolve, reject) => {
+            setTimeout(() => {
+              return resolve()
+            }, 3000)
+          })
+        }).then( () => {
           const donePromises = element.all(by.css('[snapshot-name]')).each(function(element) {
             return element.getAttribute('snapshot-name').then( (snapshotName) => {
               if (snapshotName) {
                 console.log(`take snapshot ${contentPath} ${snapshotName}`);
                 snapshotsCount++;
-                eyes.checkRegionBy(by.css(`[snapshot-name="${snapshotName}"]`), snapshotName, global.visualDiffConfig.checkRegionTimeout);
+                eyes.checkRegionBy(by.css(`[snapshot-name="${snapshotName}"]`), snapshotName);
               }
               else {
                 console.error(`snapshot on page ${contentPath} missing snapshot name`);

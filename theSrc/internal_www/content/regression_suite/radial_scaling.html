@@ -2,7 +2,7 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Arvo:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
-  <link href='/internal_www/style/internal_www.css' rel='stylesheet' type='text/css'>
+  <link href='/styles/internal_www.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <!-- NB Important dev note: This file is used to auto generate r files in the examples directory. If you modify ensure you maintain the format of sections, containing h2, p, and div.example elements -->
@@ -13,8 +13,9 @@
   <p>This set of examples provides a tool to verify that the radial scaling technique is handled correctly in a variety of situations.</p>
 </section>
 
+<br/>
 <section snapshot-name="radial_scale_circle_in_square">
-  <h2>Circle</h2>
+  <p>Circle</p>
   <div class="row" data-ex-w="100" data-ex-h="62">
     <pre class="example hide-config">{ "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "circle:radial:lightblue", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{ "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "circle:radial:lightblue", "background-color": "#dddddd" }</pre>
@@ -41,8 +42,9 @@
   </div>
 </section>
 
+<br/>
 <section snapshot-name="radial_scale_circle_in_rectangle">
-  <h2>Circle in Rectangle</h2>
+  <p>Circle in Rectangle</p>
   <div class="row" data-ex-w="150" data-ex-h="62">
     <pre class="example hide-config">{ "debugBorder": "true", "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "circle:radial:lightblue", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{ "debugBorder": "true", "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "circle:radial:lightblue", "background-color": "#dddddd" }</pre>
@@ -69,8 +71,9 @@
   </div>
 </section>
 
+<br/>
 <section snapshot-name="radial_scale_ellipse_in_rectangle">
-  <h2>Ellipse in Rectangle</h2>
+  <p>Ellipse in Rectangle</p>
   <div class="row" data-ex-w="150" data-ex-h="62">
     <pre class="example hide-config">{ "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "ellipse:radial:lightblue", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{ "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "ellipse:radial:lightblue", "background-color": "#dddddd" }</pre>
@@ -97,12 +100,9 @@
   </div>
 </section>
 
-<section class="for-consideration" snapshot-name="radial_scale_external_circle_svg_in_rectangle">
-  <h2>External SVG Image in Rectangle With Different Aspect Ratio</h2>
-  <p>This shows a limitation of scaling an external image that doesn't "fit" the cell.</p>
-  <p>In these examples a cell of 200x100 (or 100x200) contains an external image of a circle, which is scaled to fit such that the circle has a diameter of 100 and is centred in the cell.</p>
-  <p>The issue is there is no way to now what proportion of the cell is occupied by the image, so the scaling takes place accross the entire cell, not just for the content occupied by the image.</p>
-
+<br/>
+<section snapshot-name="radial_scale_external_circle_svg_in_rectangle">
+  <p>External SVG Image in Rectangle With Different Aspect Ratio</p>
   <div class="row" data-ex-w="200" data-ex-h="62">
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
@@ -130,10 +130,9 @@
 </section>
 
 
-<section class="for-consideration" snapshot-name="radial_scale_recolored_external_circle_svg_in_rectangle">
-  <h2>External Recolored SVG Image in Rectangle With Different Aspect Ratio</h2>
-  <p>Same issue as above.</p>
-
+<br/>
+<section snapshot-name="radial_scale_recolored_external_circle_svg_in_rectangle">
+  <p>External Recolored SVG Image in Rectangle With Different Aspect Ratio</p>
   <div class="row" data-ex-w="200" data-ex-h="62">
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:red:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:red:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
@@ -160,10 +159,9 @@
   </div>
 </section>
 
-<section class="for-consideration" snapshot-name="single_image_radial_scale_recolored_external_circle_svg_in_rectangle">
-  <h2>(Single Image) External Recolored SVG Image in Rectangle With Different Aspect Ratio</h2>
-  <p>Same issue as above.</p>
-
+<br/>
+<section snapshot-name="single_image_radial_scale_recolored_external_circle_svg_in_rectangle">
+  <p>(Single Image) External Recolored SVG Image in Rectangle With Different Aspect Ratio</p>
   <div class="row" data-ex-w="200" data-ex-h="62">
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=1/16", "columnGutter": "0", "numImages": 1, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:red:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=2/16", "columnGutter": "0", "numImages": 1, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:red:/images/blue_circle_512.svg", "background-color": "#dddddd" }</pre>
@@ -190,10 +188,9 @@
   </div>
 </section>
 
-<section class="for-consideration" snapshot-name="radial_scale_external_circle_png_in_rectangle">
-  <h2>External PNG Image in Rectangle With Different Aspect Ratio</h2>
-  <p>Same issue as above.</p>
-
+<br/>
+<section snapshot-name="radial_scale_external_circle_png_in_rectangle">
+  <p>External PNG Image in Rectangle With Different Aspect Ratio</p>
   <div class="row" data-ex-w="200" data-ex-h="62">
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 1/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:/images/blue_circle_512.png", "background-color": "#dddddd" }</pre>
     <pre class="example hide-config">{  "debugBorder": "true", "proportion": "=0.5 + 2/32", "columnGutter": "0", "numImages": 2, "text-footer": { "text": "percentage", "font-size": "12" }, "variableImage": "url:radial:/images/blue_circle_512.png", "background-color": "#dddddd" }</pre>
@@ -220,22 +217,6 @@
   </div>
 </section>
 
-<script src="/external/lodash.min.js"></script>
-<script src="/external/jquery.min.js"></script>
-<script src="/external/d3.min.js"></script>
-<script src="/external/d3-grid.js"></script>
-<script src="/external/rHtmlStatefulWidget.js"></script>
-<script src="/external/rHtmlSvgWidget.js"></script>
-
-<script src="/scripts/RecolorSvg.js"></script>
-<script src="/scripts/ColorFactory.js"></script>
-<script src="/scripts/ImageFactory.js"></script>
-<script src="/scripts/DisplayError.js"></script>
-<script src="/scripts/BaseCell.js"></script>
-<script src="/scripts/GraphicCell.js"></script>
-<script src="/scripts/LabelCell.js"></script>
-<script src="/scripts/Pictograph.js"></script>
-
-<script src="/internal_www/js/renderContentPage.js"></script>
+<script src="/js/loadDependenciesAndStartRender.js"></script>
 </body>
 </html>

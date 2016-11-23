@@ -31,7 +31,7 @@ gulp.task('build', function(done) {
   runSequence('clean', 'testSpecs', 'core', ['makeDocs', 'makeExample'], done);
 });
 
-gulp.task('core', ['compileCoffee', 'less', 'copy']);
+gulp.task('core', ['compileCoffee', 'less', 'copy', 'buildContentManifest']);
 
 gulp.task('serve', ['connect', 'watch'], function () {
   require('opn')('http://localhost:9000');

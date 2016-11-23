@@ -2,6 +2,6 @@
   "applitoolsKey": "8jR9y94XQkTaJem9b6mqkYjJkIdO779E99koq103UrPiMI110",
   "browserWidth": 1280,
   "browserHeight": 670,
-  "checkRegionTimeout": 1,
+  "defaultMatchTimeout": 5,
   "forceFullPageScreenshot": true
 }

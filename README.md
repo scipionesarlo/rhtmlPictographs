@@ -32,17 +32,9 @@ Choose an example or add another example/tutorial to the [internal www content](
 
 # Docs
 
-The method signatures and their definitions are detailed in the main [R file](theSrc/R/htmlwidget.R), and this definition is used to autogenerate the R docs [here](man/).
+The repo contains an internal web server that can be started via `gulp serve`. Once the server is running, on [the index page](http://127.0.0.1:9000) of the web content there is a link to a tutorial. This is the best way to understand how to use the widget.
 
-## View the docs in R
-
-```
-help(graphic)
-```
-
-## Detailed repo and build process docs
-
-The rhtml widget frameworkd is documented in more detail in the rhtmlTemplate repo [here](https://github.com/NumbersInternational/rhtmlTemplate/blob/master/docs/)
+This repo was build from the [rhtmlTemplate](https://github.com/NumbersInternational/rhtmlTemplate) repo. The rhtmlTemplate repo has several docs pages linked from its main readme which are all relevant to the structure and inner working of the rhtmlPictograph repo.
 
 ## Detailed list of CSS class names - useful when targeting these DOM via the custom CSS feature
 

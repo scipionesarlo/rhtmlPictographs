@@ -63,7 +63,7 @@ ImageFactory = (function() {
 
   ImageFactory.addBaseImageTo = function(d3Node, config, width, height, dataAttributes) {
     config = ImageFactory.parseConfigString(config);
-    if (_.includes(ImageFactory.basicShapes, config.type)) {
+    if (_.includes(ImageFactory.basicShapes, config.type) && this.isInternetExplorer()) {
       config.baseShapeScale = 0.98;
     }
     return ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes);
@@ -448,6 +448,17 @@ ImageFactory = (function() {
       return pathParts.join(' ');
     });
     return uniqueId;
+  };
+
+  ImageFactory.isInternetExplorer = function() {
+    var new_ie, old_ie, userAgentString;
+    userAgentString = window.navigator.userAgent;
+    old_ie = userAgentString.indexOf('MSIE ');
+    new_ie = userAgentString.indexOf('Trident/');
+    if ((old_ie > -1) || (new_ie > -1)) {
+      return true;
+    }
+    return false;
   };
 
   ImageFactory.types = {

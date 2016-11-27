@@ -58,8 +58,8 @@ class ImageFactory
   @addBaseImageTo: (d3Node, config, width, height, dataAttributes) ->
     config = ImageFactory.parseConfigString config
 
-    # VIS-121 - Prevent base svgs from peeking out (only for basic shapes)
-    config.baseShapeScale = 0.98 if _.includes(ImageFactory.basicShapes, config.type)
+    # VIS-121 - Prevent base svgs from peeking out over the variable images (only for basic shapes)
+    config.baseShapeScale = 0.98 if _.includes(ImageFactory.basicShapes, config.type) and @isInternetExplorer()
     ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes)
 
   @addVarImageTo: (d3Node, config, width, height, dataAttributes) ->
@@ -265,7 +265,6 @@ class ImageFactory
   @addRecoloredSvgTo: (d3Node, config, width, height, dataAttributes) ->
     newColor = ColorFactory.getColor config.color
 
-
     return new Promise (resolve, reject) ->
       onDownloadSuccess = (xmlString) ->
         data = jQuery.parseXML xmlString
@@ -408,6 +407,16 @@ class ImageFactory
         return pathParts.join ' '
 
     return uniqueId
+
+  @isInternetExplorer = () ->
+    userAgentString = window.navigator.userAgent;
+    old_ie = userAgentString.indexOf('MSIE ');
+    new_ie = userAgentString.indexOf('Trident/');
+
+    if (old_ie > -1) || (new_ie > -1)
+      return true
+
+    return false
 
   @types = {
     circle: ImageFactory.addCircleTo

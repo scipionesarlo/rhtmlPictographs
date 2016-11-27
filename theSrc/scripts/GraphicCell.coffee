@@ -21,7 +21,8 @@ class GraphicCell extends BaseCell
     'text-footer',
     'text-header',
     'text-overlay',
-    'variableImage'
+    'variableImage',
+    'floatingLabels'
   ]
 
   setConfig: (config) ->
@@ -50,9 +51,39 @@ class GraphicCell extends BaseCell
     @_verifyKeyIsFloat @config, 'rowGutter', 0.05, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'rowGutter'
 
-    @_processTextConfig 'text-header'
-    @_processTextConfig 'text-overlay'
-    @_processTextConfig 'text-footer'
+    @config['text-header'] = @_processTextConfig(@config['text-header'], 'text-header') if @config['text-header']
+    @config['text-overlay'] = @_processTextConfig(@config['text-overlay'], 'text-overlay') if @config['text-overlay']
+    @config['text-footer'] = @_processTextConfig(@config['text-footer'], 'text-footer') if @config['text-footer']
+
+    if @config.floatingLabels
+      floatingLabelsInput = @config.floatingLabels
+      @config.floatingLabels = {}
+      _(floatingLabelsInput).each (labelConfig) =>
+        if !labelConfig.text
+          throw new Error("Invalid floating label, missing text")
+
+        if !labelConfig.position
+          throw new Error("Invalid floating label, missing position")
+
+        [rowString,colString] = labelConfig.position.split(':')
+
+        row = parseInt(rowString)
+        col = parseInt(colString)
+
+        if _.isNaN(row) or _.isNaN(col)
+          throw new Error("Invalid floating label, position not int:int")
+
+        @config.floatingLabels[row] ?= {}
+
+        if _.has(@config.floatingLabels[row], col)
+          throw new Error "Cannot place two floating labels in same image slot"
+
+        className = "floating-label-#{row}-#{col}"
+        @config.floatingLabels[row][col] = @_processTextConfig(_.omit(labelConfig, 'position'), className)
+        @config.floatingLabels[row][col].className = className
+
+    else
+      @config.floatingLabels = {}
 
     if (@config.padding)
       [paddingTop, paddingRight, paddingBottom, paddingLeft] = @config.padding.split(" ")
@@ -75,36 +106,47 @@ class GraphicCell extends BaseCell
       unless validLayoutValues.includes @config.layout
         throw new Error "Invalid layout #{@config.layout}. Valid values: [#{validLayoutValues.join('|')}]"
 
-  _processTextConfig: (key) ->
-    if @config[key]?
-      textConfig = if _.isString(@config[key]) then { text : @config[key] } else @config[key]
+  _processTextConfig: (input, cssName) ->
+    textConfig = if _.isString(input) then { text : input } else input
 
-      throw new Error "Invalid #{key} config: must have text field" unless textConfig['text']?
+    throw new Error "Invalid #{cssName} config: must have text field" unless textConfig['text']?
 
-      if textConfig? and textConfig['text'].match(/^percentage$/)
-        textConfig['text'] = "#{(100 * @config.proportion).toFixed(1).replace(/\.0$/,'')}%"
+    if textConfig? and textConfig['text'].match(/^percentage$/)
+      textConfig['text'] = "#{(100 * @config.proportion).toFixed(1).replace(/\.0$/,'')}%"
 
-      if textConfig? and textConfig['text'].match(/^proportion$/)
-        textConfig['text'] = "#{(@config.proportion).toFixed(3).replace(/0+$/, '')}"
+    if textConfig? and textConfig['text'].match(/^proportion$/)
+      textConfig['text'] = "#{(@config.proportion).toFixed(3).replace(/0+$/, '')}"
 
+    textConfig['horizontal-align'] ?= 'middle'
+    textConfig['horizontal-align'] = 'middle' if textConfig['horizontal-align'] in ['center', 'centre']
+    textConfig['horizontal-align'] = 'start' if textConfig['horizontal-align'] in ['left']
+    textConfig['horizontal-align'] = 'end' if textConfig['horizontal-align'] in ['right']
 
-      textConfig['horizontal-align'] ?= 'middle'
-      textConfig['horizontal-align'] = 'middle' if textConfig['horizontal-align'] in ['center', 'centre']
-      textConfig['horizontal-align'] = 'start' if textConfig['horizontal-align'] in ['left']
-      textConfig['horizontal-align'] = 'end' if textConfig['horizontal-align'] in ['right']
+    if (textConfig.padding)
+      [textConfig['padding-top'], textConfig['padding-right'], textConfig['padding-bottom'], textConfig['padding-left']] = textConfig.padding.split(" ")
+      delete textConfig.padding
 
-      @_verifyKeyIsPositiveInt(textConfig, 'padding-left', 1)
-      @_verifyKeyIsPositiveInt(textConfig, 'padding-right', 1)
+    @_verifyKeyIsPositiveInt(textConfig, 'padding-left', 1)
+    @_verifyKeyIsPositiveInt(textConfig, 'padding-right', 1)
+    @_verifyKeyIsPositiveInt(textConfig, 'padding-top', 1)
+    @_verifyKeyIsPositiveInt(textConfig, 'padding-bottom', 1)
 
-      unless textConfig['horizontal-align'] in ['start', 'middle', 'end']
-        throw new Error "Invalid horizontal align #{textConfig['horizontal-align']} : must be one of ['left', 'center', 'right']"
+    unless textConfig['horizontal-align'] in ['start', 'middle', 'end']
+      throw new Error "Invalid horizontal align #{textConfig['horizontal-align']} : must be one of ['left', 'center', 'right']"
 
-      #font-size must be present to compute dimensions
-      textConfig['font-size'] ?= BaseCell.getDefault('font-size')
-      for cssAttribute in ['font-family', 'font-weight', 'font-color']
-        @setCss(key, cssAttribute, textConfig[cssAttribute]) if textConfig[cssAttribute]?
+    # NB vertical align is only used by floating labels
+    textConfig['vertical-align'] ?= 'center'
+    textConfig['vertical-align'] = 'center' if textConfig['vertical-align'] in ['middle', 'centre']
 
-      @config[key] = textConfig
+    unless textConfig['vertical-align'] in ['top', 'center', 'bottom']
+      throw new Error "Invalid vertical align #{textConfig['vertical-align']} : must be one of ['top', 'center', 'bottom']"
+
+    #font-size must be present to compute dimensions
+    textConfig['font-size'] ?= BaseCell.getDefault('font-size')
+    for cssAttribute in ['font-family', 'font-weight', 'font-color']
+      @setCss(cssName, cssAttribute, textConfig[cssAttribute]) if textConfig[cssAttribute]?
+
+    return textConfig
 
   _draw: () ->
     @_computeDimensions()
@@ -214,6 +256,35 @@ class GraphicCell extends BaseCell
         textSpanWidth = gridLayout.nodeSize()[0]
         yMidpoint = gridLayout.nodeSize()[1] / 2
         @_addTextTo enteringLeafNodes, 'text-overlay', @config['text-overlay'], textSpanWidth, yMidpoint
+
+      floatingLabelConfig = @config.floatingLabels
+      _graphicCell = @
+      enteringLeafNodes.each (dataAttributes) ->
+        d3Node = d3.select(this)
+        rowNum = dataAttributes.rowOrder # set by d3-grid
+        colNum = dataAttributes.colOrder # set by d3-grid
+
+        if floatingLabelConfig?[rowNum]?[colNum]
+          textConfig = floatingLabelConfig[rowNum][colNum]
+          x = switch
+            when textConfig['horizontal-align'] is 'start' then 0 + textConfig['padding-left']
+            when textConfig['horizontal-align'] is 'middle' then imageWidth/2
+            when textConfig['horizontal-align'] is 'end' then imageWidth - textConfig['padding-right']
+
+          [yMidpoint,dominantBaseline] = switch
+            when textConfig['vertical-align'] is 'top' then [0 + textConfig['padding-top'], 'text-before-edge']
+            when textConfig['vertical-align'] is 'center' then [imageHeight / 2, 'central']
+            when textConfig['vertical-align'] is 'bottom' then [imageHeight - textConfig['padding-bottom'], 'text-after-edge']
+
+          d3Node.append('svg:text')
+            .attr 'class', "floating-label #{textConfig.className}"
+            .attr 'x', x
+            .attr 'y', yMidpoint
+            .attr 'text-anchor', textConfig['horizontal-align']
+            .style 'font-size', _graphicCell.getAdjustedTextSize textConfig['font-size']
+            .style 'dominant-baseline', dominantBaseline
+            .text textConfig['text']
+
 
   _computeDimensions: () ->
 

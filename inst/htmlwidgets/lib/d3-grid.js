@@ -65,14 +65,16 @@ d3.layout.grid = function() {
     }
   };
   distribute = function(nodes) {
-    var direction, i, j, lastColumn, lastRow, len, nextVacantSpot, p, ref, s;
+    var advanceCol, advanceRow, direction, i, j, lastColumn, lastRow, len, nextVacantSpot, p, ref, resetCol, resetRow, s;
     p = primaryDirection;
     s = secondaryDirection;
     lastColumn = numCols - 1;
     lastRow = numRows - 1;
     nextVacantSpot = {
       row: null,
-      col: null
+      col: null,
+      rowOrder: 0,
+      colOrder: 0
     };
     ref = [p, s];
     for (j = 0, len = ref.length; j < len; j++) {
@@ -91,43 +93,61 @@ d3.layout.grid = function() {
           nextVacantSpot.row = lastRow;
       }
     }
+    advanceRow = function(increment) {
+      nextVacantSpot.rowOrder += 1;
+      return nextVacantSpot.row += increment;
+    };
+    resetRow = function(resetValue) {
+      nextVacantSpot.rowOrder = 0;
+      return nextVacantSpot.row = resetValue;
+    };
+    advanceCol = function(increment) {
+      nextVacantSpot.colOrder += 1;
+      return nextVacantSpot.col += increment;
+    };
+    resetCol = function(resetValue) {
+      nextVacantSpot.colOrder = 0;
+      return nextVacantSpot.col = resetValue;
+    };
     i = -1;
     while (++i < nodes.length) {
       nodes[i].x = x(nextVacantSpot.col);
       nodes[i].y = y(nextVacantSpot.row);
       nodes[i].col = nextVacantSpot.col;
       nodes[i].row = nextVacantSpot.row;
+      nodes[i].rowOrder = nextVacantSpot.rowOrder;
+      nodes[i].colOrder = nextVacantSpot.colOrder;
       switch (p) {
         case 'right':
           if (nextVacantSpot.col < lastColumn) {
-            nextVacantSpot.col++;
+            advanceCol(1);
           } else {
-            nextVacantSpot.col = 0;
-            nextVacantSpot.row += s === 'down' ? 1 : -1;
+            resetCol(0);
+            advanceRow(s === 'down' ? 1 : -1);
           }
           break;
         case 'left':
           if (nextVacantSpot.col > 0) {
-            nextVacantSpot.col--;
+            advanceCol(-1);
           } else {
-            nextVacantSpot.col = lastColumn;
-            nextVacantSpot.row += s === 'down' ? 1 : -1;
+            resetCol(lastColumn);
+            advanceRow(s === 'down' ? 1 : -1);
           }
           break;
         case 'down':
           if (nextVacantSpot.row < lastRow) {
-            nextVacantSpot.row++;
+            advanceRow(1);
           } else {
-            nextVacantSpot.row = 0;
-            nextVacantSpot.col += s === 'right' ? 1 : -1;
+            resetRow(0);
+            advanceCol(s === 'right' ? 1 : -1);
           }
           break;
         case 'up':
           if (nextVacantSpot.row > 0) {
-            nextVacantSpot.row--;
+            advanceRow(-1);
           } else {
-            nextVacantSpot.row = lastRow;
-            nextVacantSpot.col += s === 'right' ? 1 : -1;
+            resetRow(lastRow);
+            advanceCol(s === 'right' ? 1 : -1);
           }
       }
     }

@@ -36,21 +36,24 @@ describe 'GraphicCell class', ->
       BaseCell.resetDefaults()
 
     describe 'string as input:', ->
-        it 'builds the config object and uses BaseCell.default font-size', ->
+        it 'builds the config object with defaults', ->
           @withConfig makeConfig 'test-text'
           expect(@instance.config[key]).to.deep.equal {
             text: 'test-text'
             'font-size': '24px'
             'horizontal-align': 'middle'
-            'padding-left': 1
+            'vertical-align': 'center'
+            'padding-top': 1
             'padding-right': 1
+            'padding-bottom': 1
+            'padding-left': 1
           }
 
     describe 'object as input:', ->
       it 'must have a text field', ->
         expect( => @withConfig makeConfig {}).to.throw new RegExp 'must have text field'
 
-      it 'calls setCss on all its members', ->
+      beforeEach ->
         @withConfig makeConfig {
           text: 'test-text'
           'font-size': '12px'
@@ -59,6 +62,7 @@ describe 'GraphicCell class', ->
           'font-weight': '900'
         }
 
+      it 'builds the config object with defaults', ->
         expect(@instance.config[key]).to.deep.equal {
           text: 'test-text'
           'font-size': '12px'
@@ -66,10 +70,14 @@ describe 'GraphicCell class', ->
           'font-color': 'blue'
           'font-weight': '900'
           'horizontal-align': 'middle'
-          'padding-left': 1
+          'vertical-align': 'center'
+          'padding-top': 1
           'padding-right': 1
+          'padding-bottom': 1
+          'padding-left': 1
         }
 
+      it 'calls setCss on all its members', ->
         @wasSet 'font-family'
         @wasSet 'font-color'
         @wasSet 'font-weight'
@@ -227,6 +235,88 @@ describe 'GraphicCell class', ->
 
       describe 'text-footer', ->
         maketextHandlingTestsFor 'text-footer'
+
+      describe 'floating-labels', ->
+
+        beforeEach ->
+          @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
+          BaseCell.setDefault 'font-size', '24px'
+
+          @wasSet = (key, param) ->
+            cssKeysThatWereUsed = @baseCellSetCssSpy.args.map (callValues) -> callValues[0]
+            cssThatWasSet = @baseCellSetCssSpy.args.map (callValues) -> callValues[1]
+            expect(cssKeysThatWereUsed).to.include key
+            expect(cssThatWasSet).to.include param
+
+        afterEach ->
+          BaseCell.prototype.setCss.restore()
+          BaseCell.resetDefaults()
+
+        describe 'config transformation', ->
+          beforeEach ->
+            @withConfig { floatingLabels: [
+              { position: '1:2', text: 'foo', 'font-family': 'arial', 'font-weight': '600', 'font-color': 'red' }
+              { position: '3:4', text: 'bar' }
+            ]}
+
+          it 'each array in config is converted to an object keyed by row then column', ->
+            expect(@instance.config.floatingLabels[1][2]).to.deep.equal {
+              text: 'foo'
+              "horizontal-align": "middle"
+              "vertical-align": "center"
+              "padding-left": 1
+              "padding-right": 1
+              "padding-top": 1
+              "padding-bottom": 1
+              "font-size": '24px'
+              'font-family': 'arial'
+              'font-weight': '600'
+              'font-color': 'red'
+            }
+
+          it 'calls css on font-family and uses a class name specific to the floating-label', ->
+            @wasSet('floating-label-1-2', 'font-family')
+            @wasSet('floating-label-1-2', 'font-weight')
+            @wasSet('floating-label-1-2', 'font-color')
+
+          it 'also processes the second (and all other) items in the array', ->
+            expect(@instance.config.floatingLabels[3][4].text).to.equal 'bar'
+
+          it 'accepts padding string and converts to padding-* params', ->
+            @withConfig { floatingLabels: [
+              { position: '1:2', text: 'foo', padding: "2 2 2 2" }
+            ]}
+
+            expect(@instance.config.floatingLabels[1][2]).to.deep.equal {
+              text: 'foo'
+              "horizontal-align": "middle"
+              "vertical-align": "center"
+              "padding-left": 2
+              "padding-right": 2
+              "padding-top": 2
+              "padding-bottom": 2
+              "font-size": '24px'
+            }
+
+        describe 'error handling', ->
+          it 'missing position causes error', ->
+            expect( => @withConfig { floatingLabels: [{ text: "12" }] }).to.throw(/missing position/)
+
+          it 'invalid position (not int:int)', ->
+            expect( => @withConfig { floatingLabels: [{ position: "1:foo", text: "12" }] }).to.throw(/position not int:int/)
+
+          it 'missing text', ->
+            expect( => @withConfig { floatingLabels: [{ position: "1:1" }] }).to.throw(/missing text/)
+
+          it 'no double labels in same position', -> # may want to support this later
+            expect( => @withConfig { floatingLabels: [{ position: "1:1", text: "12" }, { position: "1:1", text: "12" }] }).to.throw(/same image slot/)
+
+          describe 'invalid padding parameters', ->
+            _(['padding-left', 'padding-right', 'padding-top', 'padding-bottom']).forEach (paddingField) ->
+              it "#{paddingField} must be Int", ->
+                floatingLabelConfig = { position: "1:1", text: "12" }
+                floatingLabelConfig[paddingField] = "invalid"
+                expect( => @withConfig { floatingLabels: [floatingLabelConfig] }).to.throw(/padding.*integer/)
 
     describe 'layout:', ->
 

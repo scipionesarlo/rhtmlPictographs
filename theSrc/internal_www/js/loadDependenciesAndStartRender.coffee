@@ -26,7 +26,6 @@ waitForTheseGlobals = (globals) ->
 createScriptOnceWaitForIsTrue = (src,waitFor) ->
   myInterval = setInterval () ->
     if waitFor()
-      console.log "done waiting for script #{src}"
       clearInterval myInterval
       script = document.createElement('script')
       script.setAttribute('src', src)

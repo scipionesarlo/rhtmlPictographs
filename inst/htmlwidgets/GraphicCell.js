@@ -10,10 +10,10 @@ GraphicCell = (function(_super) {
     return GraphicCell.__super__.constructor.apply(this, arguments);
   }
 
-  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'layout', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'image-background-color', 'text-footer', 'text-header', 'text-overlay', 'variableImage'];
+  GraphicCell.validRootAttributes = ['background-color', 'baseImage', 'columnGutter', 'debugBorder', 'font-color', 'font-family', 'font-size', 'font-weight', 'layout', 'numCols', 'numImages', 'numRows', 'padding', 'proportion', 'rowGutter', 'image-background-color', 'text-footer', 'text-header', 'text-overlay', 'variableImage', 'floatingLabels'];
 
   GraphicCell.prototype.setConfig = function(config) {
-    var invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, validLayoutValues, _ref;
+    var floatingLabelsInput, invalidRootAttributes, key, paddingBottom, paddingLeft, paddingRight, paddingTop, validLayoutValues, _ref;
     this.config = _.cloneDeep(config);
     invalidRootAttributes = _.difference(_.keys(this.config), GraphicCell.validRootAttributes);
     if (invalidRootAttributes.length > 0) {
@@ -41,9 +41,47 @@ GraphicCell = (function(_super) {
     this._verifyKeyIsRatio(this.config, 'columnGutter');
     this._verifyKeyIsFloat(this.config, 'rowGutter', 0.05, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'rowGutter');
-    this._processTextConfig('text-header');
-    this._processTextConfig('text-overlay');
-    this._processTextConfig('text-footer');
+    if (this.config['text-header']) {
+      this.config['text-header'] = this._processTextConfig(this.config['text-header'], 'text-header');
+    }
+    if (this.config['text-overlay']) {
+      this.config['text-overlay'] = this._processTextConfig(this.config['text-overlay'], 'text-overlay');
+    }
+    if (this.config['text-footer']) {
+      this.config['text-footer'] = this._processTextConfig(this.config['text-footer'], 'text-footer');
+    }
+    if (this.config.floatingLabels) {
+      floatingLabelsInput = this.config.floatingLabels;
+      this.config.floatingLabels = {};
+      _(floatingLabelsInput).each((function(_this) {
+        return function(labelConfig) {
+          var className, col, colString, row, rowString, _base, _ref;
+          if (!labelConfig.text) {
+            throw new Error("Invalid floating label, missing text");
+          }
+          if (!labelConfig.position) {
+            throw new Error("Invalid floating label, missing position");
+          }
+          _ref = labelConfig.position.split(':'), rowString = _ref[0], colString = _ref[1];
+          row = parseInt(rowString);
+          col = parseInt(colString);
+          if (_.isNaN(row) || _.isNaN(col)) {
+            throw new Error("Invalid floating label, position not int:int");
+          }
+          if ((_base = _this.config.floatingLabels)[row] == null) {
+            _base[row] = {};
+          }
+          if (_.has(_this.config.floatingLabels[row], col)) {
+            throw new Error("Cannot place two floating labels in same image slot");
+          }
+          className = "floating-label-" + row + "-" + col;
+          _this.config.floatingLabels[row][col] = _this._processTextConfig(_.omit(labelConfig, 'position'), className);
+          return _this.config.floatingLabels[row][col].className = className;
+        };
+      })(this));
+    } else {
+      this.config.floatingLabels = {};
+    }
     if (this.config.padding) {
       _ref = this.config.padding.split(" "), paddingTop = _ref[0], paddingRight = _ref[1], paddingBottom = _ref[2], paddingLeft = _ref[3];
       this.config.padding = {
@@ -73,50 +111,63 @@ GraphicCell = (function(_super) {
     }
   };
 
-  GraphicCell.prototype._processTextConfig = function(key) {
-    var cssAttribute, textConfig, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
-    if (this.config[key] != null) {
-      textConfig = _.isString(this.config[key]) ? {
-        text: this.config[key]
-      } : this.config[key];
-      if (textConfig['text'] == null) {
-        throw new Error("Invalid " + key + " config: must have text field");
-      }
-      if ((textConfig != null) && textConfig['text'].match(/^percentage$/)) {
-        textConfig['text'] = "" + ((100 * this.config.proportion).toFixed(1).replace(/\.0$/, '')) + "%";
-      }
-      if ((textConfig != null) && textConfig['text'].match(/^proportion$/)) {
-        textConfig['text'] = "" + (this.config.proportion.toFixed(3).replace(/0+$/, ''));
-      }
-      if (textConfig['horizontal-align'] == null) {
-        textConfig['horizontal-align'] = 'middle';
-      }
-      if ((_ref = textConfig['horizontal-align']) === 'center' || _ref === 'centre') {
-        textConfig['horizontal-align'] = 'middle';
-      }
-      if ((_ref1 = textConfig['horizontal-align']) === 'left') {
-        textConfig['horizontal-align'] = 'start';
-      }
-      if ((_ref2 = textConfig['horizontal-align']) === 'right') {
-        textConfig['horizontal-align'] = 'end';
-      }
-      this._verifyKeyIsPositiveInt(textConfig, 'padding-left', 1);
-      this._verifyKeyIsPositiveInt(textConfig, 'padding-right', 1);
-      if ((_ref3 = textConfig['horizontal-align']) !== 'start' && _ref3 !== 'middle' && _ref3 !== 'end') {
-        throw new Error("Invalid horizontal align " + textConfig['horizontal-align'] + " : must be one of ['left', 'center', 'right']");
-      }
-      if (textConfig['font-size'] == null) {
-        textConfig['font-size'] = BaseCell.getDefault('font-size');
-      }
-      _ref4 = ['font-family', 'font-weight', 'font-color'];
-      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-        cssAttribute = _ref4[_i];
-        if (textConfig[cssAttribute] != null) {
-          this.setCss(key, cssAttribute, textConfig[cssAttribute]);
-        }
-      }
-      return this.config[key] = textConfig;
+  GraphicCell.prototype._processTextConfig = function(input, cssName) {
+    var cssAttribute, textConfig, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+    textConfig = _.isString(input) ? {
+      text: input
+    } : input;
+    if (textConfig['text'] == null) {
+      throw new Error("Invalid " + cssName + " config: must have text field");
     }
+    if ((textConfig != null) && textConfig['text'].match(/^percentage$/)) {
+      textConfig['text'] = "" + ((100 * this.config.proportion).toFixed(1).replace(/\.0$/, '')) + "%";
+    }
+    if ((textConfig != null) && textConfig['text'].match(/^proportion$/)) {
+      textConfig['text'] = "" + (this.config.proportion.toFixed(3).replace(/0+$/, ''));
+    }
+    if (textConfig['horizontal-align'] == null) {
+      textConfig['horizontal-align'] = 'middle';
+    }
+    if ((_ref = textConfig['horizontal-align']) === 'center' || _ref === 'centre') {
+      textConfig['horizontal-align'] = 'middle';
+    }
+    if ((_ref1 = textConfig['horizontal-align']) === 'left') {
+      textConfig['horizontal-align'] = 'start';
+    }
+    if ((_ref2 = textConfig['horizontal-align']) === 'right') {
+      textConfig['horizontal-align'] = 'end';
+    }
+    if (textConfig.padding) {
+      _ref3 = textConfig.padding.split(" "), textConfig['padding-top'] = _ref3[0], textConfig['padding-right'] = _ref3[1], textConfig['padding-bottom'] = _ref3[2], textConfig['padding-left'] = _ref3[3];
+      delete textConfig.padding;
+    }
+    this._verifyKeyIsPositiveInt(textConfig, 'padding-left', 1);
+    this._verifyKeyIsPositiveInt(textConfig, 'padding-right', 1);
+    this._verifyKeyIsPositiveInt(textConfig, 'padding-top', 1);
+    this._verifyKeyIsPositiveInt(textConfig, 'padding-bottom', 1);
+    if ((_ref4 = textConfig['horizontal-align']) !== 'start' && _ref4 !== 'middle' && _ref4 !== 'end') {
+      throw new Error("Invalid horizontal align " + textConfig['horizontal-align'] + " : must be one of ['left', 'center', 'right']");
+    }
+    if (textConfig['vertical-align'] == null) {
+      textConfig['vertical-align'] = 'center';
+    }
+    if ((_ref5 = textConfig['vertical-align']) === 'middle' || _ref5 === 'centre') {
+      textConfig['vertical-align'] = 'center';
+    }
+    if ((_ref6 = textConfig['vertical-align']) !== 'top' && _ref6 !== 'center' && _ref6 !== 'bottom') {
+      throw new Error("Invalid vertical align " + textConfig['vertical-align'] + " : must be one of ['top', 'center', 'bottom']");
+    }
+    if (textConfig['font-size'] == null) {
+      textConfig['font-size'] = BaseCell.getDefault('font-size');
+    }
+    _ref7 = ['font-family', 'font-weight', 'font-color'];
+    for (_i = 0, _len = _ref7.length; _i < _len; _i++) {
+      cssAttribute = _ref7[_i];
+      if (textConfig[cssAttribute] != null) {
+        this.setCss(cssName, cssAttribute, textConfig[cssAttribute]);
+      }
+    }
+    return textConfig;
   };
 
   GraphicCell.prototype._draw = function() {
@@ -206,14 +257,47 @@ GraphicCell = (function(_super) {
     }
     return variableImageCompletePromise.then((function(_this) {
       return function() {
+        var floatingLabelConfig, _graphicCell;
         if (_this.config['tooltip']) {
           enteringLeafNodes.append("svg:title").text(_this.config['tooltip']);
         }
         if (_this.config['text-overlay'] != null) {
           textSpanWidth = gridLayout.nodeSize()[0];
           yMidpoint = gridLayout.nodeSize()[1] / 2;
-          return _this._addTextTo(enteringLeafNodes, 'text-overlay', _this.config['text-overlay'], textSpanWidth, yMidpoint);
+          _this._addTextTo(enteringLeafNodes, 'text-overlay', _this.config['text-overlay'], textSpanWidth, yMidpoint);
         }
+        floatingLabelConfig = _this.config.floatingLabels;
+        _graphicCell = _this;
+        return enteringLeafNodes.each(function(dataAttributes) {
+          var colNum, d3Node, dominantBaseline, rowNum, textConfig, x, _ref, _ref1;
+          d3Node = d3.select(this);
+          rowNum = dataAttributes.rowOrder;
+          colNum = dataAttributes.colOrder;
+          if (floatingLabelConfig != null ? (_ref = floatingLabelConfig[rowNum]) != null ? _ref[colNum] : void 0 : void 0) {
+            textConfig = floatingLabelConfig[rowNum][colNum];
+            x = (function() {
+              switch (false) {
+                case textConfig['horizontal-align'] !== 'start':
+                  return 0 + textConfig['padding-left'];
+                case textConfig['horizontal-align'] !== 'middle':
+                  return imageWidth / 2;
+                case textConfig['horizontal-align'] !== 'end':
+                  return imageWidth - textConfig['padding-right'];
+              }
+            })();
+            _ref1 = (function() {
+              switch (false) {
+                case textConfig['vertical-align'] !== 'top':
+                  return [0 + textConfig['padding-top'], 'text-before-edge'];
+                case textConfig['vertical-align'] !== 'center':
+                  return [imageHeight / 2, 'central'];
+                case textConfig['vertical-align'] !== 'bottom':
+                  return [imageHeight - textConfig['padding-bottom'], 'text-after-edge'];
+              }
+            })(), yMidpoint = _ref1[0], dominantBaseline = _ref1[1];
+            return d3Node.append('svg:text').attr('class', "floating-label " + textConfig.className).attr('x', x).attr('y', yMidpoint).attr('text-anchor', textConfig['horizontal-align']).style('font-size', _graphicCell.getAdjustedTextSize(textConfig['font-size'])).style('dominant-baseline', dominantBaseline).text(textConfig['text']);
+          }
+        });
       };
     })(this));
   };

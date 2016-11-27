@@ -7,6 +7,9 @@ h2 {
     margin: 10px;
 }
 
+p {
+    width: 800px;
+}
 h2.hidden {
     display: none;
 }
@@ -53,7 +56,6 @@ pre.config {
 }
 
 .code {
-    font-size: x-small;
     background-color: #eeeeee;
     opacity: 0.6;
     border: #cccccc 1px solid;

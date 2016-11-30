@@ -3,6 +3,10 @@ body {
     font-family: 'Arvo', serif;
 }
 
+.index-link {
+    margin-bottom: 10px;
+}
+
 h2 {
     margin: 10px;
 }

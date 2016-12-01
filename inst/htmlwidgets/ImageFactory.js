@@ -166,8 +166,8 @@ ImageFactory = (function() {
     }
     unknownParts = [];
     while (part = configParts.shift()) {
-      if (part in ImageFactory.keywordHandlers) {
-        handler = ImageFactory.keywordHandlers[part];
+      if (part in ImageFactory.scalingStrategies) {
+        handler = ImageFactory.scalingStrategies[part];
         if (_.isString(handler)) {
           config[handler] = true;
         } else {
@@ -472,7 +472,7 @@ ImageFactory = (function() {
 
   ImageFactory.basicShapes = ['circle', 'ellipse', 'square', 'rect'];
 
-  ImageFactory.keywordHandlers = {
+  ImageFactory.scalingStrategies = {
     vertical: {
       clip: 'fromBottom'
     },
@@ -496,6 +496,10 @@ ImageFactory = (function() {
     radial: 'radialclip',
     pie: 'radialclip'
   };
+
+  ImageFactory.validScalingStrategyStrings = _.keys(ImageFactory.scalingStrategies);
+
+  ImageFactory.validScalingStrategyKeys = ['clip', 'radialclip', 'scale'];
 
   function ImageFactory() {}
 

@@ -1,12 +1,11 @@
 describe 'GraphicCell class', ->
 
-  makeRatioTestsFor = (key) ->
+  makeRatioTestsFor = (key, baseConfig={}) ->
 
-    #NB this is hard to understand, but basically i cant do a one line object generation when the key is dynamic
     makeConfig = (v) ->
-      c = {}
-      c[key] = v
-      c
+      config = baseConfig
+      config[key] = v
+      config
 
     describe 'must be an float between 0 and 1 inclusive:', ->
       it "#{key}=-1 causes errors", -> expect(=> @withConfig makeConfig(-1)).to.throw new RegExp "#{key}"
@@ -17,11 +16,10 @@ describe 'GraphicCell class', ->
 
   maketextHandlingTestsFor = (key) ->
 
-    #NB this is hard to understand, but basically i cant do a one line object generation when the key is dynamic
-    makeConfig = (v, extra={}) ->
-      c = {}
-      c[key] = v
-      _.extend c, extra
+    makeConfig = (v, baseConfig={}) ->
+      config = baseConfig
+      config[key] = v
+      config
 
     beforeEach ->
       @baseCellSetCssSpy = sinon.spy BaseCell.prototype, 'setCss'
@@ -102,29 +100,29 @@ describe 'GraphicCell class', ->
       describe '"proportion" keyword:', ->
 
         it 'accepts proportion in string form and uses the proportion as text value', ->
-          @withConfig makeConfig 'proportion', { proportion: '0.123' }
+          @withConfig makeConfig 'proportion', { proportion: '0.123', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '0.123'
 
         it 'accepts proportion in string form and uses the proportion as text value', ->
-          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.123' }
+          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.123', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '0.123'
 
         it 'does not display insignificant 0 characters', ->
-          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.5' }
+          @withConfig makeConfig { text: 'proportion' }, { proportion: '0.5', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '0.5'
 
       describe '"percentage" keyword:', ->
 
         it 'accepts percentage in string form and uses the percentage as text value', ->
-          @withConfig makeConfig 'percentage', { proportion: '=2/3' }
+          @withConfig makeConfig 'percentage', { proportion: '=2/3', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '66.7%'
 
         it 'accepts percentage in string form and uses the percentage as text value', ->
-          @withConfig makeConfig { text: 'percentage' }, { proportion: '=2/3' }
+          @withConfig makeConfig { text: 'percentage' }, { proportion: '=2/3', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '66.7%'
 
         it 'does not display insignificant 0 characters', ->
-          @withConfig makeConfig { text: 'percentage' }, { proportion: '=1/2' }
+          @withConfig makeConfig { text: 'percentage' }, { proportion: '=1/2', variableImage: 'circle:fromleft' }
           expect(@instance.config[key].text).to.equal '50%'
 
   beforeEach ->
@@ -198,14 +196,26 @@ describe 'GraphicCell class', ->
         @withConfig {}
         expect(@instance.config.proportion).to.equal 1
 
-      makeRatioTestsFor 'proportion'
+      makeRatioTestsFor 'proportion', { variableImage: 'circle:fromleft' }
 
       describe 'interpret strings starting with "="', ->
         it 'proportion="=3/4" will compute to 0.75', ->
-          @withConfig { proportion: '=3/4' }
+          @withConfig { proportion: '=3/4', variableImage: 'circle:fromleft' }
           expect(@instance.config.proportion).to.equal 0.75
 
         it 'proportion="=5/4" will throw error (out of bounds)', -> expect(=> @withConfig { proportion: '=5/4' }).to.throw new RegExp 'proportion'
+
+      it 'throws error if proportion < 1 and no scaling instruction is provided (string config)', ->
+        expect( => @withConfig({ proportion: '0.75', variableImage: 'circle' })).to.throw new RegExp 'scaling strategy'
+
+      it 'does not throw error if proportion == 1 and no scaling instruction is provided (string config)', ->
+        expect( => @withConfig({ proportion: '1', variableImage: 'circle' })).not.to.throw()
+
+      it 'throws error if proportion < 1 and no scaling instruction is provided (object config)', ->
+        expect( => @withConfig({ proportion: '0.75', variableImage: { type: 'circle' } })).to.throw()
+
+      it 'does not throw error if proportion == 1 and no scaling instruction is provided (object config)', ->
+        expect( => @withConfig({ proportion: '1', variableImage: { type: 'circle' } })).not.to.throw()
 
     describe '"padding" handling:', ->
       describe 'defaults:', ->
@@ -261,13 +271,14 @@ describe 'GraphicCell class', ->
 
           it 'each array in config is converted to an object keyed by row then column', ->
             expect(@instance.config.floatingLabels[1][2]).to.deep.equal {
-              text: 'foo'
-              "horizontal-align": "middle"
-              "vertical-align": "center"
-              "padding-left": 1
-              "padding-right": 1
-              "padding-top": 1
-              "padding-bottom": 1
+              'className': 'floating-label-1-2'
+              'text': 'foo'
+              'horizontal-align': 'middle'
+              'vertical-align': 'center'
+              'padding-left': 1
+              'padding-right': 1
+              'padding-top': 1
+              'padding-bottom': 1
               "font-size": '24px'
               'font-family': 'arial'
               'font-weight': '600'
@@ -288,14 +299,15 @@ describe 'GraphicCell class', ->
             ]}
 
             expect(@instance.config.floatingLabels[1][2]).to.deep.equal {
-              text: 'foo'
-              "horizontal-align": "middle"
-              "vertical-align": "center"
-              "padding-left": 2
-              "padding-right": 2
-              "padding-top": 2
-              "padding-bottom": 2
-              "font-size": '24px'
+              'className': 'floating-label-1-2'
+              'text': 'foo'
+              'horizontal-align': 'middle'
+              'vertical-align': 'center'
+              'padding-left': 2
+              'padding-right': 2
+              'padding-top': 2
+              'padding-bottom': 2
+              'font-size': '24px'
             }
 
         describe 'error handling', ->

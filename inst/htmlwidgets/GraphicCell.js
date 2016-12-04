@@ -27,6 +27,7 @@ GraphicCell = (function(_super) {
     }
     this._verifyKeyIsFloat(this.config, 'proportion', 1, 'Must be number between 0 and 1');
     this._verifyKeyIsRatio(this.config, 'proportion');
+    this._throwErrorIfProportionSetAndNoScalingStrategyProvided();
     this._verifyKeyIsPositiveInt(this.config, 'numImages', 1);
     if (this.config['numRows'] != null) {
       this._verifyKeyIsPositiveInt(this.config, 'numRows', 1);
@@ -108,6 +109,30 @@ GraphicCell = (function(_super) {
       if (!validLayoutValues.includes(this.config.layout)) {
         throw new Error("Invalid layout " + this.config.layout + ". Valid values: [" + (validLayoutValues.join('|')) + "]");
       }
+    }
+  };
+
+  GraphicCell.prototype._throwErrorIfProportionSetAndNoScalingStrategyProvided = function() {
+    var matchingScalingStrategies;
+    if (!(this.config.proportion < 1)) {
+      return;
+    }
+    matchingScalingStrategies = null;
+    if (_.isString(this.config.variableImage)) {
+      matchingScalingStrategies = _.find(ImageFactory.validScalingStrategyStrings, (function(_this) {
+        return function(validStrategyString) {
+          return _this.config.variableImage.indexOf(validStrategyString) !== -1;
+        };
+      })(this));
+    } else {
+      matchingScalingStrategies = _.find(ImageFactory.validScalingStrategyKeys, (function(_this) {
+        return function(validStrategyKey) {
+          return validStrategyKey in _this.config.variableImage;
+        };
+      })(this));
+    }
+    if (_.isUndefined(matchingScalingStrategies)) {
+      throw new Error('Cannot have proportion < 1 without providing a scaling strategy to the variableImage');
     }
   };
 

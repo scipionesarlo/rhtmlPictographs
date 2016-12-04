@@ -40,6 +40,8 @@ class GraphicCell extends BaseCell
     @_verifyKeyIsFloat @config, 'proportion', 1, 'Must be number between 0 and 1'
     @_verifyKeyIsRatio @config, 'proportion'
 
+    @_throwErrorIfProportionSetAndNoScalingStrategyProvided()
+
     @_verifyKeyIsPositiveInt @config, 'numImages', 1
     @_verifyKeyIsPositiveInt(@config, 'numRows', 1) if @config['numRows']?
     @_verifyKeyIsPositiveInt(@config, 'numCols', 1) if @config['numCols']?
@@ -105,6 +107,19 @@ class GraphicCell extends BaseCell
       validLayoutValues = d3.layout.grid().validDirections()
       unless validLayoutValues.includes @config.layout
         throw new Error "Invalid layout #{@config.layout}. Valid values: [#{validLayoutValues.join('|')}]"
+
+  _throwErrorIfProportionSetAndNoScalingStrategyProvided: () ->
+    return unless @config.proportion < 1
+    matchingScalingStrategies = null
+    if _.isString(@config.variableImage)
+      matchingScalingStrategies = _.find ImageFactory.validScalingStrategyStrings, (validStrategyString) =>
+        return @config.variableImage.indexOf(validStrategyString) != -1
+    else
+      matchingScalingStrategies = _.find ImageFactory.validScalingStrategyKeys, (validStrategyKey) =>
+        return validStrategyKey of @config.variableImage
+
+    if _.isUndefined matchingScalingStrategies
+      throw new Error 'Cannot have proportion < 1 without providing a scaling strategy to the variableImage'
 
   _processTextConfig: (input, cssName) ->
     textConfig = if _.isString(input) then { text : input } else input

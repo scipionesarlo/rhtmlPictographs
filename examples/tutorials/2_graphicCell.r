@@ -97,8 +97,8 @@ rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "text-header" 
 
 #Use Text Presets
 ##The strings "proportion" and "percentage" will auto generate text based on the proportion field.
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "proportion", "text-overlay" : "proportion", "text-footer" : "proportion" }')
-rhtmlPictographs::graphic('{ "variableImage": "circle:lightblue", "proportion": "0.66", "text-header" : "percentage", "text-overlay" : "percentage", "text-footer" : "percentage" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:fromleft:lightblue", "proportion": "0.66", "text-header" : "proportion", "text-overlay" : "proportion", "text-footer" : "proportion" }')
+rhtmlPictographs::graphic('{ "variableImage": "circle:fromleft:lightblue", "proportion": "0.66", "text-header" : "percentage", "text-overlay" : "percentage", "text-footer" : "percentage" }')
 
 #Background Color
 ##By design, background color covers the entire cell and does not respect padding

@@ -15,7 +15,7 @@ rhtmlPictographs::graphic(0.33, 400, 400, '{"baseImageUrl": "https://s3-ap-south
 
 Prerequisites:
 
-1. Must have node.js version >= 5.0 installed
+1. Must have node.js version >= 6.1 installed
 1. Must have Google Chrome installed
 1. tested on OSX only, should work in Windows/Linux
 

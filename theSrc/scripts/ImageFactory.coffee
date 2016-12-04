@@ -152,8 +152,8 @@ class ImageFactory
     unknownParts = []
     while part = configParts.shift()
 
-      if part of ImageFactory.keywordHandlers
-        handler = ImageFactory.keywordHandlers[part]
+      if part of ImageFactory.scalingStrategies
+        handler = ImageFactory.scalingStrategies[part]
         if _.isString handler
           config[handler] = true
         else
@@ -429,7 +429,7 @@ class ImageFactory
 
   @basicShapes = ['circle', 'ellipse', 'square', 'rect']
 
-  @keywordHandlers = {
+  @scalingStrategies = {
     vertical: { clip: 'fromBottom' }
     horizontal: { clip: 'fromLeft'}
     fromleft: { clip: 'fromLeft' }
@@ -441,5 +441,8 @@ class ImageFactory
     radial: 'radialclip'
     pie: 'radialclip'
   }
+
+  @validScalingStrategyStrings = _.keys(ImageFactory.scalingStrategies)
+  @validScalingStrategyKeys = ['clip', 'radialclip', 'scale']
 
   constructor: () ->

@@ -2,6 +2,7 @@
   "applitoolsKey": "***REMOVED***",
   "browserWidth": 1280,
   "browserHeight": 670,
-  "defaultMatchTimeout": 5,
+  "defaultMatchTimeout": 10,
+  "pageLoadWaitSeconds": 5,
   "forceFullPageScreenshot": true
 }

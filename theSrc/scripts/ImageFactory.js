@@ -284,8 +284,8 @@ class ImageFactory {
 
     const newImage = d3Node.append('svg:rect')
       .classed('square', true)
-      .attr('x', d => ((width - (length * baseShapeHiding)) / 2) + ((width * (1 - ratio(d.proportion))) / 2))
-      .attr('y', d => ((height - (length * baseShapeHiding)) / 2) + ((height * (1 - ratio(d.proportion))) / 2))
+      .attr('x', d => ((width - (length * baseShapeHiding)) / 2) + ((length * (1 - ratio(d.proportion))) / 2))
+      .attr('y', d => ((height - (length * baseShapeHiding)) / 2) + ((length * (1 - ratio(d.proportion))) / 2))
       .attr('width', d => ratio(d.proportion) * length * baseShapeHiding)
       .attr('height', d => ratio(d.proportion) * length * baseShapeHiding)
       .style('fill', color)

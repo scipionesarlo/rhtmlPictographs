@@ -6,21 +6,25 @@
 #Intro
 ##This set of examples provides a tool to verify that the different scaling modes are handled correctly in a variety of situations.
 
-#Different fill directions
+#Multi Image w/ Different fill directions
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:fromleft", "proportion": "=15/16" }')
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:fromright", "proportion": "=15/16" }')
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:frombottom", "proportion": "=15/16" }')
 rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:fromtop", "proportion": "=15/16" }')
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:scale", "proportion": "=15/16" }')
+rhtmlPictographs::graphic('{ "numImages": 2, "numRows": 2, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:scale", "proportion": "=15/16" }')
 
 #Squares
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:radial", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:scale", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:scale", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "square:frombottom", "proportion": "=7/8" }')
 
 #Rectangles
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:radial", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:fromleft", "proportion": "=7/8" }')
+rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:scale", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:scale", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "rect:lightblue", "variableImage": "rect:frombottom", "proportion": "=7/8" }')
 
@@ -37,9 +41,6 @@ rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "bas
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "ellipse:lightblue", "variableImage": "ellipse:frombottom", "proportion": "=7/8" }')
 
 #External Image URL
-##This shows a limitation of scaling an external image that doesn't "fit" the cell.
-##In these examples a cell of 200x100 (or 100x200) contains an external image of a circle, which is scaled to fit such that the circle has a diameter of 100 and is centred in the cell.
-##The issue is there is no way to now what proportion of the cell is occupied by the image, so the scaling takes place accross the entire cell, not just for the content occupied by the image.
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:fromleft:/images/blue_circle_512.svg", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:radial:/images/blue_circle_512.svg", "proportion": "=7/8" }')
 rhtmlPictographs::graphic('{ "numImages": 1, "background-color": "#dddddd", "baseImage": "square:lightblue", "variableImage": "url:scale:/images/blue_circle_512.svg", "proportion": "=5/8" }')

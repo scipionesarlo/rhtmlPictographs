@@ -14,11 +14,14 @@ gulp.task('compileRenderIndexPage', function () {
       gutil.log(`bundling ${file.path}`);
 
       file.contents = browserify(file.path, { debug: true })
-        .transform(babelify, { presets: ['es2015-ie'] })
+        .transform(babelify, {
+          presets: ['es2015-ie'],
+          plugins: ['transform-object-assign', 'array-includes'],
+        })
         .bundle();
     }))
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(sourcemaps.write('./'))
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('browser/js/'));
 });

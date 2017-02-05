@@ -2,10 +2,11 @@
   "extends": "airbnb",
   "globals": {
     // all codebases
-    "document": true,
     "_": true,
-    "jQuery": true,
     "$": true,
+    "document": true,
+    "jQuery": true,
+    "window": true,
 
     // htmlwidget R boundary
     "HTMLWidgets": true,

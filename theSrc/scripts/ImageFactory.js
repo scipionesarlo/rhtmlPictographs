@@ -1,33 +1,32 @@
-import $ from 'jquery';
-import ColorFactory from './ColorFactory';
-import RecolorSvg from './RecolorSvg';
+import CircleType from './imageTypes/circle.imagetype';
+import EllipseType from './imageTypes/ellipse.imagetype';
+import SquareType from './imageTypes/square.imagetype';
+import RectangleType from './imageTypes/rectangle.imagetype';
+import RecoloredExternalSvg from './imageTypes/recoloredExternalSvg.imagetype';
+import UrlType from './imageTypes/url.imagetype';
 
-// I am a singleton, all my methods and variables are static
+import ClipFactory from './ClipFactory';
 
 class ImageFactory {
-  static initClass() {
-    // NB there is a chance that setting timeouts in the browser will mess with automation scripts, so consider this timeout in that scenario
-    // NB the timeout cn be set very low. Even at 0 all image requests for a Pictograph will share the same promise,
-    // because all calls to getOrDownload take place before the JS "next tick"
-    // NB Main benefit of setting higher is to aid during redraws etc.
-    this.imageDownloadPromises = {};
 
-  // TODO add delete cache timeout to prevent unbounded memory growth
-  // TODO seperate out the aspect ratio calculations so that we can reuse the image download request regardless of container dimensions
-    this.imageSvgDimensions = {};
-
-    this.types = {
-      circle: ImageFactory.addCircleTo,
-      ellipse: ImageFactory.addEllipseTo,
-      square: ImageFactory.addSquareTo,
-      rect: ImageFactory.addRectTo,
-      url: ImageFactory.addExternalImage,
-      data: ImageFactory._addExternalImage,
+  static get types() {
+    return {
+      circle: CircleType,
+      square: SquareType,
+      url: UrlType,
+      rect: RectangleType,
+      ellipse: EllipseType,
+      data: UrlType,
+      recoloredExternalSvg: RecoloredExternalSvg,
     };
+  }
 
-    this.basicShapes = ['circle', 'ellipse', 'square', 'rect'];
+  static get basicShapes() {
+    return ['circle', 'ellipse', 'square', 'rect'];
+  }
 
-    this.scalingStrategies = {
+  static get scalingStrategies() {
+    return {
       vertical: { clip: 'fromBottom' },
       horizontal: { clip: 'fromLeft' },
       fromleft: { clip: 'fromLeft' },
@@ -35,69 +34,26 @@ class ImageFactory {
       frombottom: { clip: 'fromBottom' },
       fromtop: { clip: 'fromTop' },
       scale: 'scale',
-      radialclip: 'radialclip',
-      radial: 'radialclip',
-      pie: 'radialclip',
+      radialclip: { clip: 'radial' },
+      radial: { clip: 'radial' },
+      pie: { clip: 'radial' },
     };
-
-    this.validScalingStrategyStrings = _.keys(ImageFactory.scalingStrategies);
-    this.validScalingStrategyKeys = ['clip', 'radialclip', 'scale'];
   }
-  static getOrDownload(url) {
-    if (!(url in ImageFactory.imageDownloadPromises)) {
-      ImageFactory.imageDownloadPromises[url] = $.ajax({ url, dataType: 'text' });
-      setTimeout(() => delete ImageFactory.imageDownloadPromises[url]
-      , 10000);
-    }
-    return ImageFactory.imageDownloadPromises[url];
+
+  static get validScalingStrategyStrings() {
+    return _.keys(ImageFactory.scalingStrategies);
   }
-  static getImageDimensions(url, imageBoxDim, containerWidth, containerHeight) {
-    if (!url) { return new Promise((resolve, reject) => resolve(imageBoxDim)); }
 
-    const cacheKey = `${url}-${containerWidth}-${containerHeight}`;
-    if (!(cacheKey in ImageFactory.imageSvgDimensions)) {
-      ImageFactory.imageSvgDimensions[cacheKey] = new Promise(function (resolve, reject) {
-        const tmpImg = document.createElement('img');
-        tmpImg.setAttribute('src', url);
-        document.body.appendChild(tmpImg);
-        tmpImg.onerror = function () {
-          tmpImg.remove();
-          return reject(new Error(`Image not found: ${url}`));
-        };
-
-        return tmpImg.onload = function () {
-          // alg from http://stackoverflow.com/a/6565988/3344695
-          const imageWidth = tmpImg.getBoundingClientRect().width;
-          const imageHeight = tmpImg.getBoundingClientRect().height;
-          const imageAspectRatio = imageWidth / imageHeight;
-          const containerAspectRatio = containerWidth / containerHeight;
-
-          if (containerAspectRatio > imageAspectRatio) {
-            imageBoxDim.width = (imageWidth * containerHeight) / imageHeight;
-            imageBoxDim.height = containerHeight;
-          } else {
-            imageBoxDim.width = containerWidth;
-            imageBoxDim.height = (imageHeight * containerWidth) / imageWidth;
-          }
-
-          imageBoxDim.x = (containerWidth - imageBoxDim.width) / 2;
-          imageBoxDim.y = (containerHeight - imageBoxDim.height) / 2;
-          imageBoxDim.aspectRatio = imageAspectRatio;
-
-          tmpImg.remove();
-          return resolve(imageBoxDim);
-        };
-      });
-    }
-
-    return ImageFactory.imageSvgDimensions[cacheKey];
+  static get validScalingStrategyKeys() {
+    return ['clip', 'scale'];
   }
 
   static addBaseImageTo(d3Node, config, width, height, dataAttributes) {
     config = ImageFactory.parseConfigString(config);
-
     // VIS-121 - Prevent base svgs from peeking out over the variable images (only for basic shapes)
-    if (_.includes(ImageFactory.basicShapes, config.type) && this.isInternetExplorer()) { config.baseShapeScale = 0.98; }
+    if (_.includes(ImageFactory.basicShapes, config.type) && this.isInternetExplorer()) {
+      config.baseShapeScale = 0.98;
+    }
     return ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes);
   }
 
@@ -107,65 +63,38 @@ class ImageFactory {
   }
 
   static addImageTo(d3Node, config, width, height, dataAttributes) {
-    // we need to get the aspect ratio for the clip, this is an ugly but effective way
-    // perhaps another way to figure out aspect ratio: http://stackoverflow.com/questions/38947966/how-to-get-a-svgs-aspect-ratio?noredirect=1#comment65284650_38947966
-    const imageBoxDim = {
-      height,
-      width,
-      x: 0,
-      y: 0,
-    };
-    config.imageBoxDim = imageBoxDim;
+    const imageInstance = ImageFactory.createInstance(d3Node, config, width, height, dataAttributes);
 
-    const getDimensionsPromise = ImageFactory.getImageDimensions(config.url, imageBoxDim, width, height);
-    const getImageDataPromise = ImageFactory.types[config.type](d3Node, config, width, height, dataAttributes);
-    return Promise.all([getDimensionsPromise, getImageDataPromise]).then(function (values) {
-      config.imageBoxDim = values[0];
-      const newImageData = values[1];
+    return Promise.resolve()
+      .then(imageInstance.calculateImageDimensions.bind(imageInstance))
+      .then((imageDimensions) => {
+        if (config.clip) {
+          const newClipId = ClipFactory.addClipPath(config.clip, d3Node, imageDimensions);
+          return newClipId;
+        } else {
+          return null;
+        }
+      })
+      .then((clipId) => {
+        const imageHandle = imageInstance.appendToSvg();
+        if (clipId) {
+          imageHandle.attr('clip-path', `url(#${clipId})`);
+        }
+      });
+  }
 
-      // why unscaledBox? if we place a 100x100 circle in a 200x100 container, the circle goes in the middle.
-      // when we create the clipPath, we need to know the circle doesn't start at 0,0 it starts at 50,0
-      const imageBox = newImageData.unscaledBox || {
-        x: config.imageBoxDim.x,
-        y: config.imageBoxDim.y,
-        width: config.imageBoxDim.width,
-        height: config.imageBoxDim.height,
-      };
-      const { newImage } = newImageData;
+  static createInstance(d3Node, config, width, height, dataAttributes) {
+    if (!_.has(ImageFactory.types, config.type)) {
+      throw new Error(`Invalid image type '${config.type}'`);
+    }
 
-      if (config.clip) {
-        const clipMaker = (() => {
-          switch (false) {
-            case config.clip !== 'fromLeft': return ImageFactory.addClipFromLeft;
-            case config.clip !== 'fromRight': return ImageFactory.addClipFromRight;
-            case config.clip !== 'fromTop': return ImageFactory.addClipFromTop;
-            case config.clip !== 'fromTop': return ImageFactory.addClipFromTop;
-            case config.clip !== 'fromBottom': return ImageFactory.addClipFromBottom;
-          }
-        })();
-
-        const clipId = clipMaker(d3Node, imageBox);
-        newImage.attr('clip-path', `url(#${clipId})`);
-      }
-
-      if (config.radialclip) {
-        config.radialclip = ImageFactory.addRadialClip(d3Node, imageBox);
-        newImage.attr('clip-path', `url(#${config.radialclip})`);
-      }
-
-      return newImage;
-    }).catch(function (err) {
-      console.log(`image error: ${err.message}`);
-      throw err;
-    });
+    return new this.types[config.type](d3Node, config, width, height, dataAttributes);
   }
 
   static parseConfigString(configString) {
-    let matchesHttp;
-    let part;
     if (!_.isString(configString)) {
       if (!(configString.type in ImageFactory.types)) {
-        throw new Error(`Invalid image creation config : unknown image type ${config.type}`);
+        throw new Error(`Invalid image creation config : unknown image type ${configString.type}`);
       }
       return configString;
     }
@@ -174,25 +103,26 @@ class ImageFactory {
       throw new Error("Invalid image creation configString '' : empty string");
     }
 
-    let config = {};
+    const config = {};
     let configParts = [];
 
     const httpRegex = new RegExp('^(.*?):?(https?://.*)$');
-    if (matchesHttp = configString.match(httpRegex)) {
+    const matchesHttp = configString.match(httpRegex);
+    if (matchesHttp) {
       configParts = _.without(matchesHttp[1].split(':'), 'url');
       config.type = 'url';
       config.url = matchesHttp[2];
     } else {
       configParts = configString.split(':');
 
-      var type = configParts.shift();
-      if (!(type in ImageFactory.types)) {
-        throw new Error(`Invalid image creation configString '${configString}' : unknown image type ${type}`);
+      // NB TODO ! converting to const breaks flow !
+      config.type = configParts.shift();
+      if (!(config.type in ImageFactory.types)) {
+        throw new Error(`Invalid image creation configString '${configString}' : unknown image type ${config.type}`);
       }
-      config.type = type;
     }
 
-    if (['url'].includes(type) && (config.url == null)) {
+    if (['url'].includes(config.type) && (config.url == null)) {
       config.url = configParts.pop();
       const hasDot = new RegExp(/\./);
       if (!config.url || !config.url.match(hasDot)) {
@@ -200,7 +130,7 @@ class ImageFactory {
       }
     }
 
-    if (['data'].includes(type)) {
+    if (['data'].includes(config.type)) {
       config.url = `data:${configParts.pop()}`;
       // TODO this logic needs to check there is something after data:
       if (!config.url) {
@@ -209,7 +139,8 @@ class ImageFactory {
     }
 
     const unknownParts = [];
-    while (part = configParts.shift()) {
+    let part = configParts.shift();
+    while (part) {
       if (part in ImageFactory.scalingStrategies) {
         const handler = ImageFactory.scalingStrategies[part];
         if (_.isString(handler)) {
@@ -220,6 +151,7 @@ class ImageFactory {
       } else {
         unknownParts.push(part);
       }
+      part = configParts.shift();
     }
 
     if (unknownParts.length > 1) {
@@ -229,287 +161,28 @@ class ImageFactory {
       config.color = unknownParts[0];
     }
 
-    return config;
-  }
-
-  static addCircleTo(d3Node, config, width, height) {
-    const ratio = function (p) { if (config.scale) { return p; } else { return 1; } };
-    const diameter = Math.min(width, height);
-    const color = ColorFactory.getColor(config.color);
-    const baseShapeHiding = (config.baseShapeScale != null) ? config.baseShapeScale : 1;
-
-    const newImage = d3Node.append('svg:circle')
-      .classed('circle', true)
-      .attr('cx', width / 2)
-      .attr('cy', height / 2)
-      .attr('r', d => ((ratio(d.proportion) * diameter) / 2) * baseShapeHiding)
-      .style('fill', color)
-      .attr('shape-rendering', 'crispEdges');
-
-    return Promise.resolve({
-      newImage,
-      unscaledBox: {
-        x: (width - diameter) / 2,
-        y: (height - diameter) / 2,
-        width: diameter,
-        height: diameter,
-      },
-    });
-  }
-
-  static addEllipseTo(d3Node, config, width, height) {
-    const ratio = p => config.scale ? p : 1;
-
-    const color = ColorFactory.getColor(config.color);
-    const baseShapeHiding = (config.baseShapeScale != null) ? config.baseShapeScale : 1;
-
-    const newImage = d3Node.append('svg:ellipse')
-      .classed('ellipse', true)
-      .attr('cx', width / 2)
-      .attr('cy', height / 2)
-      .attr('rx', d => ((width * ratio(d.proportion)) / 2) * baseShapeHiding)
-      .attr('ry', d => ((height * ratio(d.proportion)) / 2) * baseShapeHiding)
-      .style('fill', color)
-      .attr('shape-rendering', 'crispEdges');
-
-    return Promise.resolve({ newImage });
-  }
-
-  static addSquareTo(d3Node, config, width, height) {
-    const ratio = p => config.scale ? p : 1;
-    const length = Math.min(width, height);
-
-    const color = ColorFactory.getColor(config.color);
-    const baseShapeHiding = (config.baseShapeScale != null) ? config.baseShapeScale : 1;
-
-    const newImage = d3Node.append('svg:rect')
-      .classed('square', true)
-      .attr('x', d => ((width - (length * baseShapeHiding)) / 2) + ((length * (1 - ratio(d.proportion))) / 2))
-      .attr('y', d => ((height - (length * baseShapeHiding)) / 2) + ((length * (1 - ratio(d.proportion))) / 2))
-      .attr('width', d => ratio(d.proportion) * length * baseShapeHiding)
-      .attr('height', d => ratio(d.proportion) * length * baseShapeHiding)
-      .style('fill', color)
-      .attr('shape-rendering', 'crispEdges');
-
-    return Promise.resolve({
-      newImage,
-      unscaledBox: {
-        x: (width - length) / 2,
-        y: (height - length) / 2,
-        width: length,
-        height: length,
-      },
-    });
-  }
-
-  static addRectTo(d3Node, config, width, height) {
-    const ratio = p => config.scale ? p : 1;
-
-    const color = ColorFactory.getColor(config.color);
-    const baseShapeHiding = (config.baseShapeScale != null) ? config.baseShapeScale : 1;
-
-    const newImage = d3Node.append('svg:rect')
-      .classed('rect', true)
-      .attr('x', d => (width * baseShapeHiding * (1 - ratio(d.proportion))) / 2)
-      .attr('y', d => (height * baseShapeHiding * (1 - ratio(d.proportion))) / 2)
-      .attr('width', d => width * ratio(d.proportion) * baseShapeHiding)
-      .attr('height', d => height * ratio(d.proportion) * baseShapeHiding)
-      .style('fill', color)
-      .attr('shape-rendering', 'crispEdges');
-
-    return Promise.resolve({ newImage });
-  }
-
-  static addExternalImage(d3Node, config, width, height, dataAttributes) {
-    if (config.color) {
+    if (config.color && config.url) {
       if (config.url.match(/\.svg$/)) {
-        return ImageFactory.addRecoloredSvgTo(d3Node, config, width, height, dataAttributes);
+        config.type = 'recoloredExternalSvg';
       } else {
         throw new Error(`Cannot recolor ${config.url}: unsupported image type for recoloring`);
       }
-    } else {
-      return ImageFactory._addExternalImage(d3Node, config, width, height, dataAttributes);
     }
-  }
 
-  // TODO this is extremely inefficient for multiImage graphics - SO BAD !
-  static addRecoloredSvgTo(d3Node, config, width, height, dataAttributes) {
-    const newColor = ColorFactory.getColor(config.color);
-
-    return new Promise(function (resolve, reject) {
-      const onDownloadSuccess = function (xmlString) {
-        const data = $.parseXML(xmlString);
-        const svg = $(data).find('svg');
-
-        const ratio = config.scale ? dataAttributes.proportion : 1;
-        const x = (width * (1 - ratio)) / 2;
-        const y = (height * (1 - ratio)) / 2;
-        width *= ratio;
-        height *= ratio;
-
-        const cleanedSvgString = RecolorSvg.recolor(svg, newColor, x, y, width, height);
-
-        return resolve({ newImage: d3Node.append('g').html(cleanedSvgString) });
-      };
-
-      const onDownloadFailure = () => reject(new Error(`Downloading svg failed: ${config.url}`));
-
-      return ImageFactory.getOrDownload(config.url)
-                         .done(onDownloadSuccess)
-                         .fail(onDownloadFailure);
-    });
-  }
-
-  static _addExternalImage(d3Node, config, width, height) {
-    const ratio = p => config.scale ? p : 1;
-
-    const newImage = d3Node.append('svg:image')
-    .attr('x', d => (width * (1 - ratio(d.proportion))) / 2)
-    .attr('y', d => (height * (1 - ratio(d.proportion))) / 2)
-    .attr('width', d => width * ratio(d.proportion))
-    .attr('height', d => height * ratio(d.proportion))
-    .attr('xlink:href', config.url)
-    .attr('class', 'variable-image');
-
-    return Promise.resolve({ newImage });
-  }
-
-  static addClipFromBottom(d3Node, imageBox) {
-    const uniqueId = `clip-id-${Math.random()}`.replace(/\./g, '');
-    d3Node.append('clipPath')
-      .attr('id', uniqueId)
-      .append('rect')
-        .attr('x', imageBox.x)
-        .attr('y', d => imageBox.y + (imageBox.height * (1 - d.proportion)))
-        .attr('width', imageBox.width)
-        .attr('height', d => imageBox.height * d.proportion);
-    return uniqueId;
-  }
-
-  static addClipFromTop(d3Node, imageBox) {
-    const uniqueId = `clip-id-${Math.random()}`.replace(/\./g, '');
-    d3Node.append('clipPath')
-      .attr('id', uniqueId)
-      .append('rect')
-        .attr('x', imageBox.x)
-        .attr('y', d => imageBox.y)
-        .attr('width', imageBox.width)
-        .attr('height', d => imageBox.height * d.proportion);
-    return uniqueId;
-  }
-
-  static addClipFromLeft(d3Node, imageBox) {
-    const uniqueId = `clip-id-${Math.random()}`.replace(/\./g, '');
-    d3Node.append('clipPath')
-      .attr('id', uniqueId)
-      .append('rect')
-        .attr('x', imageBox.x)
-        .attr('y', imageBox.y)
-        .attr('width', d => imageBox.width * d.proportion)
-        .attr('height', imageBox.height);
-    return uniqueId;
-  }
-
-  static addClipFromRight(d3Node, imageBox) {
-    const uniqueId = `clip-id-${Math.random()}`.replace(/\./g, '');
-    d3Node.append('clipPath')
-      .attr('id', uniqueId)
-      .append('rect')
-        .attr('x', d => imageBox.x + (imageBox.width * (1 - d.proportion)))
-        .attr('y', imageBox.y)
-        .attr('width', d => imageBox.width * d.proportion)
-        .attr('height', imageBox.height);
-    return uniqueId;
-  }
-
-  static addRadialClip(d3Node, imageBox) {
-    let { x, y, width, height } = imageBox;
-
-    const uniqueId = `clip-id-${Math.random()}`.replace(/\./g, '');
-    d3Node.append('clipPath')
-    .attr('id', uniqueId)
-    .append('path')
-      .attr('d', function (d) {
-        const p = d.proportion;
-        const degrees = p * 360;
-        const w2 = width / 2;
-        const h2 = height / 2;
-
-        // start in the centre, then go straight up, then ...
-        const pathParts = [`M${x + w2},${y + h2} l0,-${h2}`];
-
-        // trace the edges of the rectangle, returning to the centre once we have "used up" all the proportion
-        // probably can be optimized or expressed better ...
-
-        if (p >= 1 / 8) {
-          pathParts.push(`l${w2},0`);
-        } else {
-          pathParts.push(`l${h2 * Math.tan((degrees * Math.PI) / 180)},0`);
-        }
-
-        if (p >= 2 / 8) {
-          pathParts.push(`l0,${h2}`);
-        } else if (p > 1 / 8) {
-          pathParts.push(`l0,${h2 - (w2 * Math.tan(((90 - degrees) * Math.PI) / 180))}`);
-        }
-
-        if (p >= 3 / 8) {
-          pathParts.push(`l0,${h2}`);
-        } else if (p > 2 / 8) {
-          pathParts.push(`l0,${w2 * Math.tan(((degrees - 90) * Math.PI) / 180)}`);
-        }
-
-        if (p >= 4 / 8) {
-          pathParts.push(`l-${w2},0`);
-        } else if (p > 3 / 8) {
-          pathParts.push(`l-${w2 - (h2 * Math.tan(((180 - degrees) * Math.PI) / 180))},0`);
-        }
-
-        if (p >= 5 / 8) {
-          pathParts.push(`l-${w2},0`);
-        } else if (p > 4 / 8) {
-          pathParts.push(`l-${h2 * Math.tan(((degrees - 180) * Math.PI) / 180)},0`);
-        }
-
-        if (p >= 6 / 8) {
-          pathParts.push(`l0,-${h2}`);
-        } else if (p > 5 / 8) {
-          pathParts.push(`l0,-${h2 - (w2 * Math.tan(((270 - degrees) * Math.PI) / 180))}`);
-        }
-
-        if (p >= 7 / 8) {
-          pathParts.push(`l0,-${h2}`);
-        } else if (p > 6 / 8) {
-          pathParts.push(`l0,-${w2 * Math.tan(((degrees - 270) * Math.PI) / 180)}`);
-        }
-
-        if (p >= 8 / 8) {
-          pathParts.push(`l${w2},0`);
-        } else if (p > 7 / 8) {
-          pathParts.push(`l${w2 - (h2 * Math.tan(((360 - degrees) * Math.PI) / 180))},0`);
-        }
-
-        pathParts.push('z');
-        return pathParts.join(' ');
-      });
-
-    return uniqueId;
+    return config;
   }
 
   static isInternetExplorer() {
     const userAgentString = window.navigator.userAgent;
-    const old_ie = userAgentString.indexOf('MSIE ');
-    const new_ie = userAgentString.indexOf('Trident/');
+    const oldIe = userAgentString.indexOf('MSIE ');
+    const newIe = userAgentString.indexOf('Trident/');
 
-    if ((old_ie > -1) || (new_ie > -1)) {
+    if ((oldIe > -1) || (newIe > -1)) {
       return true;
     }
 
     return false;
   }
-
-  constructor() {}
 }
-ImageFactory.initClass();
 
 module.exports = ImageFactory;

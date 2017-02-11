@@ -27,12 +27,12 @@ class ImageFactory {
 
   static get scalingStrategies() {
     return {
-      vertical: { clip: 'fromBottom' },
-      horizontal: { clip: 'fromLeft' },
-      fromleft: { clip: 'fromLeft' },
-      fromright: { clip: 'fromRight' },
-      frombottom: { clip: 'fromBottom' },
-      fromtop: { clip: 'fromTop' },
+      vertical: { clip: 'frombottom' },
+      horizontal: { clip: 'fromleft' },
+      fromleft: { clip: 'fromleft' },
+      fromright: { clip: 'fromright' },
+      frombottom: { clip: 'frombottom' },
+      fromtop: { clip: 'fromtop' },
       scale: 'scale',
       radialclip: { clip: 'radial' },
       radial: { clip: 'radial' },
@@ -48,8 +48,36 @@ class ImageFactory {
     return ['clip', 'scale'];
   }
 
+  static validateAspectRatioString(candidateAspectRatio) {
+    // https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio
+    const validAlignStrings = [
+      'none',
+      'xMinYMin',
+      'xMidYMin',
+      'xMaxYMin',
+      'xMinYMid',
+      'xMidYMid',
+      'xMaxYMid',
+      'xMinYMax',
+      'xMidYMax',
+      'xMaxYMax',
+    ];
+
+    const validMeetOrSlice = ['meet', 'slice'];
+
+    const [align, meetOrSlice] = candidateAspectRatio.split(' ');
+
+    if (!validAlignStrings.includes(align)) {
+      throw new Error(`Invalid preserveAspectRatio string '${candidateAspectRatio}'`);
+    }
+
+    if (meetOrSlice && !validMeetOrSlice.includes(meetOrSlice)) {
+      throw new Error(`Invalid preserveAspectRatio string '${candidateAspectRatio}'`);
+    }
+  }
+
   static addBaseImageTo(d3Node, config, width, height, dataAttributes) {
-    config = ImageFactory.parseConfigString(config);
+    config = ImageFactory.parseConfig(config);
     // VIS-121 - Prevent base svgs from peeking out over the variable images (only for basic shapes)
     if (_.includes(ImageFactory.basicShapes, config.type) && this.isInternetExplorer()) {
       config.baseShapeScale = 0.98;
@@ -58,7 +86,7 @@ class ImageFactory {
   }
 
   static addVarImageTo(d3Node, config, width, height, dataAttributes) {
-    config = ImageFactory.parseConfigString(config);
+    config = ImageFactory.parseConfig(config);
     return ImageFactory.addImageTo(d3Node, config, width, height, dataAttributes);
   }
 
@@ -91,19 +119,39 @@ class ImageFactory {
     return new this.types[config.type](d3Node, config, width, height, dataAttributes);
   }
 
-  static parseConfigString(configString) {
-    if (!_.isString(configString)) {
-      if (!(configString.type in ImageFactory.types)) {
-        throw new Error(`Invalid image creation config : unknown image type ${configString.type}`);
+  static parseConfig(newConfig) {
+    let config = {};
+
+    if (!_.isString(newConfig)) {
+      if (!(newConfig.type in ImageFactory.types)) {
+        throw new Error(`Invalid image creation config : unknown image type ${newConfig.type}`);
       }
-      return configString;
+      config = newConfig;
+    } else {
+      config = this.parseConfigString(newConfig);
     }
 
+    if (config.color && config.url) {
+      if (config.url.match(/\.svg$/)) {
+        config.type = 'recoloredExternalSvg';
+      } else {
+        throw new Error(`Cannot recolor ${config.url}: unsupported image type for recoloring`);
+      }
+    }
+
+    if (_.has(config, 'preserveAspectRatio')) {
+      this.validateAspectRatioString(config.preserveAspectRatio);
+    }
+
+    return config;
+  }
+
+  static parseConfigString(configString) {
+    const config = {};
     if (configString.length <= 0) {
       throw new Error("Invalid image creation configString '' : empty string");
     }
 
-    const config = {};
     let configParts = [];
 
     const httpRegex = new RegExp('^(.*?):?(https?://.*)$');
@@ -159,14 +207,6 @@ class ImageFactory {
     }
     if (unknownParts.length === 1) {
       config.color = unknownParts[0];
-    }
-
-    if (config.color && config.url) {
-      if (config.url.match(/\.svg$/)) {
-        config.type = 'recoloredExternalSvg';
-      } else {
-        throw new Error(`Cannot recolor ${config.url}: unsupported image type for recoloring`);
-      }
     }
 
     return config;

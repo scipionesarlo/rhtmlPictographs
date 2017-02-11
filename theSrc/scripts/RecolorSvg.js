@@ -20,23 +20,23 @@ class RecolorSvg {
     return _.reduce(regexes, reducer, inputString);
   }
 
-  static recolor(svgObject, newColor, x, y, width, height) {
-    const currentWidth = svgObject.attr('width');
-    const currentHeight = svgObject.attr('height');
+  static recolor({ svg, color, x, y, width, height, preserveAspectRatio = 'xMidYMid meet' }) {
+    const currentWidth = svg.attr('width');
+    const currentHeight = svg.attr('height');
 
-    svgObject.attr('x', x);
-    svgObject.attr('y', y);
-    svgObject.attr('width', width);
-    svgObject.attr('height', height);
-    svgObject.attr('preserveAspectRatio', 'xMidYMid meet');
+    svg.attr('x', x);
+    svg.attr('y', y);
+    svg.attr('width', width);
+    svg.attr('height', height);
+    svg.attr('preserveAspectRatio', preserveAspectRatio);
 
-    if (currentWidth && currentHeight && !svgObject.attr('viewBox')) {
-      svgObject.attr('viewBox', `0 0 ${currentWidth.replace(/(px|em)/, '')} ${currentHeight.replace(/(px|em)/, '')}`);
+    if (currentWidth && currentHeight && !svg.attr('viewBox')) {
+      svg.attr('viewBox', `0 0 ${currentWidth.replace(/(px|em)/, '')} ${currentHeight.replace(/(px|em)/, '')}`);
     }
 
-    const svgString = $('<div />').append(svgObject).html();
+    const svgString = $('<div />').append(svg).html();
 
-    return RecolorSvg.fillReplacer(svgString, newColor);
+    return RecolorSvg.fillReplacer(svgString, color);
   }
 }
 

@@ -3,10 +3,10 @@ class ClipFactory {
   static addClipPath(clipType, d3Node, imageDimensions) {
     const clipMaker = (() => {
       switch (true) {
-        case clipType === 'fromLeft': return this.addClipFromLeft;
-        case clipType === 'fromRight': return this.addClipFromRight;
-        case clipType === 'fromTop': return this.addClipFromTop;
-        case clipType === 'fromBottom': return this.addClipFromBottom;
+        case clipType === 'fromleft': return this.addClipFromLeft;
+        case clipType === 'fromright': return this.addClipFromRight;
+        case clipType === 'fromtop': return this.addClipFromTop;
+        case clipType === 'frombottom': return this.addClipFromBottom;
         case clipType === 'radial': return this.addRadialClip;
         default: throw new Error(`Invalid clip type '${clipType}'`);
       }

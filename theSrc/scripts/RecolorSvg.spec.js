@@ -92,15 +92,17 @@ describe('RecolorSvg:', function () {
       return boilerplate + svgOpenTag + (args.content || '') + svgCloseTag;
     };
 
-    this.build = function (svgString, newColor, newX, newY, newWidth, newHeight) {
-      if (newColor == null) { newColor = 'color'; }
-      if (newX == null) { newX = 0; }
-      if (newY == null) { newY = 0; }
-      if (newWidth == null) { newWidth = 100; }
-      if (newHeight == null) { newHeight = 100; }
+    this.build = function (svgString, newColor = 'color', newX = 0, newY = 0, newWidth = 100, newHeight = 100) {
       const xmlObject = jQuery.parseXML(svgString);
       const origSvgObject = jQuery(xmlObject).find('svg');
-      this.newSvgString = RecolorSvg.recolor(origSvgObject, newColor, newX, newY, newWidth, newHeight);
+      this.newSvgString = RecolorSvg.recolor({
+        svg: origSvgObject,
+        color: newColor,
+        x: newX,
+        y: newY,
+        width: newWidth,
+        height: newHeight,
+      });
       this.newSvgObject = jQuery(jQuery.parseXML(this.newSvgString)).find('svg');
     };
   });

@@ -3,7 +3,7 @@ An R HTMLWidget that can generate single image graphics, mutli image graphics, o
 # Installation in R
 
 1. `library(devtools)`
-1. `install_github('NumbersInternational/rhtmlPictographs', auth_token='????????????????????')`
+1. `install_github('Displayr/rhtmlPictographs', auth_token='????????????????????')`
 
 Simplest Example to verify installation:
 
@@ -21,7 +21,7 @@ Prerequisites:
 
 Steps:
 
-1. `git clone git@github.com:NumbersInternational/rhtmlPictographs.git`
+1. `git clone git@github.com:Displayr/rhtmlPictographs.git`
 1. `cd rhtmlPictographs`
 1. `npm install`
 1. `gulp serve`
@@ -34,7 +34,7 @@ Choose an example or add another example/tutorial to the [internal www content](
 
 The repo contains an internal web server that can be started via `gulp serve`. Once the server is running, on [the index page](http://127.0.0.1:9000) of the web content there is a link to a tutorial. This is the best way to understand how to use the widget.
 
-This repo was build from the [rhtmlTemplate](https://github.com/NumbersInternational/rhtmlTemplate) repo. The rhtmlTemplate repo has several docs pages linked from its main readme which are all relevant to the structure and inner working of the rhtmlPictograph repo.
+This repo was build from the [rhtmlTemplate](https://github.com/Displayr/rhtmlTemplate) repo. The rhtmlTemplate repo has several docs pages linked from its main readme which are all relevant to the structure and inner working of the rhtmlPictograph repo.
 
 ## Detailed list of CSS class names - useful when targeting these DOM via the custom CSS feature
 

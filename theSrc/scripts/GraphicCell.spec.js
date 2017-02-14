@@ -634,28 +634,5 @@ describe('GraphicCell class', function () {
         expect(fourthImageRadius / firstImageRadius).to.be.closeTo(0.5, 0.001);
       });
     });
-
-    describe('multi image proportion scaled graphic:', function () {
-      beforeEach(function (done) {
-        this.uniqueClass = this.makeGraphic({
-          proportion: 0.875,
-          numImages: 4,
-          variableImage: 'url:scale:/image1.jpg',
-        });
-        // 0 sec timeout is necessary because ImageFactory uses a immediately resolving promise.
-        // the 0 sec timeout effectively says clear the call stack before proceeding
-        setTimeout(done, 0);
-      });
-
-      it('applies a clip path to hide part of the fourth image', function () {
-        const firstImageWidth = parseFloat($(`.${this.uniqueClass} .node-xy-0-0 image`).attr('width'));
-        const fourthImageWidth = parseFloat($(`.${this.uniqueClass} .node-xy-1-1 image`).attr('width'));
-        const firstImageHeight = parseFloat($(`.${this.uniqueClass} .node-xy-0-0 image`).attr('height'));
-        const fourthImageHeight = parseFloat($(`.${this.uniqueClass} .node-xy-1-1 image`).attr('height'));
-
-        expect(fourthImageWidth / firstImageWidth).to.be.closeTo(0.5, 0.001);
-        expect(fourthImageHeight / firstImageHeight).to.be.closeTo(0.5, 0.001);
-      });
-    });
   });
 });

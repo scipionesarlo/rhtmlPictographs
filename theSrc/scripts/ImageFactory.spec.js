@@ -23,8 +23,8 @@ describe('ImageFactory class:', function () {
         it('is good', function () { this.run('circle:scale', { type: 'circle', scale: true }); });
         it('is good', function () { this.run('circle:vertical', { type: 'circle', clip: 'fromBottom' }); });
         it('is good', function () { this.run('circle:horizontal', { type: 'circle', clip: 'fromLeft' }); });
-        it('is good', function () { this.run('circle:radial', { type: 'circle', radialclip: true }); });
-        it('is good', function () { this.run('circle:pie', { type: 'circle', radialclip: true }); });
+        it('is good', function () { this.run('circle:radial', { type: 'circle', clip: 'radial' }); });
+        it('is good', function () { this.run('circle:pie', { type: 'circle', clip: 'radial' }); });
         it('is good', function () { this.run('circle:fromleft', { type: 'circle', clip: 'fromLeft' }); });
         it('is good', function () { this.run('circle:fromright', { type: 'circle', clip: 'fromRight' }); });
         it('is good', function () { this.run('circle:frombottom', { type: 'circle', clip: 'fromBottom' }); });

@@ -42,8 +42,6 @@ class GraphicCellGrid {
   }
 
   constructor() {
-    this.xFactory = d3.scale.ordinal();
-    this.yFactory = d3.scale.ordinal();
     this.primaryDirection(GraphicCellGrid._defaultHorizontalDirection);
     this.secondaryDirection(GraphicCellGrid._defaultVerticalDirection);
 
@@ -55,7 +53,6 @@ class GraphicCellGrid {
     this._nodeSize = [1, 1];
 
     this.padding([0, 0]);
-    this.bands(false);
   }
 
   compute(newNodes) {
@@ -66,6 +63,14 @@ class GraphicCellGrid {
   }
 
   _calcGridDimensions() {
+    if (this.rowsSpecified && this.colsSpecified) {
+      if ((this.numRows * this.numCols) !== this.nodes.length) {
+        const errorMath = `${this.numRows} * ${this.numCols} !== ${this.nodes.length}`;
+        throw new Error(`rows * cols must equal node length if both rows and cols are specified: ${errorMath}`);
+      }
+      return;
+    }
+
     if (this.rowsSpecified && !this.colsSpecified) {
       this.numCols = Math.ceil(this.nodes.length / this.numRows);
     } else {
@@ -79,17 +84,105 @@ class GraphicCellGrid {
   }
 
   _calcNodeSize() {
-    if (this._bands) {
-      this.xFactory.domain(_.range(this.numCols)).rangeBands([0, this._containerWidth()], this._padding[0], 0);
-      this.yFactory.domain(_.range(this.numRows)).rangeBands([0, this._containerHeight()], this._padding[1], 0);
-      this._nodeSize[0] = this.xFactory.rangeBand();
-      this._nodeSize[1] = this.yFactory.rangeBand();
-    } else {
-      this.xFactory.domain(_.range(this.numCols)).rangePoints([0, this._containerWidth()]);
-      this.yFactory.domain(_.range(this.numRows)).rangePoints([0, this._containerHeight()]);
-      this._nodeSize[0] = this.xFactory(1);
-      this._nodeSize[1] = this.yFactory(1);
+    this.scale = {
+      x: this._computeScale(this._containerWidth(), this.numCols, this._padding[0]),
+      y: this._computeScale(this._containerHeight(), this.numRows, this._padding[1])
+    };
+  }
+
+  // NB div by zero on gutterAllocation === 1 is avoided by validation rules in this.padding()
+  _computeScale(totalSize, numElements, gutterAllocation) {
+    const numGutters = numElements - 1;
+    const gutterToColRatio = gutterAllocation / (1 - gutterAllocation);
+    const nodeSize = totalSize / (numElements + (numGutters * gutterToColRatio));
+    const gutterSize = nodeSize * gutterToColRatio;
+    return { nodeSize, gutterSize };
+  }
+
+  getTopLeftCoordOfImageSlot(rowNumber, colNumber) {
+
+    // adjust to get top left coord of slot not right (due to mirroring in _getRangeFromDomain)
+    const adjustedColumnNumber = (columnNumber) => {
+      if ([this.primaryDirection(), this.secondaryDirection()].includes('left')) {
+        return columnNumber + 0.99999999;
+      }
+      return columnNumber;
     }
+
+    // adjust to get top coord of slot not bottom (due to mirroring in _getRangeFromDomain)
+    const adjustedRowNumber = (rowNumber) => {
+      if ([this.primaryDirection(), this.secondaryDirection()].includes('up')) {
+        return rowNumber + 0.99999999;
+      }
+      return rowNumber;
+    }
+
+    return {
+      x: this.getX(adjustedColumnNumber(colNumber)),
+      y: this.getY(adjustedRowNumber(rowNumber))
+    }
+  }
+
+  getX(position) {
+    if ([this.primaryDirection(), this.secondaryDirection()].includes('left')) {
+      let x = this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+      return this._containerWidth() - x;
+    }
+    return this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+  }
+
+  getGutterX(position) {
+    if ([this.primaryDirection(), this.secondaryDirection()].includes('left')) {
+      let x = this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+      return this._containerWidth() - x;
+    }
+    return this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+  }
+
+  getY(position) {
+    if ([this.primaryDirection(), this.secondaryDirection()].includes('up')) {
+      let y = this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
+      return this._containerHeight() - y;
+    }
+    return this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);;
+  }
+
+  getGutterY(position) {
+    if ([this.primaryDirection(), this.secondaryDirection()].includes('up')) {
+      let y = this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
+      return this._containerWidth() - y;
+    }
+    return this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
+  }
+
+  _getRangeFromDomain(position, nodeSize, gutterSize) {
+    const seperate = function(position) {
+      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position);
+      const fraction = parseFloat(position) - whole;
+      return { whole, fraction };
+    }
+
+    const { whole, fraction } = seperate(position);
+    const x = whole * nodeSize + whole * gutterSize + fraction * nodeSize;
+    return x;
+  }
+
+  _getGutterRangeFromDomain(position, nodeSize, gutterSize) {
+    const seperate = function(position) {
+      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position);
+      const fraction = parseFloat(position) - whole;
+      return { whole, fraction };
+    }
+
+    if (position < 1) {
+      throw new Error(`Invalid gutter position '${position}: must be >= 1`);
+    }
+
+    // TODO test for greater than number gutter ?
+
+    const { whole, fraction } = seperate(position);
+    const x = whole * nodeSize + (whole - 1) * gutterSize + fraction * gutterSize;
+    return x;
   }
 
   _distribute() {
@@ -110,13 +203,13 @@ class GraphicCellGrid {
             nextVacantSpot.col = 0;
             break;
           case 'left':
-            nextVacantSpot.col = lastColumn;
+            nextVacantSpot.col = 0;
             break;
           case 'down':
             nextVacantSpot.row = 0;
             break;
           case 'up':
-            nextVacantSpot.row = lastRow;
+            nextVacantSpot.row = 0;
             break;
           default:
             throw new Error(`Unexpected direction: '${direction}'`);
@@ -145,13 +238,15 @@ class GraphicCellGrid {
       nextVacantSpot.col = resetValue;
     };
 
-
     let i = -1;
     while (++i < this.nodes.length) {
-      this.nodes[i].x = this.xFactory(nextVacantSpot.col);
-      this.nodes[i].y = this.yFactory(nextVacantSpot.row);
-      this.nodes[i].col = nextVacantSpot.col;
-      this.nodes[i].row = nextVacantSpot.row;
+      const topLeftCoords = this.getTopLeftCoordOfImageSlot(nextVacantSpot.row, nextVacantSpot.col)
+      _.merge(this.nodes[i], topLeftCoords);
+      // this.nodes[i].x = this.getX(nextVacantSpot.col);
+      // this.nodes[i].y = this.getY(nextVacantSpot.row);
+
+      // this.nodes[i].col = nextVacantSpot.col;
+      // this.nodes[i].row = nextVacantSpot.row;
       this.nodes[i].rowOrder = nextVacantSpot.rowOrder;
       this.nodes[i].colOrder = nextVacantSpot.colOrder;
       switch (this.primaryDirection()) {
@@ -160,15 +255,15 @@ class GraphicCellGrid {
             advanceCol(1);
           } else {
             resetCol(0);
-            advanceRow(this.secondaryDirection() === 'down' ? 1 : -1);
+            advanceRow(1);
           }
           break;
         case 'left':
-          if (nextVacantSpot.col > 0) {
-            advanceCol(-1);
+          if (nextVacantSpot.col < lastColumn) {
+            advanceCol(1);
           } else {
-            resetCol(lastColumn);
-            advanceRow(this.secondaryDirection() === 'down' ? 1 : -1);
+            resetCol(0);
+            advanceRow(1);
           }
           break;
         case 'down':
@@ -176,15 +271,15 @@ class GraphicCellGrid {
             advanceRow(1);
           } else {
             resetRow(0);
-            advanceCol(this.secondaryDirection() === 'right' ? 1 : -1);
+            advanceCol(1);
           }
           break;
         case 'up':
-          if (nextVacantSpot.row > 0) {
-            advanceRow(-1);
+          if (nextVacantSpot.row < lastRow) {
+            advanceRow(1);
           } else {
-            resetRow(lastRow);
-            advanceCol(this.secondaryDirection() === 'right' ? 1 : -1);
+            resetRow(0);
+            advanceCol(1);
           }
           break;
         default:
@@ -195,30 +290,14 @@ class GraphicCellGrid {
   }
 
   rows(value) {
-    if (this.colsSpecified) {
-      throw new Error('Cannot specify both rows and cols');
-    }
     this.rowsSpecified = true;
     this.numRows = value;
     return this;
   }
 
   cols(value) {
-    if (this.rowsSpecified) {
-      throw new Error('Cannot specify both rows and cols');
-    }
     this.colsSpecified = true;
     this.numCols = value;
-    return this;
-  }
-
-  bands() {
-    this._bands = true;
-    return this;
-  }
-
-  points() {
-    this._bands = false;
     return this;
   }
 
@@ -235,14 +314,22 @@ class GraphicCellGrid {
     return this._containerSize[1];
   }
 
-
   padding(value) {
+    if (!_.isArray(value)) {
+      throw new Error("Padding must be array");
+    }
+    if (value[0] >= 1 || value[1] >= 1) {
+      throw new Error("Padding values must be less than 1");
+    }
+    if (value[0] < 0 || value[1] < 0) {
+      throw new Error("Padding values must be greater than or equal to 0");
+    }
     this._padding = value;
     return this;
   }
 
   nodeSize() {
-    return this._nodeSize;
+    return [this.scale.x.nodeSize, this.scale.y.nodeSize];
   }
 
   direction(value) {

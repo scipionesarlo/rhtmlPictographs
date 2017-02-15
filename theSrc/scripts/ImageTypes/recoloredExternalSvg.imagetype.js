@@ -21,7 +21,7 @@ class RecoloredExternalSvg extends BaseImageType {
         const imageDimensions = geometryUtils.computeImageDimensions(
           imageAspectRatio,
           this.containerWidth,
-          this.containerHeight
+          this.containerHeight,
         );
         _.merge(this.imageDimensions, imageDimensions);
         return resolve(this.imageDimensions);
@@ -62,14 +62,19 @@ class RecoloredExternalSvg extends BaseImageType {
   }
 
   appendToSvg() {
-    const newColor = this.colorFactory.getColor(this.config.color);
+    const recolorArgs = {
+      svg: this.svg,
+      x: (this.containerWidth * (1 - this.ratio)) / 2,
+      y: (this.containerHeight * (1 - this.ratio)) / 2,
+      width: this.containerWidth * this.ratio,
+      height: this.containerHeight * this.ratio,
+      color: this.color,
+    };
 
-    const x = (this.containerWidth * (1 - this.ratio)) / 2;
-    const y = (this.containerHeight * (1 - this.ratio)) / 2;
-    const width = this.containerWidth * this.ratio;
-    const height = this.containerHeight * this.ratio;
-
-    const cleanedSvgString = RecolorSvg.recolor(this.svg, newColor, x, y, width, height);
+    if (_.has(this.config, 'preserveAspectRatio')) {
+      recolorArgs.preserveAspectRatio = this.config.preserveAspectRatio;
+    }
+    const cleanedSvgString = RecolorSvg.recolor(recolorArgs);
 
     this.imageHandle = this.d3Node.append('g').html(cleanedSvgString);
     return this.imageHandle;

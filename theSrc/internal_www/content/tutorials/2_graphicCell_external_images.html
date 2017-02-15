@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Arvo:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
+  <link href='/styles/internal_www.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<!-- NB Important dev note: This file is used to auto generate r files in the examples directory. If you modify ensure you maintain the format of sections, containing h2, p, and .example elements -->
+
+<h1>Single Graphic Cell External Image Usage Tutorial</h1>
+<p>External images can be used in graphic cells.</p>
+<p>Given the aspect ratio of the external image may not fit the assigned image slot, the widget must make some scaling decisions.</p>
+
+<section>
+  <p>Consider this external image of a 600x900 green rectange:</p>
+  <img width=60px" height="90px" src="/images/green_rectangle_600_900.jpg">
+
+  <p>Consider placing that external image inside several different graphic cell dimensions:</p>
+  It fits:
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="90">url:/images/green_rectangle_600_900.jpg</pre>
+  </div>
+
+  It does not fit (image slot too wide):
+  <div class="row">
+    <pre class="example" data-ex-w="90" data-ex-h="90">url:/images/green_rectangle_600_900.jpg</pre>
+  </div>
+
+  It does not fit (image slot too tall):
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="120">url:/images/green_rectangle_600_900.jpg</pre>
+  </div>
+
+  <p>There are two ways to address this if you want the external image to completely fill the provided image slot:</p>
+  <ul>
+    <li><b>Option 1: use the "slice" feature of SVG aspect ratios:</b> This tells the SVG engine to fill the slot with the image and try to get the aspect ratio as close as possible, and its ok to crop the image a bit.</li>
+    <li><b>Option 2: use the "none" feature of SVG aspect ratios:</b> This tells the SVG engine to fill the slot with the image by distorting it, completely ignoring the aspect ratio of the image.</li>
+  </ul>
+
+  <p>You can also "shift" the image up down left and right so all extra space will appear on one side of the image:</p>
+  <ul>
+    <li><b>Option 3: use the "min/mid/max" setting of SVG aspect ratios:</b> This tells the SVG engine to move the image in specific directions so all extra space occurs one or more sides of the image.</li>
+  </ul>
+
+  <h3>Option 1: use the "slice" feature of SVG aspect ratios</h3>
+  Valid values are found here : <a href="https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio">https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio</a>
+
+  Basically we are changing the "preserveAspectRatio" value of the &lt;svg:image&gt; tag:
+
+  It does not fit (image slot too wide):
+  <div class="row">
+    <pre class="example" data-ex-w="90" data-ex-h="90">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMidYMid slice"
+      }
+    }</pre>
+  </div>
+
+  It does not fit (image slot too tall):
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="120">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMidYMid slice"
+      }
+    }</pre>
+  </div>
+
+  <h3>Option 2: use the "none" feature of SVG aspect ratios</h3>
+  Valid values are found here : <a href="https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio">https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio</a>
+
+  Basically we are changing the "preserveAspectRatio" value of the &lt;svg:image&gt; tag:
+
+  It does not fit (image slot too wide):
+  <div class="row">
+    <pre class="example" data-ex-w="90" data-ex-h="90">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "none"
+      }
+    }</pre>
+  </div>
+
+  It does not fit (image slot too tall):
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="120">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "none"
+      }
+    }</pre>
+  </div>
+
+  <h3>Option 3: use the "min vs mid vs max" settings of SVG aspect ratios</h3>
+  Valid values are found here : <a href="https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio">https://developer.mozilla.org/en/docs/Web/SVG/Attribute/preserveAspectRatio</a>
+
+  Basically we are changing the "preserveAspectRatio" value of the &lt;svg:image&gt; tag:
+
+  It does not fit (image slot too wide): So shift it to the left
+  <div class="row">
+    <pre class="example" data-ex-w="90" data-ex-h="90">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMinYMid meet"
+      }
+    }</pre>
+  </div>
+
+  It does not fit (image slot too wide): So shift it to the right
+  <div class="row">
+    <pre class="example" data-ex-w="90" data-ex-h="90">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMaxYMid meet"
+      }
+    }</pre>
+  </div>
+
+  It does not fit (image slot too tall): So shift it up
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="120">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMidYMin meet"
+      }
+    }</pre>
+  </div>
+
+  It does not fit (image slot too tall): So shift it down
+  <div class="row">
+    <pre class="example" data-ex-w="60" data-ex-h="120">{
+      "variableImage": {
+        "type": "url",
+        "url": "/images/green_rectangle_600_900.jpg",
+        "preserveAspectRatio" : "xMidYMax meet"
+      }
+    }</pre>
+  </div>
+</section>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

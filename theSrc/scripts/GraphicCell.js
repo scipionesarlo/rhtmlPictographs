@@ -136,7 +136,7 @@ class GraphicCell extends BaseCell {
       });
     } else {
       matchingScalingStrategies = _.find(ImageFactory.validScalingStrategyKeys, (validStrategyKey) => {
-        _.has(this.config.variableImage, validStrategyKey);
+        return _.has(this.config.variableImage, validStrategyKey);
       });
     }
 

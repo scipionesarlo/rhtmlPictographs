@@ -1,6 +1,6 @@
 module.exports = {
-  //NB alg from http://stackoverflow.com/a/6565988/3344695
-  computeImageDimensions : function(imageAspectRatio, containerWidth, containerHeight) {
+  // NB alg from http://stackoverflow.com/a/6565988/3344695
+  computeImageDimensions(imageAspectRatio, containerWidth, containerHeight) {
     const containerAspectRatio = containerWidth / containerHeight;
     const results = {};
     if (containerAspectRatio > imageAspectRatio) {
@@ -16,5 +16,5 @@ module.exports = {
     results.aspectRatio = imageAspectRatio;
 
     return results;
-  }
+  },
 };

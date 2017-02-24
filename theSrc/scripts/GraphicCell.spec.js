@@ -63,6 +63,7 @@ describe('GraphicCell class', function () {
           'font-size': '24px',
           'horizontal-align': 'middle',
           'vertical-align': 'center',
+          'dominant-baseline': 'central',
           'padding-top': 1,
           'padding-right': 1,
           'padding-bottom': 1,
@@ -95,6 +96,7 @@ describe('GraphicCell class', function () {
           'font-weight': '900',
           'horizontal-align': 'middle',
           'vertical-align': 'center',
+          'dominant-baseline': 'central',
           'padding-top': 1,
           'padding-right': 1,
           'padding-bottom': 1,
@@ -356,12 +358,17 @@ describe('GraphicCell class', function () {
             ] });
           });
 
-          it('each array in config is converted to an object keyed by row then column', function () {
-            expect(this.instance.config.floatingLabels[1][2]).to.deep.equal({
+          it('each array item in config is converted to an object with defaults set by processTextConfig', function () {
+            expect(this.instance.config.floatingLabels[0]).to.deep.equal({
               className: 'floating-label-1-2',
               text: 'foo',
+              position: {
+                row: { position: 1, gutter: false },
+                col: { position: 2, gutter: false }
+              },
               'horizontal-align': 'middle',
               'vertical-align': 'center',
+              'dominant-baseline': 'central',
               'padding-left': 1,
               'padding-right': 1,
               'padding-top': 1,
@@ -380,24 +387,20 @@ describe('GraphicCell class', function () {
           });
 
           it('also processes the second (and all other) items in the array', function () {
-            expect(this.instance.config.floatingLabels[3][4].text).to.equal('bar');
+            expect(this.instance.config.floatingLabels[1].text).to.equal('bar');
           });
 
-          return it('accepts padding string and converts to padding-* params', function () {
+          it('accepts padding string and converts to padding-* params', function () {
             this.withConfig({ floatingLabels: [
               { position: '1:2', text: 'foo', padding: '2 2 2 2' },
             ] });
 
-            expect(this.instance.config.floatingLabels[1][2]).to.deep.equal({
-              className: 'floating-label-1-2',
-              text: 'foo',
-              'horizontal-align': 'middle',
-              'vertical-align': 'center',
+            expect(this.instance.config.floatingLabels[0]).to.contain({
               'padding-left': 2,
               'padding-right': 2,
               'padding-top': 2,
               'padding-bottom': 2,
-              'font-size': '24px',
+
             });
           });
         });
@@ -407,17 +410,12 @@ describe('GraphicCell class', function () {
             expect(() => this.withConfig({ floatingLabels: [{ text: '12' }] })).to.throw(/missing position/);
           });
 
-          it('invalid position (not int:int)', function () {
-            expect(() => this.withConfig({ floatingLabels: [{ position: '1:foo', text: '12' }] })).to.throw(/must be int:int/);
+          it('invalid position (not float:float)', function () {
+            expect(() => this.withConfig({ floatingLabels: [{ position: '1:foo', text: '12' }] })).to.throw(/must be \[g\]FLOAT:\[g\]FLOAT/);
           });
 
           it('missing text', function () {
             expect(() => this.withConfig({ floatingLabels: [{ position: '1:1' }] })).to.throw(/missing text/);
-          });
-
-          // may want to support this later
-          it('no double labels in same position', function () {
-            expect(() => this.withConfig({ floatingLabels: [{ position: '1:1', text: '12' }, { position: '1:1', text: '12' }] })).to.throw(/same image slot/);
           });
 
           describe('invalid padding parameters', () =>
@@ -542,7 +540,7 @@ describe('GraphicCell class', function () {
       };
     });
 
-    describe('node classes:', () =>
+    describe('node classes:', function() {
 
       beforeEach(function (done) {
         this.uniqueClass = this.makeGraphic({
@@ -567,8 +565,8 @@ describe('GraphicCell class', function () {
           expect($(`.${this.uniqueClass} .node-xy-1-1`).length).to.equal(1);
           expect($(`.${this.uniqueClass} .node-xy-2-0`).length).to.equal(0);
         });
-      }),
-    );
+      });
+    });
 
     describe('multi image clipped from left graphic:', function () {
       beforeEach(function (done) {
@@ -610,7 +608,7 @@ describe('GraphicCell class', function () {
         const height10 = parseFloat($(`.${this.uniqueClass} .node-xy-1-0 clippath rect`).attr('height')).toFixed(0);
         const height11 = parseFloat($(`.${this.uniqueClass} .node-xy-1-1 clippath rect`).attr('height')).toFixed(0);
 
-        expect(`${height00} ${height01} ${height10} ${height11}`).to.equal('100 50 100 100');
+        expect(`${height00} ${height01} ${height10} ${height11}`).to.equal('100 100 100 50');
       });
     });
 

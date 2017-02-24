@@ -120,7 +120,7 @@ ALWAYS build before commit
 
 Original : Jeremy Stucki, [Interactive Things](https://github.com/interactivethings/d3-grid)
 
-Current Modified : Kyle Zeeuwen, [Numbers International](https://github.com/Displayr/d3-grid)
+Current Modified : Kyle Zeeuwen, [Displayr](https://github.com/Displayr/rhtmlPictographs)
 
 ## License
 

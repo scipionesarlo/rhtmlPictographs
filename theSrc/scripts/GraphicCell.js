@@ -71,7 +71,7 @@ class GraphicCell extends BaseCell {
 
     if (this.config.floatingLabels) {
       const floatingLabelsInput = this.config.floatingLabels;
-      this.config.floatingLabels = {};
+      this.config.floatingLabels = [];
       _(floatingLabelsInput).each((labelConfig) => {
         if (!labelConfig.text) {
           throw new Error('Invalid floating label, missing text');
@@ -81,24 +81,32 @@ class GraphicCell extends BaseCell {
           throw new Error('Invalid floating label, missing position');
         }
 
-        const [row, col] = labelConfig.position.split(':').map(positionString => parseInt(positionString));
-
-        if (_.isNaN(row) || _.isNaN(col)) {
-          throw new Error(`Invalid floating label position '${labelConfig.position}', must be int:int`);
+        const extractGapAndPosition = (input) => {
+          if (input[0] === 'g') {
+            return { gutter: true, position: parseFloat(input.substr(1)) }
+          }
+          else {
+            return { gutter: false, position: parseFloat(input) }
+          }
         }
 
-        if (this.config.floatingLabels[row] == null) { this.config.floatingLabels[row] = {}; }
+        const [row, col] = labelConfig.position.split(':').map(extractGapAndPosition);
 
-        if (_.has(this.config.floatingLabels[row], col)) {
-          throw new Error('Cannot place two floating labels in same image slot');
+        if (_.isNaN(row.position) || _.isNaN(col.position)) {
+          throw new Error(`Invalid floating label position '${labelConfig.position}', must be [g]FLOAT:[g]FLOAT`);
         }
 
-        const className = `floating-label-${row}-${col}`;
-        this.config.floatingLabels[row][col] = this._processTextConfig(_.omit(labelConfig, 'position'), className);
-        this.config.floatingLabels[row][col].className = className;
+        const className = `floating-label-${labelConfig.position}`.replace(/[\.:]/g, '-');
+        const newFloatingLabelConfig = this._processTextConfig(_.omit(labelConfig, 'position'), className);
+        newFloatingLabelConfig.className = className;
+        newFloatingLabelConfig.position = {
+          row: row,
+          col: col
+        };
+        this.config.floatingLabels.push(newFloatingLabelConfig);
       });
     } else {
-      this.config.floatingLabels = {};
+      this.config.floatingLabels = [];
     }
 
     if (this.config.padding) {
@@ -184,6 +192,15 @@ class GraphicCell extends BaseCell {
       throw new Error(`Invalid vertical align ${textConfig['vertical-align']} : must be one of ['top', 'center', 'bottom']`);
     }
 
+    textConfig['dominant-baseline'] = (() => {
+      switch (true) {
+        case textConfig['vertical-align'] === 'top': return 'text-before-edge';
+        case textConfig['vertical-align'] === 'center': return 'central';
+        case textConfig['vertical-align'] === 'bottom': return 'text-after-edge';
+        default: throw new Error(`Invalid vertical-align: ${textConfig['vertical-align']}`);
+      }
+    })();
+
     // font-size must be present to compute dimensions
     if (textConfig['font-size'] == null) { textConfig['font-size'] = BaseCell.getDefault('font-size'); }
     ['font-family', 'font-weight', 'font-color'].forEach((cssAttribute) => {
@@ -205,9 +222,13 @@ class GraphicCell extends BaseCell {
       .attr('fill', this.config['background-color'] || 'none');
 
     if (this.config['text-header'] != null) {
-      const textSpanWidth = this.dimensions.headerXOffset + this.dimensions.headerWidth;
-      const yMidpoint = this.dimensions.headerYOffset + (this.dimensions.headerHeight / 2);
-      this._addTextTo(this.parentSvg, 'text-header', this.config['text-header'], textSpanWidth, yMidpoint);
+      this._addTextTo(this.parentSvg, {
+        myClass: 'text-header',
+        textConfig: this.config['text-header'],
+        containerWidth: this.dimensions.headerWidth,
+        containerHeight: this.dimensions.headerHeight,
+        yOffSet: this.dimensions.headerYOffset
+      });
     }
 
     const graphicContainer = this.parentSvg.append('g')
@@ -215,15 +236,18 @@ class GraphicCell extends BaseCell {
       .attr('transform', `translate(${this.dimensions.graphicXOffset},${this.dimensions.graphicYOffset})`);
 
     if (this.config['text-footer'] != null) {
-      const textSpanWidth = this.dimensions.footerXOffset + this.dimensions.footerWidth;
-      const yMidpoint = this.dimensions.footerYOffset + (this.dimensions.footerHeight / 2);
-      this._addTextTo(this.parentSvg, 'text-footer', this.config['text-footer'], textSpanWidth, yMidpoint);
+      this._addTextTo(this.parentSvg, {
+        myClass: 'text-footer',
+        textConfig: this.config['text-footer'],
+        containerWidth: this.dimensions.footerWidth,
+        containerHeight: this.dimensions.footerHeight,
+        yOffSet: this.dimensions.footerYOffset
+      });
     }
 
     const d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
 
     const gridLayout = new GraphicCellGrid()
-      .bands()
       .containerSize([this.dimensions.graphicWidth, this.dimensions.graphicHeight])
       .padding([this.config.columnGutter, this.config.rowGutter]);
 
@@ -253,7 +277,7 @@ class GraphicCell extends BaseCell {
       .enter()
       .append('g')
         .attr('class', function (d) {
-          const cssLocation = `node-index-${d.i} node-xy-${d.row}-${d.col}`;
+          const cssLocation = `node-index-${d.i} node-xy-${d.rowOrder}-${d.colOrder}`;
           return `node ${cssLocation}`;
         })
         .attr('transform', d => `translate(${d.x},${d.y})`);
@@ -317,48 +341,30 @@ class GraphicCell extends BaseCell {
       }
 
       if (this.config['text-overlay'] != null) {
-        const textSpanWidth = gridLayout.nodeSize()[0];
-        const yMidpoint = gridLayout.nodeSize()[1] / 2;
-        this._addTextTo(enteringLeafNodes, 'text-overlay', this.config['text-overlay'], textSpanWidth, yMidpoint);
+        this._addTextTo(enteringLeafNodes, {
+          myClass:'text-overlay',
+          textConfig: this.config['text-overlay'],
+          containerWidth: gridLayout.nodeSize()[0],
+          containerHeight: imageHeight
+        });
       }
 
-      const floatingLabelConfig = this.config.floatingLabels;
-      const _graphicCell = this;
-      return enteringLeafNodes.each(function (dataAttributes) {
-        const d3Node = d3.select(this);
-        const rowNum = dataAttributes.rowOrder; // set by d3-grid
-        const colNum = dataAttributes.colOrder; // set by d3-grid
+      _(this.config.floatingLabels).each( (floatingLabelConfig) => {
 
-        // use .get as [rowNum] may be null
-        const textConfig = _.get(floatingLabelConfig, `[${rowNum}][${colNum}]`);
-        if (textConfig) {
-          const x = (() => {
-            switch (true) {
-              case textConfig['horizontal-align'] === 'start': return 0 + textConfig['padding-left'];
-              case textConfig['horizontal-align'] === 'middle': return imageWidth / 2;
-              case textConfig['horizontal-align'] === 'end': return imageWidth - textConfig['padding-right'];
-              default: throw new Error(`Invalid horizontal-align: ${textConfig['horizontal-align']}`);
-            }
-          })();
+        const x = (floatingLabelConfig.position.col.gutter)
+          ? gridLayout.getGutterX(floatingLabelConfig.position.col.position)
+          : gridLayout.getX(floatingLabelConfig.position.col.position);
 
-          const [yMidpoint, dominantBaseline] = (() => {
-            switch (true) {
-              case textConfig['vertical-align'] === 'top': return [0 + textConfig['padding-top'], 'text-before-edge'];
-              case textConfig['vertical-align'] === 'center': return [imageHeight / 2, 'central'];
-              case textConfig['vertical-align'] === 'bottom': return [imageHeight - textConfig['padding-bottom'], 'text-after-edge'];
-              default: throw new Error(`Invalid vertical-align: ${textConfig['vertical-align']}`);
-            }
-          })();
-
-          d3Node.append('svg:text')
-            .attr('class', `floating-label ${textConfig.className}`)
-            .attr('x', x)
-            .attr('y', yMidpoint)
-            .attr('text-anchor', textConfig['horizontal-align'])
-            .style('font-size', _graphicCell.getAdjustedTextSize(textConfig['font-size']))
-            .style('dominant-baseline', dominantBaseline)
-            .text(textConfig.text);
-        }
+        const y = (floatingLabelConfig.position.row.gutter)
+          ? gridLayout.getGutterY(floatingLabelConfig.position.row.position)
+          : gridLayout.getY(floatingLabelConfig.position.row.position);
+        
+        this._addFloatingLabel(graphicContainer, {
+          myClass: floatingLabelConfig.className,
+          textConfig: floatingLabelConfig,
+          xOffSet: x,
+          yOffSet: y
+        });
       });
     });
   }
@@ -386,23 +392,44 @@ class GraphicCell extends BaseCell {
     dim.footerYOffset = 0 + dim.graphicYOffset + dim.graphicHeight;
   }
 
-  _addTextTo(parent, myClass, textConfig, textSpanWidth, yMidpoint) {
-    const x = (() => {
+  _addFloatingLabel(parent, { myClass, textConfig, xOffSet = 0, yOffSet = 0 }) {
+
+    return parent.append('svg:text')
+      .attr('class', `floating-label ${myClass}`)
+      .attr('x', xOffSet)
+      .attr('y', yOffSet)
+      .attr('text-anchor', textConfig['horizontal-align'])
+      .style('font-size', this.getAdjustedTextSize(textConfig['font-size']))
+      .style('dominant-baseline', textConfig['dominant-baseline'])
+      .text(textConfig.text);
+  }
+
+  _addTextTo(parent, { myClass, textConfig, containerWidth, containerHeight, xOffSet = 0, yOffSet = 0 }) {
+    const xAnchor = (() => {
       switch (true) {
-        case textConfig['horizontal-align'] === 'start': return 0 + textConfig['padding-left'];
-        case textConfig['horizontal-align'] === 'middle': return textSpanWidth / 2;
-        case textConfig['horizontal-align'] === 'end': return textSpanWidth - textConfig['padding-right'];
+        case textConfig['horizontal-align'] === 'start': return textConfig['padding-left'];
+        case textConfig['horizontal-align'] === 'middle': return containerWidth / 2;
+        case textConfig['horizontal-align'] === 'end': return containerWidth - textConfig['padding-right'];
         default: throw new Error(`Invalid horizontal-align: ${textConfig['horizontal-align']}`);
       }
     })();
 
+    const yMidpoint = (() => {
+      switch (true) {
+        case textConfig['vertical-align'] === 'top': return 0 + textConfig['padding-top'];
+        case textConfig['vertical-align'] === 'center': return containerHeight / 2;
+        case textConfig['vertical-align'] === 'bottom': return containerHeight - textConfig['padding-bottom'];
+        default: throw new Error(`Invalid vertical-align: ${textConfig['vertical-align']}`);
+      }
+    })();
+
     return parent.append('svg:text')
-      .attr('class', myClass)
-      .attr('x', x)
-      .attr('y', yMidpoint)
+      .attr('class', `label ${myClass}`)
+      .attr('x', xOffSet + xAnchor)
+      .attr('y', yOffSet + yMidpoint)
       .attr('text-anchor', textConfig['horizontal-align'])
       .style('font-size', this.getAdjustedTextSize(textConfig['font-size']))
-      .style('dominant-baseline', 'central')
+      .style('dominant-baseline', textConfig['dominant-baseline'])
       .text(textConfig.text);
   }
 

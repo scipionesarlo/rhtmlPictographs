@@ -9,25 +9,26 @@
 
 <h1>Floating Labels</h1>
 
-<p>In any single image or multi image graphic cell config we can place floating labels at various locations.</p>
-<p>There are two placement considerations. Note that although its called a graphic cell, a single graphic cell can contain a grid of the same images. So for this tutorial we will refer to each individual image slot - whether shown or not - as an image slot.</p>
-<h2>Consideration 1: Which image slot</h2>
+<p>In any single image or multi image graphic cell config we can place floating labels at various locations. A single graphic cell can contain a grid of the same images. We refer to each individual image in a graphic cell as an image slot.</p>
 
-<p>This is done by specifying the row and column - using 0-based notation - via the position field: <span class="code">{ "position": "1:2" }</span>.In the example below the label text matches the position used to place the label.</p>
+<p>Floating labels behave the same as normal labels, except they require an explicit X and Y coordinate to use. The X and Y coordinate values are not scaled to pixels, they are scaled to units that match the height and width of the image slots. So for example the position <span class="code">0:0</span> will place a label at the top left of the first image slot. Position <span class="code">1:1</span> will place a label at the bottom right of the first image slot.</p>
 
-<div class="row" data-ex-w="100" data-ex-h="66">
+<p>In the example below the label text matches the position used to place the label.</p>
+
+<div class="row" data-ex-w="200" data-ex-h="132">
   <pre class="example hide-config">
 {
+  "font-size": 12,
   "numImages": 6,
   "numRows": 2,
   "variableImage": "circle:lightblue",
   "floatingLabels": [
-    { "position": "0:0", "font-size": "10px", "text": "0:0" },
-    { "position": "0:1", "font-size": "10px", "text": "0:1" },
-    { "position": "0:2", "font-size": "10px", "text": "0:2" },
-    { "position": "1:0", "font-size": "10px", "text": "1:0" },
-    { "position": "1:1", "font-size": "10px", "text": "1:1" },
-    { "position": "1:2", "font-size": "10px", "text": "1:2" }
+    { "position": "0.5:0.5", "text": "0.5:0.5" },
+    { "position": "0.5:1.5", "text": "0.5:1.5" },
+    { "position": "0.5:2.5", "text": "0.5:2.5" },
+    { "position": "1.5:0.5", "text": "1.5:0.5" },
+    { "position": "1.5:1.5", "text": "1.5:1.5" },
+    { "position": "1.5:2.5", "text": "1.5:2.5" }
   ]
 }
   </pre>
@@ -35,19 +36,20 @@
 
 <p>Here is the same example with the config shown:</p>
 
-<div class="row" data-ex-w="100" data-ex-h="66">
+<div class="row" data-ex-w="200" data-ex-h="132">
   <pre class="example">
 {
+  "font-size": 12,
   "numImages": 6,
   "numRows": 2,
   "variableImage": "circle:lightblue",
   "floatingLabels": [
-    { "position": "0:0", "font-size": "10px", "text": "0:0" },
-    { "position": "0:1", "font-size": "10px", "text": "0:1" },
-    { "position": "0:2", "font-size": "10px", "text": "0:2" },
-    { "position": "1:0", "font-size": "10px", "text": "1:0" },
-    { "position": "1:1", "font-size": "10px", "text": "1:1" },
-    { "position": "1:2", "font-size": "10px", "text": "1:2" }
+    { "position": "0.5:0.5", "text": "0.5:0.5" },
+    { "position": "0.5:1.5", "text": "0.5:1.5" },
+    { "position": "0.5:2.5", "text": "0.5:2.5" },
+    { "position": "1.5:0.5", "text": "1.5:0.5" },
+    { "position": "1.5:1.5", "text": "1.5:1.5" },
+    { "position": "1.5:2.5", "text": "1.5:2.5" }
   ]
 }
   </pre>
@@ -63,7 +65,7 @@
   "numImages": 5,
   "numCols": 1,
   "variableImage": "circle:frombottom:lightblue",
-  "floatingLabels": [ { "position": "3:0", "text": "percentage" } ]
+  "floatingLabels": [ { "position": "3.2:0.5", "text": "percentage" } ]
 }
   </pre>
 
@@ -73,33 +75,78 @@
   "numImages": 5,
   "numRows": 1,
   "variableImage": "circle:fromleft:lightblue",
-  "floatingLabels": [ { "position": "0:3", "text": "percentage" } ]
+  "floatingLabels": [ { "position": "0.5:3.5", "text": "percentage" } ]
 }
   </pre>
 
 </div>
 
-<p>However, placement becomes more confusing when we use the <span class="code">fromtop</span>, <span class="code">fromright</span>, or <span class="code">frombottom</span> clip direction. You can see above that in the vertical bar graph example - with the use of <span class="code">frombottom</span> - the proportion <span class="code">=3/5</span> and the floating label position <span class="code">3:0</span> line up nicely. But if you count from the top, the floating label is actually occupying the <span class="code">1:0</span> image slot ?!</p>
+<p>However, placement becomes more confusing when we use the <span class="code">fromtop</span>, <span class="code">fromright</span>, or <span class="code">frombottom</span> clip direction. You will recall that these clip directions alter the layout ordering of the image slots by changing the direction of one or more axis. For example <span class="code">fromright</span> makes the x-axis increase from right to left instead of the standard left to right.</p>
+
+<p>You can see above that in the vertical bar graph example - with the use of <span class="code">frombottom</span> - the proportion <span class="code">=3/5</span> and the floating label position <span class="code">3.2:0.5</span> line up nicely. But if you count from the top, the floating label is actually occupying the <span class="code">1.8:0.5</span> image slot ?!</p>
+
 <p>What we have done under the hood is that the floating label position field doesn't always count rows from top to bottom and doesn't always count columns from left to right. Instead, it changes the indexing of rows and columns to match the layout pattern selected. Recall the different options by having a look <a href="/content/tutorials/6_multi_image_scaling.html">here</a>.</p>
 
 <p>Here are the different layout options and the corresponding floating label positions</p>
 
-<div class="row" data-ex-w="100" data-ex-h="66">
-  fromleft:   <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "0:2", "text": "0:2", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "1:2", "text": "1:2", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromleft:lightblue" } </pre>
-  fromright:  <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "0:2", "text": "0:2", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "1:2", "text": "1:2", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromright:lightblue" } </pre>
-  fromtop:    <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "0:2", "text": "0:2", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "1:2", "text": "1:2", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromtop:lightblue" } </pre>
-  frombottom: <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "0:2", "text": "0:2", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "1:2", "text": "1:2", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:frombottom:lightblue" } </pre>
+<div class="row" data-ex-w="200" data-ex-h="132">
+  fromleft:   <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "0.5:2.5", "text": "0.5:2.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "1.5:2.5", "text": "1.5:2.5" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromleft:lightblue", "font-size": "12" } </pre>
+  fromright:  <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "0.5:2.5", "text": "0.5:2.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "1.5:2.5", "text": "1.5:2.5" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromright:lightblue", "font-size": "12" } </pre>
+  fromtop:    <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "0.5:2.5", "text": "0.5:2.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "1.5:2.5", "text": "1.5:2.5" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:fromtop:lightblue", "font-size": "12" } </pre>
+  frombottom: <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "0.5:2.5", "text": "0.5:2.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "1.5:2.5", "text": "1.5:2.5" }], "proportion": 0.75, "numImages": 6, "numRows": 2, "variableImage": "circle:frombottom:lightblue", "font-size": "12" } </pre>
 </div>
 
-<div class="row" data-ex-w="66" data-ex-h="100">
-  fromleft:   <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "2:0", "text": "2:0", "font-size": "10px" }, { "position": "2:1", "text": "2:1", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromleft:lightblue" } </pre>
-  fromright:  <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "2:0", "text": "2:0", "font-size": "10px" }, { "position": "2:1", "text": "2:1", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromright:lightblue" } </pre>
-  fromtop:    <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "2:0", "text": "2:0", "font-size": "10px" }, { "position": "2:1", "text": "2:1", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromtop:lightblue" } </pre>
-  frombottom: <pre class="example hide-config">{ "floatingLabels": [{ "position": "0:0", "text": "0:0", "font-size": "10px" }, { "position": "0:1", "text": "0:1", "font-size": "10px" }, { "position": "1:0", "text": "1:0", "font-size": "10px" }, { "position": "1:1", "text": "1:1", "font-size": "10px" }, { "position": "2:0", "text": "2:0", "font-size": "10px" }, { "position": "2:1", "text": "2:1", "font-size": "10px" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:frombottom:lightblue" } </pre>
+<div class="row" data-ex-w="132" data-ex-h="200">
+  fromleft:   <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "2.5:0.5", "text": "2.5:0.5" }, { "position": "2.5:1.5", "text": "2.5:1.5" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromleft:lightblue", "font-size": "12" } </pre>
+  fromright:  <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "2.5:0.5", "text": "2.5:0.5" }, { "position": "2.5:1.5", "text": "2.5:1.5" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromright:lightblue", "font-size": "12" } </pre>
+  fromtop:    <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "2.5:0.5", "text": "2.5:0.5" }, { "position": "2.5:1.5", "text": "2.5:1.5" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:fromtop:lightblue", "font-size": "12" } </pre>
+  frombottom: <pre class="example hide-config">{ "floatingLabels": [{ "position": "0.5:0.5", "text": "0.5:0.5" }, { "position": "0.5:1.5", "text": "0.5:1.5" }, { "position": "1.5:0.5", "text": "1.5:0.5" }, { "position": "1.5:1.5", "text": "1.5:1.5" }, { "position": "2.5:0.5", "text": "2.5:0.5" }, { "position": "2.5:1.5", "text": "2.5:1.5" }], "proportion": 0.75, "numImages": 6, "numCols": 2, "variableImage": "circle:frombottom:lightblue", "font-size": "12" } </pre>
+</div>
+
+<h3>Fractions and negatives are supported</h3>
+
+<p>Fractions and negatives are supported. Note that if you use negatives, or you use positives that are greater than the total number of images, you will be placing labels in the margins of the graphic cell. In order for them to show up you will explicitly need to add enough padding for the label to be rendered.</p>
+
+<p>Here is an example that can be used for reference when using fractions in the positioning of floating labels. Note the image has <span class="code">"padding": "75 100 75 100"</span> to provide space for the negative and >3 labels</p>
+
+<div class="row">
+  <pre class="example" data-ex-w="400" data-ex-h="200">{
+    "font-size": "8",
+    "numImages": 3,
+    "numRows": 1,
+    "padding": "75 100 75 100",
+    "columnGutter": 0,
+    "rowGutter": 0,
+    "variableImage": "ellipse:lightblue",
+    "floatingLabels": [
+      { "position": "-1:2", "text": "-1:2" },
+      { "position": "-1:1", "text": "-1:1" },
+      { "position": "0:-1", "text": "0:-1" },
+      { "position": "0:0", "text": "0:0" },
+      { "position": "0:1", "text": "0:1" },
+      { "position": "0:2", "text": "0:2" },
+      { "position": "0:3", "text": "0:3" },
+      { "position": "0:4", "text": "0:4" },
+      { "position": "0.5:-0.5", "text": "0.5:-0.5" },
+      { "position": "0.5:0.5", "text": "0.5:0.5" },
+      { "position": "0.5:1.5", "text": "0.5:1.5" },
+      { "position": "0.5:2.5", "text": "0.5:2.5" },
+      { "position": "0.5:3.5", "text": "0.5:3.5" },
+      { "position": "1:-1", "text": "1:-1" },
+      { "position": "1:0", "text": "1:0" },
+      { "position": "1:1", "text": "1:1" },
+      { "position": "1:2", "text": "1:2" },
+      { "position": "1:3", "text": "1:3" },
+      { "position": "1:4", "text": "1:4" },
+      { "position": "2:2", "text": "2:2" },
+      { "position": "2:1", "text": "2:1" }
+    ]
+  }
+  </pre>
 </div>
 
 
-<h3>Consideration 2: Where in the image slot</h3>
+<h3><span class="code">horizontal-align</span> and <span class="code">vertical-align</span> are both supported, but behave <i>slightly</i> different</h3>
 
 <p>Similar to the labelCell, you can provide both a <span class="code">horizontal-align</span>, which default to center, and a <span class="code">vertical-align</span>, which also defaults to center.</p>
 <p>The allowed values are:</p>
@@ -108,24 +155,74 @@
   <li><span class="code">vertical-align</span>: top, center, bottom (although middle, and centre also work but get mapped to one of the three)</li>
 </ul>
 
+These two values accept the same inputs as normal labels, but for floating labels they behave slightly different in terms of the computations under the hood:
+<ul>
+  <li><span class="code">horizontal-align</span>: Horizontal align varies the <a href="https://developer.mozilla.org/en/docs/Web/SVG/Attribute/text-anchor">SVG text-anchor property</a>, (which is does for a normal label as well), but it does not change the xy coords used for the label, so you will need to adjust these to match the desired placement. In a normal label, we would change the auto compute the bottom right (for example) position and use that, but since floating labels can be positioned anywhere, there is no "correct" way to compute positioning based on horizonal-alignment, so it is left up to the callee.</li>
+  <li><span class="code">vertical-align</span>: Veritcal align varies the <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/dominant-baseline">SVG dominant-baseline property</a>, (which is does for a normal label as well), but it does not change the xy coords used for the label, so you will need to adjust these to match the desired placement. In a normal label, we would change the auth compute the bottom right (for example) position and use that, but since floating labels can be positioned anywhere, there is no "correct" way to compute positioning based on horizonal-alignment, so it is left up to the callee.</li>
+</ul>
+
+
 <p>Here is an example showing the default plus each of the nine permutations</p>
 
 <div class="row" data-ex-w="50" data-ex-h="400">
   <pre class="example">
 { "floatingLabels": [
-  { "position": "0:0", "font-size": "16px", "text": "percentage", "font-color": "red", "font-weight": "900", "font-family":"Avro" },
-  { "position": "1:0", "font-size": "10px", "horizontal-align": "left",   "vertical-align": "top", "text": "percentage" },
-  { "position": "2:0", "font-size": "10px", "horizontal-align": "center", "vertical-align": "top", "text": "percentage" },
-  { "position": "3:0", "font-size": "10px", "horizontal-align": "right",  "vertical-align": "top", "text": "percentage" },
-  { "position": "4:0", "font-size": "10px", "horizontal-align": "left",   "vertical-align": "center", "text": "percentage" },
-  { "position": "5:0", "font-size": "10px", "horizontal-align": "center", "vertical-align": "center", "text": "proportion" },
-  { "position": "6:0", "font-size": "10px", "horizontal-align": "right",  "vertical-align": "center", "text": "proportion" },
-  { "position": "7:0", "font-size": "10px", "horizontal-align": "left",   "vertical-align": "bottom", "text": "proportion" },
-  { "position": "8:0", "font-size": "10px", "horizontal-align": "center", "vertical-align": "bottom", "text": "proportion" },
-  { "position": "9:0", "font-size": "10px", "horizontal-align": "right",  "vertical-align": "bottom", "text": "proportion" }
-], "proportion": "0.95", "numImages": 10, "numCols": "1", "variableImage": "circle:fromleft:lightblue" }
+  { "position": "0.5:0.5", "font-size": "16px", "text": "NL", "font-color": "orange", "font-weight": "900", "font-family":"Avro" },
+  { "position": "1:0", "horizontal-align": "left",   "vertical-align": "top", "text": "tl" },
+  { "position": "2:0.5", "horizontal-align": "center", "vertical-align": "top", "text": "tc" },
+  { "position": "3:1", "horizontal-align": "right",  "vertical-align": "top", "text": "tr" },
+  { "position": "4.5:0", "horizontal-align": "left",   "vertical-align": "center", "text": "cl" },
+  { "position": "5.5:0.5", "horizontal-align": "center", "vertical-align": "center", "text": "cc" },
+  { "position": "6.5:1", "horizontal-align": "right",  "vertical-align": "center", "text": "cr" },
+  { "position": "8:0", "horizontal-align": "left",   "vertical-align": "bottom", "text": "bl" },
+  { "position": "9:0.5", "horizontal-align": "center", "vertical-align": "bottom", "text": "bc" },
+  { "position": "10:1", "horizontal-align": "right",  "vertical-align": "bottom", "text": "br" }
+], "proportion": "0.95", "numImages": 10, "numCols": "1", "variableImage": "circle:fromleft:lightblue", "font-size": "12", "font-color": "brown", "rowGutter": "0.01", "columnGutter":"0" }
   </pre>
 </div>
+
+<h3>Placing floating labels in the gutter is possible</h3>
+
+<p>To place a floating label in the gutter, prefix the position with a "g". See example below.</p>
+<p>There is another interesting consideration when gutters are >0 : where does floating label <span class="code">1:1</span> go ? Is it on the right most edge of the first image slot or the left most edge of the second image slot, or is it in the middle of the gutter?</p>
+
+<ul>
+  <li>I have chosen to place <span class="code">1:1</span> on the left edge of the second image slot.</li>
+  <li>If you want to place something on the right  edge of the first image slot just make the position slightly less than 1 : <span class="code">1:0.999</span></li>
+  <li>If you wish to place a label in the middle of the gutter use the g notation : <span class="code">1:g1.5</span></li>
+</ul>
+
+<div class="row">
+  <pre class="example" data-ex-w="400" data-ex-h="200">{
+  "debugBorder": "yes",
+  "font-size": "8",
+  "numImages": 6,
+  "numRows": 2,
+  "padding": "10 10 10 10",
+  "columnGutter": 0.5,
+  "rowGutter": 0.5,
+  "variableImage": "ellipse:lightblue",
+  "floatingLabels": [
+    { "position": "0.99:0.99", "text": "0.99:0.99", "horizontal-align": "right" },
+    { "position": "0.99:g1.5", "text": "0.99:g1.5" },
+    { "position": "1:g1.5", "text": "1:g1.5" },
+    { "position": "1:1", "text": "1:1", "horizontal-align": "left" },
+    { "position": "g1.5:1", "text": "g1.5:1" },
+    { "position": "g1.5:0.99", "text": "g1.5:0.99" },
+
+    { "position": "0.99:g2.5", "text": "0.99:g2.5" },
+    { "position": "1:g2.5", "text": "1:g2.5" },
+    { "position": "g2.5:1", "text": "g2.5:1" },
+    { "position": "g2.5:0.99", "text": "g2.5:0.99" },
+
+    { "position": "0.99:g2.5", "text": "0.99:g2.5" },
+    { "position": "1:g2.5", "text": "1:g2.5" },
+    { "position": "g2.5:1", "text": "g2.5:1" },
+    { "position": "g2.5:0.99", "text": "g2.5:0.99" }
+
+  ]}</pre>
+</div>
+
 
 <h3>Other Considerations</h3>
 
@@ -136,8 +233,6 @@
   <li>support for <span class="code">font-family</span>, <span class="code">font-weight</span>, and <span class="code">font-color</span> attributes</li>
   <li><span class="code">padding: "1 1 1 1"</span> or the individual parameters <span class="code">padding-top</span>, <span class="code">padding-right</span>, <span class="code">padding-bottom</span>, and <span class="code">padding-left</span>.</li>
 </ul>
-
-TODO: padding-example
 
 <script src="/js/renderContentPage.js"></script>
 </body>

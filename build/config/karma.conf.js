@@ -1,6 +1,7 @@
 module.exports = function (config) {
 
   config.set({
+    port: 9123,
     browsers: ['Chrome'],
     basePath: '../../',
     files: [

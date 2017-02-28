@@ -248,8 +248,10 @@ class GraphicCell extends BaseCell {
     const d3Data = this._generateDataArray(this.config.proportion, this.config.numImages);
 
     const gridLayout = new GraphicCellGrid()
-      .containerSize([this.dimensions.graphicWidth, this.dimensions.graphicHeight])
-      .padding([this.config.columnGutter, this.config.rowGutter]);
+      .containerWidth(this.dimensions.graphicWidth)
+      .containerHeight( this.dimensions.graphicHeight)
+      .rowGutter(this.config.rowGutter)
+      .columnGutter(this.config.columnGutter);
 
     if (this.config.numRows != null) { gridLayout.rows(this.config.numRows); }
     if (this.config.numCols != null) { gridLayout.cols(this.config.numCols); }
@@ -282,8 +284,8 @@ class GraphicCell extends BaseCell {
         })
         .attr('transform', d => `translate(${d.x},${d.y})`);
 
-    const imageWidth = gridLayout.nodeSize()[0];
-    const imageHeight = gridLayout.nodeSize()[1];
+    const imageWidth = gridLayout.nodeWidth();
+    const imageHeight = gridLayout.nodeHeight();
 
     const backgroundRect = enteringLeafNodes.append('svg:rect')
       .attr('width', imageWidth)
@@ -344,7 +346,7 @@ class GraphicCell extends BaseCell {
         this._addTextTo(enteringLeafNodes, {
           myClass:'text-overlay',
           textConfig: this.config['text-overlay'],
-          containerWidth: gridLayout.nodeSize()[0],
+          containerWidth: gridLayout.nodeWidth(),
           containerHeight: imageHeight
         });
       }
@@ -358,7 +360,7 @@ class GraphicCell extends BaseCell {
         const y = (floatingLabelConfig.position.row.gutter)
           ? gridLayout.getGutterY(floatingLabelConfig.position.row.position)
           : gridLayout.getY(floatingLabelConfig.position.row.position);
-        
+
         this._addFloatingLabel(graphicContainer, {
           myClass: floatingLabelConfig.className,
           textConfig: floatingLabelConfig,

@@ -43,7 +43,8 @@ describe('graphic cell grid:', function () {
   describe('initialization and configuration:', function() {
     it('initial sizes', function () {
       const l = new GraphicCellGrid();
-      expect(l._containerSize).to.deep.equal([1, 1]);
+      expect(l.containerWidth(), 'incorrect width').to.deep.equal(1);
+      expect(l.containerHeight(), 'incorrect height').to.deep.equal(1);
     });
 
     describe('layout ordering', function () {
@@ -198,7 +199,7 @@ describe('graphic cell grid:', function () {
 
       describe('layout : 2x2 grid 200x200 left to right and top to bottom', function() {
         beforeEach(function() {
-          this.grid = new GraphicCellGrid().containerSize([200, 200]).rows(2).direction('right,down');
+          this.grid = new GraphicCellGrid().containerWidth(200).containerHeight( 200).rows(2).direction('right,down');
           this.grid.compute(makeArray(4));
         });
 
@@ -217,7 +218,7 @@ describe('graphic cell grid:', function () {
 
       describe('layout : 2x2 grid 200x200 right to left and bottom to top', function() {
         beforeEach(function() {
-          this.grid = new GraphicCellGrid().containerSize([200, 200]).rows(2).direction('left,up');
+          this.grid = new GraphicCellGrid().containerWidth(200).containerHeight( 200).rows(2).direction('left,up');
           this.grid.compute(makeArray(4));
         });
 
@@ -236,7 +237,7 @@ describe('graphic cell grid:', function () {
 
       describe('layout : 1x1 grid 100x100 right to left and bottom to top with gutter 0.1x0.1', function() {
         beforeEach(function() {
-          this.grid = new GraphicCellGrid().containerSize([100, 100]).rows(1).padding([0.1,0.1]).direction('left,up');
+          this.grid = new GraphicCellGrid().containerWidth(100).containerHeight(100).rows(1).rowGutter(0.1).columnGutter(0.1).direction('left,up');
           this.grid.compute(makeArray(1));
         });
 
@@ -249,7 +250,7 @@ describe('graphic cell grid:', function () {
 
       describe('layout : 2x2 grid 210x210 left to right and top to bottom with gutter 1/11x1/11', function() {
         beforeEach(function() {
-          this.grid = new GraphicCellGrid().containerSize([210, 210]).rows(2).padding([1/11,1/11]).direction('right,down');
+          this.grid = new GraphicCellGrid().containerWidth(210).containerHeight(210).rows(2).rowGutter(1/11).columnGutter(1/11).direction('right,down');
           this.grid.compute(makeArray(4));
         });
 
@@ -265,7 +266,7 @@ describe('graphic cell grid:', function () {
 
       describe('layout : 2x2 grid 210x210 right to left and bottom to top with gutter 1/11x1/11', function() {
         beforeEach(function() {
-          this.grid = new GraphicCellGrid().containerSize([210, 210]).rows(2).padding([1/11,1/11]).direction('left,up');
+          this.grid = new GraphicCellGrid().containerWidth(210).containerHeight(210).rows(2).rowGutter(1/11).columnGutter(1/11).direction('left,up');
           this.grid.compute(makeArray(4));
         });
 
@@ -433,7 +434,7 @@ ${JSON.stringify(t.expected)}
     });
 
     it('equally distributes 5 nodes within a 300x500 space', function () {
-      const l = (new GraphicCellGrid()).containerSize([300, 500])
+      const l = (new GraphicCellGrid()).containerWidth(300).containerHeight(500)
       const actual = l.compute(getNodes(5)).map(justXY);
       const expected = [
         { x: 0, y: 0 },
@@ -444,7 +445,8 @@ ${JSON.stringify(t.expected)}
       ];
       compareAndReportDifferences(expected, actual);
 
-      expect(l._containerSize).to.deep.equal([300, 500]);
+      expect(l.containerWidth(), 'incorrect width').to.deep.equal(300);
+      expect(l.containerHeight(), 'incorrect height').to.deep.equal(500);
     });
 
     it('fixed amount of cols', function () {
@@ -531,16 +533,16 @@ ${JSON.stringify(t.expected)}
       compareAndReportDifferences(expectedTwo, actualTwo);
     });
 
-    describe('padding is accounted for in layout:', function() {
-      describe('padding is such that 0.1 means "padding is 10% of total space"', function () {
+    describe('gutter sizes are accounted for in layout:', function() {
+      describe('gutter size 0.1 means "gutter size is 10% of total space"', function () {
         beforeEach(function() {
-          this.l = (new GraphicCellGrid()).padding([0.1, 0]).containerSize([19, 19]);
+          this.l = (new GraphicCellGrid()).rowGutter(0).columnGutter(0.1).containerWidth(19).containerHeight(19);
           this.actual = this.l.compute(getNodes(4)).map(justXY);
           this.expected = [
             { x: 0, y: 0 },
             { x: 10, y: 0 },
-            { x: 0, y: 9.5 },
-            { x: 10, y: 9.5 }
+            { x: 0, y: 19/2 },
+            { x: 10, y: 19/2 }
           ];
         });
 
@@ -549,13 +551,14 @@ ${JSON.stringify(t.expected)}
         });
 
         it('computes node size correctly', function() {
-          expect(this.l.nodeSize()).to.deep.equal([9,9.5]);
+          expect(this.l.nodeWidth(), 'incorrect nodeWidth').to.deep.equal(9);
+          expect(this.l.nodeHeight(), 'incorrect nodeHeight').to.deep.equal(9.5);
         })
       });
 
-      describe('padding is such that 0.5 means "same size as nodes"', function () {
+      describe('gutter size 0.5 means "gutter is same size as nodes"', function () {
         beforeEach(function() {
-          this.l = (new GraphicCellGrid()).padding([0, 0.5]);
+          this.l = (new GraphicCellGrid()).rowGutter(0.5).columnGutter(0);
           this.actual = this.l.compute(getNodes(4)).map(justXY);
           this.expected = [
             {x: 0, y: 0},
@@ -570,13 +573,14 @@ ${JSON.stringify(t.expected)}
         });
 
         it('computes node size correctly', function() {
-          expect(this.l.nodeSize()).to.deep.equal([0.5,oneThird]);
+          expect(this.l.nodeWidth(), 'incorrect nodeWidth').to.deep.equal(0.5);
+          expect(this.l.nodeHeight(), 'incorrect nodeHeight').to.deep.equal(oneThird);
         })
       });
 
-      describe('padding is such that 0.3333 means "padding is 1/3 to the 2/3 size of node"', function () {
+      describe('gutter size 0.3333 means "gutter is 1/3 to the 2/3 size of node"', function () {
         beforeEach(function() {
-          this.l = (new GraphicCellGrid()).padding([oneThird, oneThird]).containerSize([5, 5]);
+          this.l = (new GraphicCellGrid()).rowGutter(oneThird).columnGutter(oneThird).containerWidth(5).containerHeight(5);
           this.actual = this.l.compute(getNodes(4)).map(justXY);
           this.expected = [
             {x: 0, y: 0},
@@ -591,7 +595,8 @@ ${JSON.stringify(t.expected)}
         });
 
         it('computes node size correctly', function() {
-          expect(this.l.nodeSize()).to.deep.equal([2,2]);
+          expect(this.l.nodeWidth(), 'incorrect nodeWidth').to.deep.equal(2);
+          expect(this.l.nodeHeight(), 'incorrect nodeHeight').to.deep.equal(2);
         })
       });
     });
@@ -618,7 +623,7 @@ ${JSON.stringify(t.expected)}
 
       _.forEach(_.keys(layoutExpectations), function (directionKeyword) {
         it(`the layout for ${directionKeyword} is ${layoutExpectations[directionKeyword]}`, function () {
-          const l = (new GraphicCellGrid()).direction(directionKeyword).rows(2).containerSize([3,2]);
+          const l = (new GraphicCellGrid()).direction(directionKeyword).rows(2).containerWidth(3).containerHeight(2);
           const nodes = [{}, {}, {}, {}, {}];
 
           const actual = nodeString(l.compute(nodes));

@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Arvo:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
+  <link href='/styles/internal_www.css' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+
+<h1>Graphic Cell External SVG Considerations</h1>
+<p>External SVG images can be used in graphic cells, and we can recolor them.</p>
+<p>When using external SVG elements, there are several considerations to be aware of.</p>
+
+<p>It's important to understand what happens when we use an external SVG vs when we recolor an external SVG.</p>
+<p><b><em>If the external SVG does not have a viewBox attribute, then unless we recolor it, the aspect ratio will not be preserved.</em></b></p>
+
+<br/>
+<p>Consider two external SVGs of an green ellipse, one with a <a href="https://developer.mozilla.org/en/docs/Web/SVG/Attribute/viewBox">viewbox</a> and one without a viewbox:</p>
+
+<p>With viewBox:</p>
+<div style="display:inline-block; border:1px dashed dimgrey">
+  <pre><span class="config-only">
+&lt;svg width="512px" height="256px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 256"&gt;
+  &lt;ellipse cx="256" cy="128" rx="256" ry="128" fill="green"&gt;&lt;/ellipse&gt;
+&lt;/svg&gt;</span></pre>
+
+  <img height="64" width="128" src="/images/green_ellipse_with_viewbox_512.svg"/>
+</div>
+
+<p>Without viewBox:</p>
+<div style="display:inline-block; border:1px dashed dimgrey">
+  <pre><span class="config-only">
+&lt;svg width="512px" height="256px" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;ellipse cx="256" cy="128" rx="256" ry="128" fill="green"&gt;&lt;/ellipse&gt;
+&lt;/svg&gt;</span></pre>
+  <img height="64" width="128" src="/images/green_ellipse_no_viewbox_512.svg"/>
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<p>When we add an SVG without recoloring we simply create an <span class="code">image</span> within out outer <span class="code">svg</span> tag.</p>
+<p>For example this 100x100 rhtmlPictograph using <span class="code">green_ellipse_no_viewbox_512.svg</span>:</p>
+<p><b>Important</b>: See how the ellipse image below with no viewBox turned into a circle? Without the viewBox attribute, the browser does not know the intended aspect ratio. We didn't modify the ellipse SVG content, we just referenced it using an image tag.</p>
+<div class="row">
+  <div class="example">url:/images/green_ellipse_no_viewbox_512.svg</div>
+</div>
+
+<p>(abridged) Pictograph SVG content:</p>
+<pre>
+  <span class="config-only">
+  &lt;svg&gt;
+    &lt;image x="0" y="0" width="100" height="100" href="/images/green_ellipse_no_viewbox_512.svg"&gt;&lt;/image&gt;
+  &lt;/svg&gt;
+  </span>
+</pre>
+
+<br/>
+<br/>
+<p>When we add an SVG with recoloring, we actually use Javascript to download the SVG content, parse the content in memory, change the color, and make modifications to the <span class="code">height</span>, <span class="code">width</span>, <span class="code">preserveAspectRatio</span>, and <span class="code">viewBox </span> of the SVG. Then we add the modified content as an embedded SVG tag.</p>
+<p>For example this 100x100 rhtmlPictograph using <span class="code">green_ellipse_no_viewbox_512.svg</span>:</p>
+<p><b>Important:</b> when we recolor we create an embedded SVG inside the outer SVG, and the viewBox has been added. See the markup below the image.<p>
+<div class="row">
+  <div class="example">url:lightblue:/images/green_ellipse_no_viewbox_512.svg</div>
+</div>
+
+<p>(abridged) Pictograph SVG content:</p>
+<pre>
+  <span class="config-only">
+  &lt;svg&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" x="0" y="0" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 256"&gt;
+      &lt;ellipse cx="256" cy="128" rx="256" ry="128" fill="lightblue"&gt;&lt;/ellipse&gt;
+    &lt;/svg&gt;
+  &lt;/svg&gt;
+  </span>
+</pre>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

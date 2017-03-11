@@ -19,8 +19,7 @@ class CircleType extends BaseImageType {
       .attr('cx', this.containerWidth / 2)
       .attr('cy', this.containerHeight / 2)
       .attr('r', ((this.ratio * this.imageDimensions.diameter) / 2) * this.baseShapeHiding)
-      .style('fill', this.color)
-      .attr('shape-rendering', 'crispEdges');
+      .style('fill', this.color);
 
     return this.imageHandle;
   }

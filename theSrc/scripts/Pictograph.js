@@ -116,14 +116,13 @@ class Pictograph extends RhtmlSvgWidget {
   }
 
   _processConfig() {
-    // do not accept width and height from config, they were passed to constructor
-    delete this.config.width;
-    delete this.config.height;
+    // update the specified width/height used in the baseclass used to redraw the SVG
+    if (this.config.width) { this.specifiedWidth = this.config.width; }
+    if (this.config.height) { this.specifiedHeight = this.config.height; }
 
     if (this.config.table == null) {
       const pictographConfig = _.pick(this.config, Pictograph.validRootAttributes);
       const graphicCellConfig = _.pick(this.config, GraphicCell.validRootAttributes);
-      // console.log(`keysToKeepInPictograph: ${keysToKeepInPictograph}`)
 
       pictographConfig.table = { rows: [[{ type: 'graphic', value: graphicCellConfig }]] };
       this.config = pictographConfig;
@@ -264,7 +263,7 @@ class Pictograph extends RhtmlSvgWidget {
       return {
         position: lineIndex,
         x1: 0 + table.lines['padding-left'],
-        x2: this.initialWidth - table.lines['padding-right'],
+        x2: this.specifiedWidth - table.lines['padding-right'],
         y1: y,
         y2: y,
         style: table.lines.style || 'stroke:black;stroke-width:2',
@@ -280,7 +279,7 @@ class Pictograph extends RhtmlSvgWidget {
         x1: x,
         x2: x,
         y1: 0 + table.lines['padding-top'],
-        y2: this.initialHeight - table.lines['padding-bottom'],
+        y2: this.specifiedHeight - table.lines['padding-bottom'],
         style: table.lines.style || 'stroke:black;stroke-width:2',
       };
     });
@@ -308,11 +307,11 @@ class Pictograph extends RhtmlSvgWidget {
       });
 
       const sumSpecified = _.sum(table.rowHeights) + ((this.numTableRows - 1) * table.rowGutterLength);
-      if (sumSpecified > this.initialHeight) {
-        throw new Error(`Cannot specify rowHeights/rowGutterLength where sum(rows+padding) exceeds table height: ${sumSpecified} !< ${this.initialHeight}`);
+      if (sumSpecified > this.specifiedHeight) {
+        throw new Error(`Cannot specify rowHeights/rowGutterLength where sum(rows+padding) exceeds table height: ${sumSpecified} !< ${this.specifiedHeight}`);
       }
     } else {
-      table.rowHeights = _.range(this.numTableRows).map(() => parseInt(this.initialHeight / this.numTableRows));
+      table.rowHeights = _.range(this.numTableRows).map(() => parseInt(this.specifiedHeight / this.numTableRows));
     }
 
     if (table.colWidths) {
@@ -333,11 +332,11 @@ class Pictograph extends RhtmlSvgWidget {
       });
 
       const sumSpecified = _.sum(table.colWidths) + ((this.numTableCols - 1) * table.columnGutterLength);
-      if (sumSpecified > this.initialWidth) {
-        throw new Error(`Cannot specify colWidths/columnGutterLength where sum(cols+padding) exceeds table width: : ${sumSpecified} !< ${this.initialWidth}`);
+      if (sumSpecified > this.specifiedWidth) {
+        throw new Error(`Cannot specify colWidths/columnGutterLength where sum(cols+padding) exceeds table width: : ${sumSpecified} !< ${this.specifiedWidth}`);
       }
     } else {
-      table.colWidths = _.range(this.numTableCols).map(() => parseInt(this.initialWidth / this.numTableCols));
+      table.colWidths = _.range(this.numTableCols).map(() => parseInt(this.specifiedWidth / this.numTableCols));
     }
 
     table.rows.forEach((row, rowIndex) => {
@@ -374,8 +373,8 @@ class Pictograph extends RhtmlSvgWidget {
     if (this.config['background-color']) {
       this.outerSvg.append('svg:rect')
       .attr('class', 'background')
-      .attr('width', this.initialWidth)
-      .attr('height', this.initialHeight)
+      .attr('width', this.specifiedWidth)
+      .attr('height', this.specifiedHeight)
       .attr('fill', this.config['background-color']);
     }
 

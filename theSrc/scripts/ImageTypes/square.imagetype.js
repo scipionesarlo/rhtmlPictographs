@@ -21,8 +21,7 @@ class SquareType extends BaseImageType {
       .attr('y', ((this.containerHeight - (length * this.baseShapeHiding)) / 2) + ((length * (1 - this.ratio)) / 2))
       .attr('width', this.ratio * length * this.baseShapeHiding)
       .attr('height', this.ratio * length * this.baseShapeHiding)
-      .style('fill', this.color)
-      .attr('shape-rendering', 'crispEdges');
+      .style('fill', this.color);
 
     return this.imageHandle;
   }

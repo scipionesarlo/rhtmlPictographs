@@ -117,8 +117,8 @@ class Pictograph extends RhtmlSvgWidget {
 
   _processConfig() {
     // update the specified width/height used in the baseclass used to redraw the SVG
-    if (this.config.width) { this.specifiedWidth = this.config.width; }
-    if (this.config.height) { this.specifiedHeight = this.config.height; }
+    if (this.config.width) { this.specifiedWidth = this.config.width; delete this.config.width; }
+    if (this.config.height) { this.specifiedHeight = this.config.height; delete this.config.height; }
 
     if (this.config.table == null) {
       const pictographConfig = _.pick(this.config, Pictograph.validRootAttributes);

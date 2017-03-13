@@ -12,6 +12,8 @@ class RhtmlSvgWidget {
     this.rootElement = _.has(el, 'length') ? el[0] : el;
     this.initialWidth = width;
     this.initialHeight = height;
+    this.specifiedWidth = width;
+    this.specifiedHeight = height;
 
     RhtmlSvgWidget.widgetIndex++;
   }
@@ -49,7 +51,7 @@ class RhtmlSvgWidget {
     if (this.config.resizable) {
       return $(this.rootElement).width('100%').height('100%');
     }
-    return $(this.rootElement).width(this.initialWidth).height(this.initialHeight);
+    return $(this.rootElement).width(this.specifiedWidth).height(this.specifiedHeight);
   }
 
   _addRootSvgToRootElement() {
@@ -68,7 +70,7 @@ class RhtmlSvgWidget {
     // NB JQuery insists on lowercasing attributes, so we must use JS directly
     // when setting viewBox and preserveAspectRatio ?!
     document.getElementsByClassName(`${this.config['table-id']} rhtmlwidget-outer-svg`)[0]
-      .setAttribute('viewBox', `0 0 ${this.initialWidth} ${this.initialHeight}`);
+      .setAttribute('viewBox', `0 0 ${this.specifiedWidth} ${this.specifiedHeight}`);
     if (this.config.preserveAspectRatio != null) {
       document.getElementsByClassName(`${this.config['table-id']} rhtmlwidget-outer-svg`)[0]
         .setAttribute('preserveAspectRatio', this.config.preserveAspectRatio);

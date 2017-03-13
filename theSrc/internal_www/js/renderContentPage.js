@@ -105,16 +105,6 @@ const addExampleTo = function (rowConfig) {
 
   instance.draw();
 
-  if (exampleConfig.redraw) {
-    console.log('redrawing');
-    console.log(exampleConfig.redraw);
-
-    setInterval(() => {
-      instance.setConfig(_.cloneDeep(graphicCellConfig));
-      instance.draw();
-    }, exampleConfig.redraw);
-  }
-
   if (exampleConfig.resizeControls) {
     const resizeForm = $(makeFormHtml());
     element.append(resizeForm);

@@ -42,11 +42,11 @@ describe('Take visual regression snapshots', function () {
           );
           openedEyes = true;
 
-          console.log(`Waiting ${global.visualDiffConfig.pageLoadWaitSeconds * 1000} seconds for widgetsPage`);
+          console.log(`Waiting ${global.visualDiffConfig.pageLoadWaitSeconds} seconds for widgetsPage`);
           return new Promise((resolve) => {
             setTimeout(() => {
               return resolve();
-            }, global.visualDiffConfig.pageLoadWaitSeconds * 0);
+            }, global.visualDiffConfig.pageLoadWaitSeconds * 1000);
           });
         } else {
           console.log(`No snapshots on ${contentPath}. Skipping`);

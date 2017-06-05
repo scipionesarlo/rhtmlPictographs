@@ -1,22 +1,22 @@
-import ColorFactory from '../ColorFactory';
+import ColorFactory from '../ColorFactory'
 
 class BaseImageType {
-  constructor(d3Node, config, containerWidth, containerHeight, dataAttributes) {
-    this.d3Node = d3Node;
-    this.config = config;
-    this.containerWidth = containerWidth;
-    this.containerHeight = containerHeight;
-    this.dataAttributes = dataAttributes;
+  constructor (d3Node, config, containerWidth, containerHeight, dataAttributes) {
+    this.d3Node = d3Node
+    this.config = config
+    this.containerWidth = containerWidth
+    this.containerHeight = containerHeight
+    this.dataAttributes = dataAttributes
 
-    this.colorFactory = ColorFactory;
+    this.colorFactory = ColorFactory
 
-    this.imageHandle = null;
+    this.imageHandle = null
     this.imageDimensions = {
       width: this.containerWidth,
       height: this.containerHeight,
       x: 0,
-      y: 0,
-    };
+      y: 0
+    }
   }
 
   /*
@@ -33,26 +33,25 @@ class BaseImageType {
      The answer to whyis we let the browser do the placement in these cases because we are lazy
 
    */
-  calculateImageDimensions() {
-    throw new Error('calculateImageDimensions must be overridden in child');
+  calculateImageDimensions () {
+    throw new Error('calculateImageDimensions must be overridden in child')
   }
 
-  appendToSvg() {
-    throw new Error('appendToSvg must be overridden in child');
+  appendToSvg () {
+    throw new Error('appendToSvg must be overridden in child')
   }
 
-  get ratio() {
-    return this.config.scale ? this.dataAttributes.proportion : 1;
+  get ratio () {
+    return this.config.scale ? this.dataAttributes.proportion : 1
   }
 
-  get color() {
-    return this.colorFactory.getColor(this.config.color);
+  get color () {
+    return this.colorFactory.getColor(this.config.color)
   }
 
-  get baseShapeHiding() {
-    return (this.config.baseShapeScale != null) ? this.config.baseShapeScale : 1;
+  get baseShapeHiding () {
+    return (this.config.baseShapeScale != null) ? this.config.baseShapeScale : 1
   }
-
 }
 
-module.exports = BaseImageType;
+module.exports = BaseImageType

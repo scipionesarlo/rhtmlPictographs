@@ -1,9 +1,8 @@
 
-import _ from 'lodash';
+import _ from 'lodash'
 
 class GraphicCellGrid {
-
-  static validInputDirections() {
+  static validInputDirections () {
     return [
       'right',
       'right,down',
@@ -16,106 +15,105 @@ class GraphicCellGrid {
       'down,left',
       'up',
       'up,right',
-      'up,left',
-    ];
+      'up,left'
+    ]
   }
 
-  static get validHorizontalDirections() {
-    return ['right', 'left'];
+  static get validHorizontalDirections () {
+    return ['right', 'left']
   }
-  static get validVerticalDirections() {
-    return ['up', 'down'];
-  }
-
-  static _isValidInternalDirection(value) {
-    const validHorizontalDirection = GraphicCellGrid.validHorizontalDirections.includes(value);
-    const validVerticalDirection = GraphicCellGrid.validVerticalDirections.includes(value);
-    return validHorizontalDirection || validVerticalDirection;
+  static get validVerticalDirections () {
+    return ['up', 'down']
   }
 
-  static get _defaultHorizontalDirection() {
-    return 'right';
-  }
-  static get _defaultVerticalDirection() {
-    return 'down';
-  }
-
-  constructor() {
-    this.primaryDirection(GraphicCellGrid._defaultHorizontalDirection);
-    this.secondaryDirection(GraphicCellGrid._defaultVerticalDirection);
-
-    this.numRows = 0;
-    this.numCols = 0;
-    this.rowsSpecified = false;
-    this.colsSpecified = false;
-    this.containerWidth(1);
-    this.containerHeight(1);
-    this.rowGutter(0);
-    this.columnGutter(0);
+  static _isValidInternalDirection (value) {
+    const validHorizontalDirection = GraphicCellGrid.validHorizontalDirections.includes(value)
+    const validVerticalDirection = GraphicCellGrid.validVerticalDirections.includes(value)
+    return validHorizontalDirection || validVerticalDirection
   }
 
-  compute(newNodes) {
-    this.nodes = newNodes;
-    this._calcGridDimensions();
-    this._calcNodeSize();
-    return this._distribute();
+  static get _defaultHorizontalDirection () {
+    return 'right'
+  }
+  static get _defaultVerticalDirection () {
+    return 'down'
   }
 
-  _calcGridDimensions() {
+  constructor () {
+    this.primaryDirection(GraphicCellGrid._defaultHorizontalDirection)
+    this.secondaryDirection(GraphicCellGrid._defaultVerticalDirection)
+
+    this.numRows = 0
+    this.numCols = 0
+    this.rowsSpecified = false
+    this.colsSpecified = false
+    this.containerWidth(1)
+    this.containerHeight(1)
+    this.rowGutter(0)
+    this.columnGutter(0)
+  }
+
+  compute (newNodes) {
+    this.nodes = newNodes
+    this._calcGridDimensions()
+    this._calcNodeSize()
+    return this._distribute()
+  }
+
+  _calcGridDimensions () {
     if (this.rowsSpecified && this.colsSpecified) {
       if ((this.numRows * this.numCols) !== this.nodes.length) {
-        const errorMath = `${this.numRows} * ${this.numCols} !== ${this.nodes.length}`;
-        throw new Error(`rows * cols must equal node length if both rows and cols are specified: ${errorMath}`);
+        const errorMath = `${this.numRows} * ${this.numCols} !== ${this.nodes.length}`
+        throw new Error(`rows * cols must equal node length if both rows and cols are specified: ${errorMath}`)
       }
-      return;
+      return
     }
 
     if (this.rowsSpecified) {
-      this.numCols = Math.ceil(this.nodes.length / this.numRows);
-      return;
+      this.numCols = Math.ceil(this.nodes.length / this.numRows)
+      return
     }
 
     if (this.colsSpecified) {
-      this.numRows = Math.ceil(this.nodes.length / this.numCols);
-      return;
+      this.numRows = Math.ceil(this.nodes.length / this.numCols)
+      return
     }
 
-    this.numCols = Math.ceil(Math.sqrt(this.nodes.length));
-    this.numRows = Math.ceil(this.nodes.length / this.numCols);
+    this.numCols = Math.ceil(Math.sqrt(this.nodes.length))
+    this.numRows = Math.ceil(this.nodes.length / this.numCols)
   }
 
-  _calcNodeSize() {
+  _calcNodeSize () {
     this.scale = {
       x: this._computeScale(this.containerWidth(), this.numCols, this.columnGutter()),
       y: this._computeScale(this.containerHeight(), this.numRows, this.rowGutter())
-    };
+    }
   }
 
   // NB div by zero on gutterAllocation === 1 is avoided by validation rules in this.rowGutter() and this.columnGutter()
-  _computeScale(totalSize, numElements, gutterAllocation) {
-    const numGutters = numElements - 1;
-    const gutterToColRatio = gutterAllocation / (1 - gutterAllocation);
-    const nodeSize = totalSize / (numElements + (numGutters * gutterToColRatio));
-    const gutterSize = nodeSize * gutterToColRatio;
-    return { nodeSize, gutterSize };
+  _computeScale (totalSize, numElements, gutterAllocation) {
+    const numGutters = numElements - 1
+    const gutterToColRatio = gutterAllocation / (1 - gutterAllocation)
+    const nodeSize = totalSize / (numElements + (numGutters * gutterToColRatio))
+    const gutterSize = nodeSize * gutterToColRatio
+    return { nodeSize, gutterSize }
   }
 
-  getTopLeftCoordOfImageSlot(rowNumber, colNumber) {
-
+  getTopLeftCoordOfImageSlot (rowNumber, colNumber) {
     // adjust to get top left coord of slot not right (due to mirroring in _getRangeFromDomain)
     const adjustedColumnNumber = (columnNumber) => {
       if (this._isRightToLeft()) {
-        return columnNumber + 0.99999999;
+        return columnNumber + 0.99999999
       }
-      return columnNumber;
+      return columnNumber
     }
 
     // adjust to get top coord of slot not bottom (due to mirroring in _getRangeFromDomain)
     const adjustedRowNumber = (rowNumber) => {
       if (this._isBottomToTop()) {
-        return rowNumber + 0.99999999;
+        return rowNumber + 0.99999999
       }
-      return rowNumber;
+      return rowNumber
     }
 
     return {
@@ -124,267 +122,267 @@ class GraphicCellGrid {
     }
   }
 
-  getX(position) {
+  getX (position) {
     if (this._isRightToLeft()) {
-      let x = this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
-      return this.containerWidth() - x;
+      let x = this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize)
+      return this.containerWidth() - x
     }
-    return this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+    return this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize)
   }
 
-  getGutterX(position) {
+  getGutterX (position) {
     if ([this.primaryDirection(), this.secondaryDirection()].includes('left')) {
-      let x = this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
-      return this.containerWidth() - x;
+      let x = this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize)
+      return this.containerWidth() - x
     }
-    return this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize);
+    return this._getGutterRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize)
   }
 
-  getY(position) {
+  getY (position) {
     if (this._isBottomToTop()) {
-      let y = this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
-      return this.containerHeight() - y;
+      let y = this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize)
+      return this.containerHeight() - y
     }
-    return this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);;
+    return this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize)
   }
 
-  getGutterY(position) {
+  getGutterY (position) {
     if ([this.primaryDirection(), this.secondaryDirection()].includes('up')) {
-      let y = this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
-      return this.containerHeight() - y;
+      let y = this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize)
+      return this.containerHeight() - y
     }
-    return this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize);
+    return this._getGutterRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize)
   }
 
-  _getRangeFromDomain(position, nodeSize, gutterSize) {
-    const seperate = function(position) {
-      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position);
-      const fraction = parseFloat(position) - whole;
-      return { whole, fraction };
+  _getRangeFromDomain (position, nodeSize, gutterSize) {
+    const seperate = function (position) {
+      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position)
+      const fraction = parseFloat(position) - whole
+      return { whole, fraction }
     }
 
-    const { whole, fraction } = seperate(position);
-    const x = whole * nodeSize + whole * gutterSize + fraction * nodeSize;
-    return x;
+    const { whole, fraction } = seperate(position)
+    const x = whole * nodeSize + whole * gutterSize + fraction * nodeSize
+    return x
   }
 
-  _getGutterRangeFromDomain(position, nodeSize, gutterSize) {
-    const seperate = function(position) {
-      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position);
-      const fraction = parseFloat(position) - whole;
-      return { whole, fraction };
+  _getGutterRangeFromDomain (position, nodeSize, gutterSize) {
+    const seperate = function (position) {
+      const whole = (position > 0) ? Math.floor(position) : Math.ceil(position)
+      const fraction = parseFloat(position) - whole
+      return { whole, fraction }
     }
 
     if (position < 1) {
-      throw new Error(`Invalid gutter position '${position}: must be >= 1`);
+      throw new Error(`Invalid gutter position '${position}: must be >= 1`)
     }
 
     // TODO test for greater than number gutter ?
 
-    const { whole, fraction } = seperate(position);
-    const x = whole * nodeSize + (whole - 1) * gutterSize + fraction * gutterSize;
-    return x;
+    const { whole, fraction } = seperate(position)
+    const x = whole * nodeSize + (whole - 1) * gutterSize + fraction * gutterSize
+    return x
   }
 
-  _distribute() {
-    const lastColumn = this.numCols - 1;
-    const lastRow = this.numRows - 1;
+  _distribute () {
+    const lastColumn = this.numCols - 1
+    const lastRow = this.numRows - 1
 
     const nextVacantSpot = {
       row: 0,
       col: 0,
       rowOrder: 0,
-      colOrder: 0,
-    };
+      colOrder: 0
+    }
 
-    const advanceRow = function (increment=1) {
-      nextVacantSpot.rowOrder += 1;
-      nextVacantSpot.row += increment;
-    };
-    const resetRow = function (resetValue=0) {
-      nextVacantSpot.rowOrder = 0;
-      nextVacantSpot.row = resetValue;
-    };
-    const advanceCol = function (increment=1) {
-      nextVacantSpot.colOrder += 1;
-      nextVacantSpot.col += increment;
-    };
-    const resetCol = function (resetValue=0) {
-      nextVacantSpot.colOrder = 0;
-      nextVacantSpot.col = resetValue;
-    };
+    const advanceRow = function (increment = 1) {
+      nextVacantSpot.rowOrder += 1
+      nextVacantSpot.row += increment
+    }
+    const resetRow = function (resetValue = 0) {
+      nextVacantSpot.rowOrder = 0
+      nextVacantSpot.row = resetValue
+    }
+    const advanceCol = function (increment = 1) {
+      nextVacantSpot.colOrder += 1
+      nextVacantSpot.col += increment
+    }
+    const resetCol = function (resetValue = 0) {
+      nextVacantSpot.colOrder = 0
+      nextVacantSpot.col = resetValue
+    }
 
-    let i = -1;
+    let i = -1
     while (++i < this.nodes.length) {
       const topLeftCoords = this.getTopLeftCoordOfImageSlot(nextVacantSpot.row, nextVacantSpot.col)
-      _.merge(this.nodes[i], topLeftCoords);
-      this.nodes[i].rowOrder = nextVacantSpot.rowOrder;
-      this.nodes[i].colOrder = nextVacantSpot.colOrder;
+      _.merge(this.nodes[i], topLeftCoords)
+      this.nodes[i].rowOrder = nextVacantSpot.rowOrder
+      this.nodes[i].colOrder = nextVacantSpot.colOrder
       if (this._primaryIsHorizontal) {
         if (nextVacantSpot.col < lastColumn) {
-          advanceCol();
+          advanceCol()
         } else {
-          resetCol();
-          advanceRow();
+          resetCol()
+          advanceRow()
         }
       } else {
         if (nextVacantSpot.row < lastRow) {
-          advanceRow();
+          advanceRow()
         } else {
-          resetRow();
-          advanceCol();
+          resetRow()
+          advanceCol()
         }
       }
     }
-    return this.nodes;
+    return this.nodes
   }
 
-  rows(value) {
+  rows (value) {
     if (_.isUndefined(value)) {
-      return this.numRows;
+      return this.numRows
     }
-    const newRows = parseInt(value);
+    const newRows = parseInt(value)
     if (_.isNaN(newRows)) {
-      throw new Error(`Invalid numRows '${value}': not a valid int`);
+      throw new Error(`Invalid numRows '${value}': not a valid int`)
     }
-    this.rowsSpecified = true;
-    this.numRows = value;
-    return this;
+    this.rowsSpecified = true
+    this.numRows = value
+    return this
   }
 
-  cols(value) {
+  cols (value) {
     if (_.isUndefined(value)) {
-      return this.numCols;
+      return this.numCols
     }
-    const newCols = parseInt(value);
+    const newCols = parseInt(value)
     if (_.isNaN(newCols)) {
-      throw new Error(`Invalid numCols '${value}': not a valid int`);
+      throw new Error(`Invalid numCols '${value}': not a valid int`)
     }
-    this.colsSpecified = true;
-    this.numCols = value;
-    return this;
+    this.colsSpecified = true
+    this.numCols = value
+    return this
   }
 
-  containerWidth(value) {
+  containerWidth (value) {
     if (_.isUndefined(value)) {
-      return this._containerWidth;
+      return this._containerWidth
     }
-    const newWidth = parseFloat(value);
+    const newWidth = parseFloat(value)
     if (_.isNaN(newWidth)) {
-      throw new Error(`Invalid containerWidth '${value}': not a valid float`);
+      throw new Error(`Invalid containerWidth '${value}': not a valid float`)
     }
-    this._containerWidth = newWidth;
-    return this;
+    this._containerWidth = newWidth
+    return this
   }
 
-  containerHeight(value) {
+  containerHeight (value) {
     if (_.isUndefined(value)) {
-      return this._containerHeight;
+      return this._containerHeight
     }
-    const newHeight = parseFloat(value);
+    const newHeight = parseFloat(value)
     if (_.isNaN(newHeight)) {
-      throw new Error(`Invalid containerHeight '${value}': not a valid float`);
+      throw new Error(`Invalid containerHeight '${value}': not a valid float`)
     }
-    this._containerHeight = newHeight;
-    return this;
+    this._containerHeight = newHeight
+    return this
   }
 
-  rowGutter(value) {
+  rowGutter (value) {
     if (_.isUndefined(value)) {
-      return this._rowGutter;
+      return this._rowGutter
     }
-    const parsedValue = parseFloat(value);
+    const parsedValue = parseFloat(value)
     if (_.isNaN(parsedValue)) {
-      throw new Error(`Invalid rowGutter '${value}': not a valid float`);
+      throw new Error(`Invalid rowGutter '${value}': not a valid float`)
     }
     if (parsedValue < 0 || parsedValue >= 1) {
-      throw new Error("Invalid rowGutter '${value}': must be >= 0 and < 1");
+      throw new Error(`Invalid rowGutter '${value}': must be >= 0 and < 1`)
     }
 
-    this._rowGutter = parsedValue;
-    return this;
+    this._rowGutter = parsedValue
+    return this
   }
 
-  columnGutter(value) {
+  columnGutter (value) {
     if (_.isUndefined(value)) {
-      return this._columnGutter;
+      return this._columnGutter
     }
-    const parsedValue = parseFloat(value);
+    const parsedValue = parseFloat(value)
     if (_.isNaN(parsedValue)) {
-      throw new Error(`Invalid columnGutter '${value}': not a valid float`);
+      throw new Error(`Invalid columnGutter '${value}': not a valid float`)
     }
     if (parsedValue < 0 || parsedValue >= 1) {
-      throw new Error("Invalid columnGutter '${value}': must be >= 0 and < 1");
+      throw new Error(`Invalid columnGutter '${value}': must be >= 0 and < 1`)
     }
 
-    this._columnGutter = parsedValue;
-    return this;
+    this._columnGutter = parsedValue
+    return this
   }
 
   // NB you cannot externally set nodeWidth/nodeHeight as it is computed
-  nodeWidth() {
-    return this.scale.x.nodeSize;
+  nodeWidth () {
+    return this.scale.x.nodeSize
   }
 
   // NB you cannot externally set nodeWidth/nodeHeight as it is computed
-  nodeHeight() {
-    return this.scale.y.nodeSize;
+  nodeHeight () {
+    return this.scale.y.nodeSize
   }
 
-  direction(value) {
+  direction (value) {
     if (arguments.length === 0) {
-      return `${this.primaryDirection()},${this.secondaryDirection()}`;
+      return `${this.primaryDirection()},${this.secondaryDirection()}`
     }
 
-    const directions = value.split(',');
-    const singleDirectionProvided = directions.length === 1;
+    const directions = value.split(',')
+    const singleDirectionProvided = directions.length === 1
 
-    this.primaryDirection(directions[0]);
+    this.primaryDirection(directions[0])
 
     if (singleDirectionProvided) {
       if (GraphicCellGrid.validHorizontalDirections.includes(this.primaryDirection())) {
-        this.secondaryDirection(GraphicCellGrid._defaultVerticalDirection);
+        this.secondaryDirection(GraphicCellGrid._defaultVerticalDirection)
       } else {
-        this.secondaryDirection(GraphicCellGrid._defaultHorizontalDirection);
+        this.secondaryDirection(GraphicCellGrid._defaultHorizontalDirection)
       }
     } else {
-      this.secondaryDirection(directions[1]);
+      this.secondaryDirection(directions[1])
     }
 
-    return this;
+    return this
   }
 
-  primaryDirection(value) {
+  primaryDirection (value) {
     if (!value) {
-      return this._primaryDirection;
+      return this._primaryDirection
     }
     if (!GraphicCellGrid._isValidInternalDirection(value)) {
-      throw new Error(`Invalid primary direction ${value}`);
+      throw new Error(`Invalid primary direction ${value}`)
     }
-    this._primaryDirection = value;
-    this._primaryIsHorizontal = GraphicCellGrid.validHorizontalDirections.includes(value);
+    this._primaryDirection = value
+    this._primaryIsHorizontal = GraphicCellGrid.validHorizontalDirections.includes(value)
 
-    return this;
+    return this
   }
 
-  secondaryDirection(value) {
+  secondaryDirection (value) {
     if (!value) {
-      return this._secondaryDirection;
+      return this._secondaryDirection
     }
     if (!GraphicCellGrid._isValidInternalDirection(value)) {
-      throw new Error(`Invalid secondary direction ${value}`);
+      throw new Error(`Invalid secondary direction ${value}`)
     }
-    this._secondaryDirection = value;
-    return this;
+    this._secondaryDirection = value
+    return this
   }
 
-  _isRightToLeft() {
-    return ([this._primaryDirection, this._secondaryDirection].includes('left'));
+  _isRightToLeft () {
+    return ([this._primaryDirection, this._secondaryDirection].includes('left'))
   }
 
-  _isBottomToTop() {
-    return ([this._primaryDirection, this._secondaryDirection].includes('up'));
+  _isBottomToTop () {
+    return ([this._primaryDirection, this._secondaryDirection].includes('up'))
   }
 }
 
-module.exports = GraphicCellGrid;
+module.exports = GraphicCellGrid

@@ -1,23 +1,21 @@
-import BaseImageType from './base.imagetype';
+import BaseImageType from './base.imagetype'
 
 class RectangleType extends BaseImageType {
-
-  calculateImageDimensions() {
-    return this.imageDimensions;
+  calculateImageDimensions () {
+    return this.imageDimensions
   }
 
-  appendToSvg() {
+  appendToSvg () {
     this.imageHandle = this.d3Node.append('svg:rect')
       .classed('rect', true)
       .attr('x', (this.containerWidth * this.baseShapeHiding * (1 - this.ratio)) / 2)
       .attr('y', (this.containerHeight * this.baseShapeHiding * (1 - this.ratio)) / 2)
       .attr('width', this.containerWidth * this.ratio * this.baseShapeHiding)
       .attr('height', this.containerHeight * this.ratio * this.baseShapeHiding)
-      .style('fill', this.color);
+      .style('fill', this.color)
 
-    return this.imageHandle;
+    return this.imageHandle
   }
 }
 
-module.exports = RectangleType;
-
+module.exports = RectangleType

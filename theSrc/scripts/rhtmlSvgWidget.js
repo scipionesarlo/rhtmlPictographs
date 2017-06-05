@@ -1,86 +1,86 @@
 
-import $ from 'jquery';
-import _ from 'lodash';
-import d3 from 'd3';
+import $ from 'jquery'
+import _ from 'lodash'
+import d3 from 'd3'
 
 class RhtmlSvgWidget {
-  static initClass() {
-    this.widgetIndex = -1;
+  static initClass () {
+    this.widgetIndex = -1
   }
 
-  constructor(el, width, height) {
-    this.rootElement = _.has(el, 'length') ? el[0] : el;
-    this.initialWidth = width;
-    this.initialHeight = height;
-    this.specifiedWidth = width;
-    this.specifiedHeight = height;
+  constructor (el, width, height) {
+    this.rootElement = _.has(el, 'length') ? el[0] : el
+    this.initialWidth = width
+    this.initialHeight = height
+    this.specifiedWidth = width
+    this.specifiedHeight = height
 
-    RhtmlSvgWidget.widgetIndex++;
+    RhtmlSvgWidget.widgetIndex++
   }
 
-  setConfig(config) {
-    this.config = config;
-    if (!this.config['table-id']) { this.config['table-id'] = `rhtmlwidget-${RhtmlSvgWidget.widgetIndex}`; }
-    return this._processConfig();
+  setConfig (config) {
+    this.config = config
+    if (!this.config['table-id']) { this.config['table-id'] = `rhtmlwidget-${RhtmlSvgWidget.widgetIndex}` }
+    return this._processConfig()
   }
 
-  draw() {
-    this._manipulateRootElementSize();
-    this._addRootSvgToRootElement();
-    return this._redraw();
+  draw () {
+    this._manipulateRootElementSize()
+    this._addRootSvgToRootElement()
+    return this._redraw()
   }
 
   /* eslint-disable no-unused-vars */
-  resize(width, height) {
+  resize (width, height) {
     // NB deliberately not implemented - not needed. Subclasses can re-implement
   }
   /* eslint-enable no-unused-vars */
 
-  _processConfig() {
-    throw new Error('Must override _processConfig in child class of RhtmlSvgWidget');
+  _processConfig () {
+    throw new Error('Must override _processConfig in child class of RhtmlSvgWidget')
   }
 
-  _redraw() {
-    throw new Error('Must override _redraw in child class of RhtmlSvgWidget');
+  _redraw () {
+    throw new Error('Must override _redraw in child class of RhtmlSvgWidget')
   }
 
-  _manipulateRootElementSize() {
+  _manipulateRootElementSize () {
     // root element has width and height in a style tag. Clear that
-    $(this.rootElement).attr('style', '');
+    $(this.rootElement).attr('style', '')
 
     if (this.config.resizable) {
-      return $(this.rootElement).width('100%').height('100%');
+      return $(this.rootElement).width('100%').height('100%')
     }
-    return $(this.rootElement).width(this.specifiedWidth).height(this.specifiedHeight);
+    return $(this.rootElement).width(this.specifiedWidth).height(this.specifiedHeight)
   }
 
-  _addRootSvgToRootElement() {
-    $(this.rootElement).find('*').remove();
+  _addRootSvgToRootElement () {
+    $(this.rootElement).find('*').remove()
 
     const anonSvg = $('<svg class="rhtmlwidget-outer-svg">')
       .addClass(this.config['table-id'])
       .attr('id', this.config['table-id'])
       .attr('width', '100%')
-      .attr('height', '100%');
+      .attr('height', '100%')
 
-    $(this.rootElement).append(anonSvg);
+    $(this.rootElement).append(anonSvg)
 
-    this.outerSvg = d3.select(anonSvg[0]);
+    this.outerSvg = d3.select(anonSvg[0])
 
     // NB JQuery insists on lowercasing attributes, so we must use JS directly
     // when setting viewBox and preserveAspectRatio ?!
     document.getElementsByClassName(`${this.config['table-id']} rhtmlwidget-outer-svg`)[0]
-      .setAttribute('viewBox', `0 0 ${this.specifiedWidth} ${this.specifiedHeight}`);
+      .setAttribute('viewBox', `0 0 ${this.specifiedWidth} ${this.specifiedHeight}`)
     if (this.config.preserveAspectRatio != null) {
       document.getElementsByClassName(`${this.config['table-id']} rhtmlwidget-outer-svg`)[0]
-        .setAttribute('preserveAspectRatio', this.config.preserveAspectRatio);
+        .setAttribute('preserveAspectRatio', this.config.preserveAspectRatio)
     }
 
-    return null;
+    return null
   }
 }
-RhtmlSvgWidget.initClass();
+RhtmlSvgWidget.initClass()
 
 if (typeof (module) !== 'undefined') {
-  module.exports = RhtmlSvgWidget;
+  module.exports = RhtmlSvgWidget
 }

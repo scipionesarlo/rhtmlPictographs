@@ -7,3 +7,4 @@ browser
 *.Rproj
 .idea
 .keys
+.tmp

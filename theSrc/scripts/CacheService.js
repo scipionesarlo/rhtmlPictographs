@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import crypto from 'crypto';
+import _ from 'lodash'
+import crypto from 'crypto'
 
 /*
   Considerations:
@@ -13,40 +13,40 @@ import crypto from 'crypto';
 */
 
 class CacheService {
-  constructor() {
-    this.cache = {};
-    this.expiryHandles = {};
+  constructor () {
+    this.cache = {}
+    this.expiryHandles = {}
   }
 
-  _genHash(input) {
-    return crypto.createHash('md5').update(input).digest('hex');
+  _genHash (input) {
+    return crypto.createHash('md5').update(input).digest('hex')
   }
 
-  get(inputKey) {
-    const key = this._genHash(inputKey);
+  get (inputKey) {
+    const key = this._genHash(inputKey)
     if (_.has(this.cache, key)) {
-      return this.cache[key];
+      return this.cache[key]
     }
-    return null;
+    return null
   }
 
-  put(inputKey, value, expiry) {
-    const key = this._genHash(inputKey);
-    this.cache[key] = value;
+  put (inputKey, value, expiry) {
+    const key = this._genHash(inputKey)
+    this.cache[key] = value
 
     if (_.has(this.expiryHandles, key)) {
-      clearTimeout(this.expiryHandles[key]);
-      delete this.expiryHandles[key];
+      clearTimeout(this.expiryHandles[key])
+      delete this.expiryHandles[key]
     }
 
     if (expiry) {
       this.expiryHandles[key] = setTimeout(() => {
-        delete this.cache[key];
-        delete this.expiryHandles[key];
-      }, expiry);
+        delete this.cache[key]
+        delete this.expiryHandles[key]
+      }, expiry)
     }
   }
 }
 
-module.exports = new CacheService();
-module.exports.classDefinition = CacheService;
+module.exports = new CacheService()
+module.exports.classDefinition = CacheService

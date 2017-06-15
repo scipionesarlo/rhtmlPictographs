@@ -1628,6 +1628,13 @@ domain-browser@~1.1.0:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
+dot-object@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/dot-object/-/dot-object-1.5.4.tgz#af2b8df2626b65020cd6729d46c331bc30d3b487"
+  dependencies:
+    commander "^2.9.0"
+    glob "^7.0.5"
+
 duplexer2@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/duplexer2/-/duplexer2-0.0.2.tgz#c614dcf67e2fb14995a91711e5a617e8a60a31db"
@@ -4717,9 +4724,9 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.0.1:
-  version "1.0.1"
-  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/384bc8985706d4d2d3199d191cc79a10c52ab1d5"
+rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.1.1:
+  version "1.1.1"
+  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/0555b526d67d2250d69048921764bd2a282646c6"
   dependencies:
     app-root-dir "^1.0.2"
     babel-plugin-array-includes "^2.0.3"
@@ -4735,6 +4742,7 @@ rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.0.1:
     connect "^3.6.2"
     connect-livereload "^0.6.0"
     cucumber "^1.2.1"
+    dot-object "^1.5.4"
     eslint "^3.19.0"
     eslint-config-airbnb "^15.0.1"
     eslint-config-standard "^10.2.1"
@@ -5746,16 +5754,9 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@1.1.2:
+ws@1.1.2, ws@^1.0.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.2.tgz#8a244fa052401e08c9886cf44a85189e1fd4067f"
-  dependencies:
-    options ">=0.0.5"
-    ultron "1.0.x"
-
-ws@^1.0.1:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.4.tgz#57f40d036832e5f5055662a397c4de76ed66bf61"
   dependencies:
     options ">=0.0.5"
     ultron "1.0.x"

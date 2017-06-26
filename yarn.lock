@@ -2869,7 +2869,7 @@ https-proxy-agent@^1.0.0:
     debug "2"
     extend "3"
 
-husky@^0.13.3:
+husky@^0.13.3, husky@^0.13.4:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/husky/-/husky-0.13.4.tgz#48785c5028de3452a51c48c12c4f94b2124a1407"
   dependencies:
@@ -4724,9 +4724,9 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.1.1:
-  version "1.1.1"
-  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/0555b526d67d2250d69048921764bd2a282646c6"
+rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.1.5:
+  version "1.1.5"
+  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/81853ba7efd58da63548a023be075f7ee91f4aa7"
   dependencies:
     app-root-dir "^1.0.2"
     babel-plugin-array-includes "^2.0.3"
@@ -4768,6 +4768,7 @@ rhtmlBuildUtils@Displayr/rhtmlBuildUtils#1.1.1:
     gulp-tap "^1.0.1"
     gulp-uglify "^3.0.0"
     gulp-util "^3.0.8"
+    husky "^0.13.4"
     jquery "^3.2.1"
     karma "^1.6.0"
     karma-browserify "^5.1.1"

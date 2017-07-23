@@ -3,12 +3,12 @@ An R HTMLWidget that can generate single image graphics, mutli image graphics, o
 # Installation in R
 
 1. `library(devtools)`
-1. `install_github('Displayr/rhtmlPictographs', auth_token='????????????????????')`
+1. `install_github('Displayr/rhtmlPictographs')`
 
-Simplest Example to verify installation:
+Simple Example to verify installation:
 
 ```
-rhtmlPictographs::graphic(0.33, 400, 400, '{"baseImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/black_square_512.png", "variableImageUrl": "https://s3-ap-southeast-2.amazonaws.com/kyle-public-numbers-assets/htmlwidgets/CroppedImage/blue_square_512.png"}')
+rhtmlPictographs::graphic('circle:lightblue')
 ```
 
 # Local Installation to Develop/Contribute

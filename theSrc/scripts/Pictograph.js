@@ -340,6 +340,8 @@ class Pictograph {
     const anonSvg = $('<svg class="rhtmlwidget-outer-svg">')
       .addClass(this.config.id)
       .attr('id', this.config.id)
+      .attr('width', '100%')
+      .attr('height', '100%')
 
     $(this.rootElement).append(anonSvg)
 

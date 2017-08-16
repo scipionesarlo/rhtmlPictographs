@@ -23,6 +23,7 @@ class CircleType extends BaseImageType {
       .attr('cy', this.containerHeight / 2)
       .attr('r', ((this.ratio * this.imageDimensions.diameter) / 2) * this.baseShapeHiding)
       .style('fill', this.color)
+      .style('opacity', this.opacity)
 
     return this.imageHandle
   }

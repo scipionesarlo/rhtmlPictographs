@@ -25,6 +25,7 @@ class SquareType extends BaseImageType {
       .attr('width', this.ratio * length * this.baseShapeHiding)
       .attr('height', this.ratio * length * this.baseShapeHiding)
       .style('fill', this.color)
+      .style('opacity', this.opacity)
 
     return this.imageHandle
   }

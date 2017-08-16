@@ -17,6 +17,7 @@ class RectangleType extends BaseImageType {
       .attr('width', this.containerWidth * this.ratio * this.baseShapeHiding)
       .attr('height', this.containerHeight * this.ratio * this.baseShapeHiding)
       .style('fill', this.color)
+      .style('opacity', this.opacity)
 
     return this.imageHandle
   }

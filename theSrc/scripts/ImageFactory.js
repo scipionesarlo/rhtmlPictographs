@@ -203,6 +203,13 @@ class ImageFactory {
         } else {
           _.extend(config, handler)
         }
+      } else if (part.match(/opacity=/)) {
+        const [, opacityValueString] = part.split('=')
+        const opacityValue = parseFloat(opacityValueString)
+        if (_.isNaN(opacityValue) || opacityValue < 0 || opacityValue > 1) {
+          throw new Error(`Invalid opacity '${opacityValue}': Must be between 0 and 1`)
+        }
+        config.opacity = opacityValue
       } else {
         unknownParts.push(part)
       }

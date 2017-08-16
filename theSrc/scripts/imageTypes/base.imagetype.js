@@ -1,4 +1,5 @@
 import ColorFactory from '../ColorFactory'
+import _ from 'lodash'
 
 class BaseImageType {
   constructor (d3Node, config, containerWidth, containerHeight, dataAttributes) {
@@ -52,6 +53,11 @@ class BaseImageType {
 
   get color () {
     return this.colorFactory.getColor(this.config.color)
+  }
+
+  get opacity () {
+    if (_.has(this.config, 'opacity')) { return this.config.opacity }
+    return 1
   }
 
   get baseShapeHiding () {

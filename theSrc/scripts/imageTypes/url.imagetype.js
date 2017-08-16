@@ -85,6 +85,7 @@ class UrlType extends BaseImageType {
       .attr('width', this.containerWidth * this.ratio)
       .attr('height', this.containerHeight * this.ratio)
       .attr('xlink:href', this.config.url)
+      .style('opacity', this.opacity)
 
     if (_.has(this.config, 'preserveAspectRatio')) {
       this.imageHandle.attr('preserveAspectRatio', this.config.preserveAspectRatio)

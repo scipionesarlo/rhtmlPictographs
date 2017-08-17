@@ -371,10 +371,12 @@ class PictographConfig {
       match = true
       const [, proportion] = input.match(/^proportion:([0-9.]+)$/)
       const size = range * parseFloat(proportion)
-      output.min = size
+      output.min = 0
       output.max = size
       output.size = size
       output.flexible = false
+      output.type = 'proportion'
+      output.preference = 'min'
     }
 
     if (input === 'flexible:graphic') {

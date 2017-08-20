@@ -23,7 +23,7 @@ class Pictograph {
     this._addSvgToRootElement()
 
     return Promise.resolve()
-      .then(this._computeCellSizes.bind(this))
+      .then(this._computeFlexibleCellSizes.bind(this))
       .then(this._computeCellPlacement.bind(this))
       .then(this._recomputeSizing.bind(this))
       .then(this._render.bind(this))
@@ -46,7 +46,7 @@ class Pictograph {
       this._addSvgToRootElement()
 
       return Promise.resolve()
-        .then(this._computeCellSizes.bind(this))
+        .then(this._computeFlexibleCellSizes.bind(this))
         .then(this._computeCellPlacement.bind(this))
         .then(this._render.bind(this))
         .catch((error) => {
@@ -156,13 +156,14 @@ class Pictograph {
     return _.flatten([computedHorizontalLines, computedVerticalLines])
   }
 
-  _computeCellSizes () {
+  _computeFlexibleCellSizes () {
     if (this.config.gridInfo.flexible.column || this.config.gridInfo.flexible.row) {
       // should I introduce the term 'vector' into the code ? (https://english.stackexchange.com/questions/132493/common-term-for-row-and-column)
 
       const flexibleDimension = (this.config.gridInfo.flexible.column) ? 'column' : 'row'
       const fixedDimension = (flexibleDimension === 'column') ? 'row' : 'column'
       const flexibleSize = (flexibleDimension === 'column') ? 'width' : 'height'
+      const fixedSize = (flexibleDimension === 'column') ? 'height' : 'width'
 
       let totalRangeAvailable = this.config.size.specified[flexibleSize] - ((this.config.gridInfo.dimensions[flexibleDimension] - 1) * this.config.size.gutter[flexibleDimension])
 
@@ -182,28 +183,45 @@ class Pictograph {
       }).filter(indexOrNull => !_.isNull(indexOrNull))
 
       return Promise.all(flexibleCellIndexes.map(flexibleIndex => {
-        const dimensionConstraintPromises = this._getAllCellsInDimension(flexibleDimension, flexibleIndex).map((cell) => {
+        const cellSizeConstraintPromises = this._getAllCellsInDimension(flexibleDimension, flexibleIndex).map((cell) => {
           return cell.instance.getDimensionConstraints()
         })
 
         const cellSizeData = this.config.gridInfo.sizes[flexibleDimension][flexibleIndex]
-        return Promise.all(dimensionConstraintPromises).then((dimensionConstraints) => {
+        return Promise.all(cellSizeConstraintPromises).then((cellSizeConstraints) => {
           if (cellSizeData.type === 'label') {
-            const maxOfMinSizes = Math.max.apply(null, _(dimensionConstraints).map(`${flexibleSize}.min`).value())
+            const maxOfMinSizes = Math.max.apply(null, _(cellSizeConstraints).map(`${flexibleSize}.min`).value())
             cellSizeData.size = maxOfMinSizes
             totalRangeAvailable -= cellSizeData.size
+
+            // NB TODO there is an order of operations assumption here that this code (calc min of proportion spec) goes first
+            cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
+              if (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].type === 'proportion' && this.config.gridInfo.sizes[fixedDimension][dimensionIndex].preference === 'min') {
+                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min = Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, cellSizeContraint[fixedSize].min)
+              }
+            })
           }
 
           if (cellSizeData.type === 'graphic') {
-            dimensionConstraints.map((dimensionContraint, dimensionIndex) => {
-              const aspectRatioMultiplier = (flexibleDimension === 'column') ? dimensionContraint.aspectRatio : (1.0 / dimensionContraint.aspectRatio)
-              dimensionContraint[flexibleSize].min = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min * aspectRatioMultiplier
-              dimensionContraint[flexibleSize].max = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max * aspectRatioMultiplier
+            cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
+              const aspectRatioMultiplier = (flexibleDimension === 'column') ? cellSizeContraint.aspectRatio : (1.0 / cellSizeContraint.aspectRatio)
+
+              cellSizeContraint[flexibleSize].min = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min * aspectRatioMultiplier
+              cellSizeContraint[flexibleSize].max = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max * aspectRatioMultiplier
             })
 
-            const minOfMaxSizes = Math.min.apply(null, _(dimensionConstraints).map(`${flexibleSize}.max`).value())
+            const minOfMaxSizes = Math.min.apply(null, _(cellSizeConstraints).map(`${flexibleSize}.max`).value())
             cellSizeData.size = Math.min(minOfMaxSizes, totalRangeAvailable)
             totalRangeAvailable -= cellSizeData.size
+
+            // NB TODO It is assumed this runs after the "calc min of proportion spec" code above
+            cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
+              if (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].type === 'proportion' && this.config.gridInfo.sizes[fixedDimension][dimensionIndex].preference === 'min') {
+                const aspectRatioMultiplier = (flexibleDimension === 'row') ? cellSizeContraint.aspectRatio : (1.0 / cellSizeContraint.aspectRatio)
+                const perfectAspectRatioSize = cellSizeData.size * aspectRatioMultiplier
+                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size = Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, perfectAspectRatioSize)
+              }
+            })
           }
         })
       }))
@@ -269,6 +287,7 @@ class Pictograph {
         .attr('fill', this.config['background-color'])
     }
 
+    // TODO move this to the draw promise chain
     const computedLines = this._computeTableLines()
     this.outerSvg.selectAll(`.line`)
       .data(computedLines)

@@ -168,8 +168,12 @@ class GraphicCell extends BaseCell {
     const numCols = gridLayout.numCols
 
     return ImageFactory.calculateAspectRatio(this.config.variableImage).then((imageAspectRatio) => {
-      const cellHeightInImageUnits = (1.0 / parseFloat(imageAspectRatio)) * numRows + (numRows - 1) * (1.0 / parseFloat(imageAspectRatio)) * gridLayout.rowGutter()
-      const cellWidthInImageUnits = parseFloat(imageAspectRatio) * numCols + (numCols - 1) * parseFloat(imageAspectRatio) * gridLayout.columnGutter()
+      const rowGutterToImageRatio = gridLayout.rowGutter() / (1 - gridLayout.rowGutter())
+      const columnGutterToImageRatio = gridLayout.columnGutter() / (1 - gridLayout.columnGutter())
+
+      // if we assume height is 1, then we use aspectRatio for width multiplier, and 1 for height multiplier
+      const cellHeightInImageUnits = numRows + (numRows - 1) * rowGutterToImageRatio
+      const cellWidthInImageUnits = parseFloat(imageAspectRatio) * numCols + (numCols - 1) * parseFloat(imageAspectRatio) * columnGutterToImageRatio
 
       return {
         aspectRatio: parseFloat(cellWidthInImageUnits / cellHeightInImageUnits),

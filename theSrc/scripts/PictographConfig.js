@@ -369,9 +369,15 @@ class PictographConfig {
       output.flexible = false
     }
 
-    if (`${input}`.match(/^proportion:[0-9.]+$/)) {
+    if (`${input}`.match(/^proportion:.+$/)) {
       match = true
-      const [, proportion] = input.match(/^proportion:([0-9.]+)$/)
+      let [, proportion] = input.match(/^proportion:(.+)$/)
+
+      if (proportion.startsWith('=')) {
+        // TODO - do this safely as this does come from user
+        proportion = eval(proportion.substring(1)) // eslint-disable-line no-eval
+      }
+
       const size = range * parseFloat(proportion)
       output.min = 0
       output.max = size

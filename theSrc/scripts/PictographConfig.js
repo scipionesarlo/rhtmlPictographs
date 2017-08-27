@@ -272,7 +272,8 @@ class PictographConfig {
     }
     this.gridInfo.flexible.column = (_.findIndex(this.gridInfo.sizes.column, {flexible: true}) !== -1)
 
-    if (this.totalAllocatedHorizontalSpace > this.size.specified.width) {
+    // NB we use Math.ceil here to avoid throwing error on rounding diff. e.g., exceeds table width: 372.99996000000004 !< 372.99996
+    if (Math.ceil(this.totalAllocatedHorizontalSpace) > Math.ceil(this.size.specified.width)) {
       throw new Error(`Cannot specify columnWidth/columnGutterLength where sum(rows+padding) exceeds table width: ${this.totalAllocatedHorizontalSpace} !< ${this.size.specified.width}`)
     }
   }
@@ -306,7 +307,8 @@ class PictographConfig {
     }
     this.gridInfo.flexible.row = (_.findIndex(this.gridInfo.sizes.row, {flexible: true}) !== -1)
 
-    if (this.totalAllocatedVerticalSpace > this.size.specified.height) {
+    // NB we use Math.ceil here to avoid throwing error on rounding diff. e.g., exceeds table height: 372.99996000000004 !< 372.99996
+    if (Math.ceil(this.totalAllocatedVerticalSpace) > Math.ceil(this.size.specified.height)) {
       throw new Error(`Cannot specify rowHeights/rowGutterLength where sum(rows+padding) exceeds table height: ${this.totalAllocatedVerticalSpace} !< ${this.size.specified.height}`)
     }
   }

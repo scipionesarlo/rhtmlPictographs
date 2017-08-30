@@ -118,8 +118,8 @@ class LabelCell extends BaseCell {
     // TODO might not be safe to cache these (if font size changes for ex), add some invalidate logic and cache otherwise
     this.dimensionConstraints = {
       apectRatio: null,
-      width: {min: minWidth, max: null},
-      height: {min: minHeight, max: null}
+      width: {min: minWidth, max: null, extra: null},
+      height: {min: minHeight, max: null, extra: null}
     }
 
     return Promise.resolve(this.dimensionConstraints)

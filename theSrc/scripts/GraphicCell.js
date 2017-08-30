@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import d3 from 'd3'
+import $ from 'jquery'
 
 import GraphicCellGrid from './GraphicCellGrid'
 import BaseCell from './BaseCell'
@@ -135,6 +136,30 @@ class GraphicCell extends BaseCell {
   }
 
   getDimensionConstraints () {
+    // TODO make reusable across graphicCell and labelCell. The configs are diff so this will require refactor
+    const makeDivForEstimation = (labelConfig) => {
+      // TODO copied from cssDefaults in Pictograph
+      const defaults = {
+        'font-family': 'Verdana,sans-serif',
+        'font-weight': '900',
+        'font-size': '24px'
+      }
+
+      function getAttribute (attribute) {
+        if (_.has(labelConfig, attribute)) {
+          return labelConfig[attribute]
+        }
+        return defaults[attribute]
+      }
+
+      const styleComponents = [
+        `font-size:${getAttribute('font-size')}`,
+        `font-family:${getAttribute('font-family')}`,
+        `font-weight:${getAttribute('font-weight')}`
+      ]
+      return `<div style="${styleComponents.join(';')}">${labelConfig.text}</div>`
+    }
+
     const gridLayout = new GraphicCellGrid()
       .rowGutter(this.config.rowGutter)
       .columnGutter(this.config.columnGutter)
@@ -167,18 +192,67 @@ class GraphicCell extends BaseCell {
     const numRows = gridLayout.numRows
     const numCols = gridLayout.numCols
 
+    // calc header dimensions
+    const textHeaderDimensions = { width: 0, height: 0 }
+    if (this.config['text-header'] != null) {
+      const uniqueId = `${Math.random()}`.replace('.', '')
+      const textDivsForEstimation = _([this.config['text-header']]).map(makeDivForEstimation).value()
+      const divWrapper = $(`<div id="${uniqueId}" style="display:inline-block">`)
+
+      divWrapper.html(textDivsForEstimation)
+      $(document.body).append(divWrapper)
+      const { width: textWidth, height: textHeight } = document.getElementById(uniqueId).getBoundingClientRect()
+      divWrapper.remove()
+
+      textHeaderDimensions.height = textHeight +
+        this.config['text-header']['padding-top'] +
+        this.config['text-header']['padding-bottom']
+
+      textHeaderDimensions.width = textWidth +
+        this.config['text-header']['padding-left'] +
+        this.config['text-header']['padding-right']
+    }
+
+    // calc header dimensions
+    const textFooterDimensions = { width: 0, height: 0 }
+    if (this.config['text-footer'] != null) {
+      const uniqueId = `${Math.random()}`.replace('.', '')
+      const textDivsForEstimation = _([this.config['text-footer']]).map(makeDivForEstimation).value()
+      const divWrapper = $(`<div id="${uniqueId}" style="display:inline-block">`)
+
+      divWrapper.html(textDivsForEstimation)
+      $(document.body).append(divWrapper)
+      const { width: textWidth, height: textHeight } = document.getElementById(uniqueId).getBoundingClientRect()
+      divWrapper.remove()
+
+      textFooterDimensions.height = textHeight +
+        this.config['text-footer']['padding-top'] +
+        this.config['text-footer']['padding-bottom']
+
+      textFooterDimensions.width = textWidth +
+        this.config['text-footer']['padding-left'] +
+        this.config['text-footer']['padding-right']
+    }
+
     return ImageFactory.calculateAspectRatio(this.config.variableImage).then((imageAspectRatio) => {
       const rowGutterToImageRatio = gridLayout.rowGutter() / (1 - gridLayout.rowGutter())
       const columnGutterToImageRatio = gridLayout.columnGutter() / (1 - gridLayout.columnGutter())
+
+      // TODO NB pixels may not be correct term here
+      const extraHeightInPixels = { negative: 0, positive: 0 }
+      const extraWidthInPixels = { negative: 0, positive: 0 }
 
       // if we assume height is 1, then we use aspectRatio for width multiplier, and 1 for height multiplier
       const cellHeightInImageUnits = numRows + (numRows - 1) * rowGutterToImageRatio
       const cellWidthInImageUnits = parseFloat(imageAspectRatio) * numCols + (numCols - 1) * parseFloat(imageAspectRatio) * columnGutterToImageRatio
 
+      extraHeightInPixels.negative = Math.max(extraHeightInPixels.negative, textHeaderDimensions.height)
+      extraHeightInPixels.positive = Math.max(extraHeightInPixels.positive, textFooterDimensions.height)
+
       return {
         aspectRatio: parseFloat(cellWidthInImageUnits / cellHeightInImageUnits),
-        width: {min: null, max: null},
-        height: {min: null, max: null}
+        width: { min: null, max: null, extra: extraWidthInPixels.positive + extraWidthInPixels.negative },
+        height: { min: null, max: null, extra: extraHeightInPixels.positive + extraHeightInPixels.negative }
       }
     })
   }

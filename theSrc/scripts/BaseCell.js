@@ -65,8 +65,8 @@ class BaseCell {
   getDimensionConstraints () {
     return Promise.resolve({
       aspectRatio: null,
-      width: {min: null, max: null},
-      height: {min: null, max: null}
+      width: {min: null, max: null, extra: null},
+      height: {min: null, max: null, extra: null}
     })
   }
 

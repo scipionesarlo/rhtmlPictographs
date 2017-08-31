@@ -203,11 +203,11 @@ class Pictograph {
           }
 
           if (cellSizeData.type === 'graphic') {
-            cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
-              const aspectRatioMultiplier = (flexibleDimension === 'column') ? cellSizeContraint.aspectRatio : (1.0 / cellSizeContraint.aspectRatio)
+            cellSizeConstraints.map((cellSizeConstraint, dimensionIndex) => {
+              const aspectRatioMultiplier = (flexibleDimension === 'column') ? cellSizeConstraint.aspectRatio : (1.0 / cellSizeConstraint.aspectRatio)
 
-              cellSizeContraint[flexibleSize].min = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min * aspectRatioMultiplier
-              cellSizeContraint[flexibleSize].max = this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max * aspectRatioMultiplier
+              cellSizeConstraint[flexibleSize].min = (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min - cellSizeConstraint[fixedSize].extra) * aspectRatioMultiplier
+              cellSizeConstraint[flexibleSize].max = (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max - cellSizeConstraint[fixedSize].extra) * aspectRatioMultiplier
             })
 
             const minOfMaxSizes = Math.min.apply(null, _(cellSizeConstraints).map(`${flexibleSize}.max`).value())
@@ -218,8 +218,8 @@ class Pictograph {
             cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
               if (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].type === 'proportion' && this.config.gridInfo.sizes[fixedDimension][dimensionIndex].preference === 'min') {
                 const aspectRatioMultiplier = (flexibleDimension === 'row') ? cellSizeContraint.aspectRatio : (1.0 / cellSizeContraint.aspectRatio)
-                const perfectAspectRatioSize = cellSizeData.size * aspectRatioMultiplier
-                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size = Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, perfectAspectRatioSize)
+                const optimalSize = cellSizeData.size * aspectRatioMultiplier + cellSizeContraint[fixedSize].extra
+                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size = Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, optimalSize)
               }
             })
           }

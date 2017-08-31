@@ -6,9 +6,19 @@
 </head>
 <body>
 
+<div>
+  <ul>
+    <li>First Image is the original bug report : clearly fixed</li>
+    <li>Second Image shows an issue: this issue may not manifest based on how you use picto in displayr : the issue is that if some graphic cells have footer/header and some dont, the auto sizing is slightly off. See how the second image hasn't properly filled it's container ?</li>
+    <li>Third image just shows that flexible "filling" the container works in the absense of graphic cell header / footers</li>
+  </ul>
+</div>
+<br/>
+
 <div class="row">
-<pre class="example hide-config" data-ex-w="887" data-ex-h="372">{
-  "width": 453.99996,
+
+  <pre class="example hide-config" data-resize-controls="true" data-ex-w="453" data-ex-h="369">{
+  "width": 453,
   "height": 369,
   "background-color": "transparent",
   "table": {
@@ -129,14 +139,6 @@
             "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
             "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
             "numRows": 1,
-            "text-footer": {
-              "text": "43",
-              "font-size": "8.000000px",
-              "font-weight": "normal",
-              "font-family": "Verdana",
-              "font-color": "#00008B",
-              "horizontal-align": "right"
-            },
             "columnGutter": 0.000000,
             "rowGutter": 0.000000,
             "padding": "0.000000 0.000000 0.000000 0.000000"
@@ -336,7 +338,636 @@
     ]
   }
 } </pre>
+
+  <pre class="example hide-config" data-ex-w="453" data-ex-h="369">{
+  "width": 453,
+  "height": 369,
+  "background-color": "transparent",
+  "table": {
+    "rowHeights": [
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125"
+    ],
+    "rowGutterLength": 0,
+    "columnGutterLength": 0,
+    "colWidths": [
+      "flexible:label",
+      "flexible:graphic"
+    ],
+    "rows": [
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "No Hdr No Ftr",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.665618,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Jst Hdr",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.765766,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Jst Ftr",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.718852,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-footer": {
+              "text": "43",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi Light ",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.903704,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "text-footer": {
+              "text": "54",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi Max",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.729924,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "text-footer": {
+              "text": "44",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi ",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.700000,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "text-footer": {
+              "text": "42",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "NET Sugarred",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.671248,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "text-footer": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "NET Sugarless",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.744592,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "text-header": {
+              "text": "40",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "left"
+            },
+            "text-footer": {
+              "text": "45",
+              "font-size": "8.000000px",
+              "font-weight": "normal",
+              "font-family": "Verdana",
+              "font-color": "#00008B",
+              "horizontal-align": "right"
+            },
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ]
+    ]
+  }
+} </pre>
+
+  <pre class="example hide-config" data-ex-w="453" data-ex-h="369">{
+  "width": 453,
+  "height": 369,
+  "background-color": "transparent",
+  "table": {
+    "rowHeights": [
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125",
+      "proportion:0.125"
+    ],
+    "rowGutterLength": 0,
+    "columnGutterLength": 0,
+    "colWidths": [
+      "flexible:label",
+      "flexible:graphic"
+    ],
+    "rows": [
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Coca Cola ",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.665618,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Diet Coke",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.765766,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Coke Zero",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.718852,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi Light ",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.903704,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi Max",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.729924,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "Pepsi ",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.700000,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "NET Sugarred",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.671248,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ],
+      [
+        {
+          "type": "label",
+          "value": {
+            "padding-right": 5.000000,
+            "padding-top": 0.000000,
+            "padding-bottom": 0.000000,
+            "vertical-align": "center",
+            "text": "NET Sugarless",
+            "font-size": "10.000000px",
+            "font-weight": "normal",
+            "horizontal-align": "center",
+            "font-family": "Verdana",
+            "font-color": "#00008B"
+          }
+        },
+        {
+          "type": "graphic",
+          "value": {
+            "proportion": 0.744592,
+            "numImages": 12,
+            "variableImage": "url:#00008B:fromleft:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "baseImage": "url:#ED7D31:https://displayrcors.azureedge.net/images/chicken_grey.svg",
+            "numRows": 1,
+            "columnGutter": 0.000000,
+            "rowGutter": 0.000000,
+            "padding": "0.000000 0.000000 0.000000 0.000000"
+          }
+        }
+      ]
+    ]
+  }
+} </pre>
 </div>
+
 
 <script src="/js/renderContentPage.js"></script>
 </body>

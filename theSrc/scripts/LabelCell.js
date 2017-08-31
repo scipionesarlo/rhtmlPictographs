@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import BaseCell from './BaseCell'
-import $ from 'jquery'
+
+import labelUtils from './utils/labelUtils'
 
 class LabelCell extends BaseCell {
   setConfig (config) {
@@ -73,53 +74,18 @@ class LabelCell extends BaseCell {
   }
 
   getDimensionConstraints () {
-    const makeDivForEstimation = (labelConfig) => {
-      // TODO copied from cssDefaults in Pictograph
-      const defaults = {
-        'font-family': 'Verdana,sans-serif',
-        'font-weight': '900',
-        'font-size': '24px'
-      }
+    const labelDimensions = labelUtils.calculateLabelDimensions(this.labels, {
+      inner: this.config['padding-inner'],
+      top: this.config['padding-top'],
+      right: this.config['padding-right'],
+      bottom: this.config['padding-bottom'],
+      left: this.config['padding-left']
+    })
 
-      function getAttribute (attribute) {
-        if (_.has(labelConfig, attribute)) {
-          return labelConfig[attribute]
-        }
-        return defaults[attribute]
-      }
-
-      const styleComponents = [
-        `font-size:${getAttribute('font-size')}`,
-        `font-family:${getAttribute('font-family')}`,
-        `font-weight:${getAttribute('font-weight')}`
-      ]
-      return `<div style="${styleComponents.join(';')}">${labelConfig.text}</div>`
-    }
-
-    const uniqueId = `${Math.random()}`.replace('.', '')
-    const textDivsForEstimation = _(this.labels).map(makeDivForEstimation).value()
-    const divWrapper = $(`<div id="${uniqueId}" style="display:inline-block">`)
-
-    divWrapper.html(textDivsForEstimation)
-    $(document.body).append(divWrapper)
-    const { width: textWidth, height: textHeight } = document.getElementById(uniqueId).getBoundingClientRect()
-
-    const minHeight = textHeight +
-      (this.labels.length - 1) * this.config['padding-inner'] +
-      this.config['padding-top'] +
-      this.config['padding-bottom']
-
-    const minWidth = textWidth +
-      this.config['padding-left'] +
-      this.config['padding-right']
-
-    divWrapper.remove()
-
-    // TODO might not be safe to cache these (if font size changes for ex), add some invalidate logic and cache otherwise
     this.dimensionConstraints = {
       apectRatio: null,
-      width: {min: minWidth, max: null, extra: null},
-      height: {min: minHeight, max: null, extra: null}
+      width: {min: labelDimensions.width, max: null, extra: null},
+      height: {min: labelDimensions.height, max: null, extra: null}
     }
 
     return Promise.resolve(this.dimensionConstraints)

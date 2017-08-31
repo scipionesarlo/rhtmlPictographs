@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import d3 from 'd3'
-import $ from 'jquery'
 
 import GraphicCellGrid from './GraphicCellGrid'
 import BaseCell from './BaseCell'
 import ImageFactory from './ImageFactory'
 import DisplayError from './DisplayError'
+import labelUtils from './utils/labelUtils'
 
 class GraphicCell extends BaseCell {
   static get validRootAttributes () {
@@ -136,30 +136,6 @@ class GraphicCell extends BaseCell {
   }
 
   getDimensionConstraints () {
-    // TODO make reusable across graphicCell and labelCell. The configs are diff so this will require refactor
-    const makeDivForEstimation = (labelConfig) => {
-      // TODO copied from cssDefaults in Pictograph
-      const defaults = {
-        'font-family': 'Verdana,sans-serif',
-        'font-weight': '900',
-        'font-size': '24px'
-      }
-
-      function getAttribute (attribute) {
-        if (_.has(labelConfig, attribute)) {
-          return labelConfig[attribute]
-        }
-        return defaults[attribute]
-      }
-
-      const styleComponents = [
-        `font-size:${getAttribute('font-size')}`,
-        `font-family:${getAttribute('font-family')}`,
-        `font-weight:${getAttribute('font-weight')}`
-      ]
-      return `<div style="${styleComponents.join(';')}">${labelConfig.text}</div>`
-    }
-
     const gridLayout = new GraphicCellGrid()
       .rowGutter(this.config.rowGutter)
       .columnGutter(this.config.columnGutter)
@@ -192,46 +168,24 @@ class GraphicCell extends BaseCell {
     const numRows = gridLayout.numRows
     const numCols = gridLayout.numCols
 
-    // calc header dimensions
-    const textHeaderDimensions = { width: 0, height: 0 }
+    let textHeaderDimensions = { width: 0, height: 0 }
     if (this.config['text-header'] != null) {
-      const uniqueId = `${Math.random()}`.replace('.', '')
-      const textDivsForEstimation = _([this.config['text-header']]).map(makeDivForEstimation).value()
-      const divWrapper = $(`<div id="${uniqueId}" style="display:inline-block">`)
-
-      divWrapper.html(textDivsForEstimation)
-      $(document.body).append(divWrapper)
-      const { width: textWidth, height: textHeight } = document.getElementById(uniqueId).getBoundingClientRect()
-      divWrapper.remove()
-
-      textHeaderDimensions.height = textHeight +
-        this.config['text-header']['padding-top'] +
-        this.config['text-header']['padding-bottom']
-
-      textHeaderDimensions.width = textWidth +
-        this.config['text-header']['padding-left'] +
-        this.config['text-header']['padding-right']
+      textHeaderDimensions = labelUtils.calculateLabelDimensions(this.config['text-header'], {
+        top: this.config['text-header']['padding-top'],
+        right: this.config['text-header']['padding-right'],
+        bottom: this.config['text-header']['padding-bottom'],
+        left: this.config['text-header']['padding-left']
+      })
     }
 
-    // calc header dimensions
-    const textFooterDimensions = { width: 0, height: 0 }
+    let textFooterDimensions = { width: 0, height: 0 }
     if (this.config['text-footer'] != null) {
-      const uniqueId = `${Math.random()}`.replace('.', '')
-      const textDivsForEstimation = _([this.config['text-footer']]).map(makeDivForEstimation).value()
-      const divWrapper = $(`<div id="${uniqueId}" style="display:inline-block">`)
-
-      divWrapper.html(textDivsForEstimation)
-      $(document.body).append(divWrapper)
-      const { width: textWidth, height: textHeight } = document.getElementById(uniqueId).getBoundingClientRect()
-      divWrapper.remove()
-
-      textFooterDimensions.height = textHeight +
-        this.config['text-footer']['padding-top'] +
-        this.config['text-footer']['padding-bottom']
-
-      textFooterDimensions.width = textWidth +
-        this.config['text-footer']['padding-left'] +
-        this.config['text-footer']['padding-right']
+      textFooterDimensions = labelUtils.calculateLabelDimensions(this.config['text-footer'], {
+        top: this.config['text-footer']['padding-top'],
+        right: this.config['text-footer']['padding-right'],
+        bottom: this.config['text-footer']['padding-bottom'],
+        left: this.config['text-footer']['padding-left']
+      })
     }
 
     return ImageFactory.calculateAspectRatio(this.config.variableImage).then((imageAspectRatio) => {

@@ -84,8 +84,22 @@ class LabelCell extends BaseCell {
 
     this.dimensionConstraints = {
       apectRatio: null,
-      width: {min: labelDimensions.width, max: null, extra: null},
-      height: {min: labelDimensions.height, max: null, extra: null}
+      width: {
+        min: labelDimensions.width,
+        max: null,
+        margins: {
+          negative: [],
+          positive: []
+        }
+      },
+      height: {
+        min: labelDimensions.height,
+        max: null,
+        margins: {
+          negative: [],
+          positive: []
+        }
+      }
     }
 
     return Promise.resolve(this.dimensionConstraints)

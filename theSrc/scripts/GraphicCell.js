@@ -66,6 +66,34 @@ class GraphicCell extends BaseCell {
     this._verifyKeyIsFloat(this.config, 'rowGutter', 0.05, 'Must be number between 0 and 1')
     this._verifyKeyIsRatio(this.config, 'rowGutter')
 
+    if (this.config.padding) {
+      const [paddingTop, paddingRight, paddingBottom, paddingLeft] = this.config.padding.split(' ')
+
+      this.config.padding = {
+        top: parseInt(paddingTop.replace(/(px|em)/, '')),
+        right: parseInt(paddingRight.replace(/(px|em)/, '')),
+        bottom: parseInt(paddingBottom.replace(/(px|em)/, '')),
+        left: parseInt(paddingLeft.replace(/(px|em)/, ''))
+      }
+      _.forEach(this.config.padding, (value, paddingKey) => {
+        if (_.isNaN(this.config.padding[paddingKey])) {
+          throw new Error(`Invalid padding ${this.config.padding}: ${paddingKey} must be Integer`)
+        }
+      })
+    } else {
+      this.config.padding = { top: 0, right: 0, bottom: 0, left: 0 }
+    }
+
+    if (this.config.layout) {
+      const validLayoutValues = GraphicCellGrid.validInputDirections()
+      if (!validLayoutValues.includes(this.config.layout)) {
+        throw new Error(`Invalid layout ${this.config.layout}. Valid values: [${validLayoutValues.join('|')}]`)
+      }
+    }
+
+    // need grid layout now to verify floating label specifications (floating labels cannot be out of bounds)
+    this.gridLayout = this._initializeGridLayout()
+
     if (this.config['text-header']) { this.config['text-header'] = this._processTextConfig(this.config['text-header'], 'text-header') }
     if (this.config['text-overlay']) { this.config['text-overlay'] = this._processTextConfig(this.config['text-overlay'], 'text-overlay') }
     if (this.config['text-footer']) { this.config['text-footer'] = this._processTextConfig(this.config['text-footer'], 'text-footer') }
@@ -96,52 +124,33 @@ class GraphicCell extends BaseCell {
           throw new Error(`Invalid floating label position '${labelConfig.position}', must be [g]FLOAT:[g]FLOAT`)
         }
 
+        if (row.position < 0 || row.position > this.gridLayout.numRows) {
+          throw new Error(`Invalid floating label positions '${labelConfig.position}', row must be between 0 and numRows(${this.gridLayout.numRows})`)
+        }
+
+        if (col.position < 0 || col.position > this.gridLayout.numCols) {
+          throw new Error(`Invalid floating label positions '${labelConfig.position}', col must be between 0 and numCols(${this.gridLayout.numCols})`)
+        }
+
         const className = `floating-label-${labelConfig.position}`.replace(/[.:]/g, '-')
         const newFloatingLabelConfig = this._processTextConfig(_.omit(labelConfig, 'position'), className)
         newFloatingLabelConfig.className = className
-        newFloatingLabelConfig.position = {
-          row: row,
-          col: col
-        }
+        newFloatingLabelConfig.position = {row: row, col: col}
         this.config.floatingLabels.push(newFloatingLabelConfig)
       })
     } else {
       this.config.floatingLabels = []
     }
-
-    if (this.config.padding) {
-      const [paddingTop, paddingRight, paddingBottom, paddingLeft] = this.config.padding.split(' ')
-
-      this.config.padding = {
-        top: parseInt(paddingTop.replace(/(px|em)/, '')),
-        right: parseInt(paddingRight.replace(/(px|em)/, '')),
-        bottom: parseInt(paddingBottom.replace(/(px|em)/, '')),
-        left: parseInt(paddingLeft.replace(/(px|em)/, ''))
-      }
-      _.forEach(this.config.padding, (value, paddingKey) => {
-        if (_.isNaN(this.config.padding[paddingKey])) {
-          throw new Error(`Invalid padding ${this.config.padding}: ${paddingKey} must be Integer`)
-        }
-      })
-    } else {
-      this.config.padding = { top: 0, right: 0, bottom: 0, left: 0 }
-    }
-
-    if (this.config.layout) {
-      const validLayoutValues = GraphicCellGrid.validInputDirections()
-      if (!validLayoutValues.includes(this.config.layout)) {
-        throw new Error(`Invalid layout ${this.config.layout}. Valid values: [${validLayoutValues.join('|')}]`)
-      }
-    }
   }
 
-  getDimensionConstraints () {
+  _initializeGridLayout () {
     const gridLayout = new GraphicCellGrid()
       .rowGutter(this.config.rowGutter)
       .columnGutter(this.config.columnGutter)
 
     if (this.config.numRows != null) { gridLayout.rows(this.config.numRows) }
     if (this.config.numCols != null) { gridLayout.cols(this.config.numCols) }
+    gridLayout.numNodes(this.config.numImages)
 
     if (_.isString(this.config.variableImage)) {
       if (this.config.variableImage.match(/fromleft/)) {
@@ -161,85 +170,170 @@ class GraphicCell extends BaseCell {
       gridLayout.direction(this.config.layout)
     }
 
-    const d3Data = this._generateDataArray(this.config.proportion, this.config.numImages)
-    gridLayout.nodes = d3Data
-
     gridLayout._calcGridDimensions()
-    const numRows = gridLayout.numRows
-    const numCols = gridLayout.numCols
 
-    let textHeaderDimensions = { width: 0, height: 0 }
+    return gridLayout
+  }
+
+  getDimensionConstraints () {
+    const numRows = this.gridLayout.rows()
+    const numCols = this.gridLayout.cols()
+
+    const marginConstraints = {
+      width: {
+        negative: [],
+        positive: []
+      },
+      height: {
+        negative: [],
+        positive: []
+      }
+    }
+
+    const convertPaddingConfig = (incomingConfig) => {
+      return {
+        top: incomingConfig['padding-top'] || 0,
+        right: incomingConfig['padding-right'] || 0,
+        bottom: incomingConfig['padding-bottom'] || 0,
+        left: incomingConfig['padding-left'] || 0
+      }
+    }
+
+    _.each(this.config.floatingLabels, (floatingLabelConfig) => {
+      const position = floatingLabelConfig.position
+      // NB TODO for now do not deal with gutter floating labels
+      if (position.row.gutter === true) { return }
+      if (position.col.gutter === true) { return }
+
+      // horizontal-align: ['start', 'middle', 'end']
+      // vertical-align: ['top', 'center', 'bottom']
+
+      let horizontalAlignment = floatingLabelConfig['horizontal-align']
+      let verticalAlignment = floatingLabelConfig['vertical-align']
+      let { width, height } = labelUtils.calculateLabelDimensions(floatingLabelConfig, convertPaddingConfig(floatingLabelConfig))
+
+      const directionAdjustedWidthOverlap = (unadjusted) => {
+        return (this.gridLayout.isRightToLeft())
+          ? 1 - unadjusted
+          : unadjusted
+      }
+
+      const directionAdjustedHeightOverlap = (unadjusted) => {
+        return (this.gridLayout.isBottomToTop())
+          ? 1 - unadjusted
+          : unadjusted
+      }
+
+      switch (horizontalAlignment) {
+        case 'start':
+          marginConstraints.width.positive.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: width,
+            overlapInUnitsOfGraphicSize: directionAdjustedWidthOverlap((numCols - position.col.position) / numCols)
+          })
+          break
+        case 'middle':
+          marginConstraints.width.positive.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: width / 2.0,
+            overlapInUnitsOfGraphicSize: directionAdjustedWidthOverlap((numCols - position.col.position) / numCols)
+          })
+          marginConstraints.width.negative.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: width / 2.0,
+            overlapInUnitsOfGraphicSize: directionAdjustedWidthOverlap(position.col.position / numCols)
+          })
+          break
+        case 'end':
+          marginConstraints.width.negative.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: width,
+            overlapInUnitsOfGraphicSize: directionAdjustedWidthOverlap(position.col.position / numCols)
+          })
+          break
+      }
+
+      switch (verticalAlignment) {
+        case 'top':
+          marginConstraints.height.negative.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: height,
+            overlapInUnitsOfGraphicSize: directionAdjustedHeightOverlap(position.row.position / numRows)
+          })
+          break
+        case 'center':
+          marginConstraints.height.positive.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: height / 2.0,
+            overlapInUnitsOfGraphicSize: directionAdjustedHeightOverlap((numRows - position.row.position) / numRows)
+          })
+          marginConstraints.height.negative.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: height / 2.0,
+            overlapInUnitsOfGraphicSize: directionAdjustedHeightOverlap(position.row.position / numRows)
+          })
+          break
+        case 'bottom':
+          marginConstraints.height.positive.push({
+            text: floatingLabelConfig.text, // debug only. helps a lot
+            size: height,
+            overlapInUnitsOfGraphicSize: directionAdjustedHeightOverlap((numRows - position.row.position) / numRows)
+          })
+          break
+      }
+    })
+
     if (this.config['text-header'] != null) {
-      textHeaderDimensions = labelUtils.calculateLabelDimensions(this.config['text-header'], {
+      const { height } = labelUtils.calculateLabelDimensions(this.config['text-header'], {
         top: this.config['text-header']['padding-top'],
         right: this.config['text-header']['padding-right'],
         bottom: this.config['text-header']['padding-bottom'],
         left: this.config['text-header']['padding-left']
       })
+
+      marginConstraints.height.negative.push({
+        size: height,
+        overlapInUnitsOfGraphicSize: 0
+      })
     }
 
-    let textFooterDimensions = { width: 0, height: 0 }
     if (this.config['text-footer'] != null) {
-      textFooterDimensions = labelUtils.calculateLabelDimensions(this.config['text-footer'], {
+      const { height } = labelUtils.calculateLabelDimensions(this.config['text-footer'], {
         top: this.config['text-footer']['padding-top'],
         right: this.config['text-footer']['padding-right'],
         bottom: this.config['text-footer']['padding-bottom'],
         left: this.config['text-footer']['padding-left']
       })
+
+      marginConstraints.height.positive.push({
+        size: height,
+        overlapInUnitsOfGraphicSize: 0
+      })
     }
 
     return ImageFactory.calculateAspectRatio(this.config.variableImage).then((imageAspectRatio) => {
-      const rowGutterToImageRatio = gridLayout.rowGutter() / (1 - gridLayout.rowGutter())
-      const columnGutterToImageRatio = gridLayout.columnGutter() / (1 - gridLayout.columnGutter())
+      const rowGutterToImageRatio = this.gridLayout.rowGutter() / (1 - this.gridLayout.rowGutter())
+      const columnGutterToImageRatio = this.gridLayout.columnGutter() / (1 - this.gridLayout.columnGutter())
 
-      // TODO NB pixels may not be correct term here
-      const extraHeightInPixels = { negative: 0, positive: 0 }
-      const extraWidthInPixels = { negative: 0, positive: 0 }
-
-      // if we assume height is 1, then we use aspectRatio for width multiplier, and 1 for height multiplier
       const cellHeightInImageUnits = numRows + (numRows - 1) * rowGutterToImageRatio
       const cellWidthInImageUnits = parseFloat(imageAspectRatio) * numCols + (numCols - 1) * parseFloat(imageAspectRatio) * columnGutterToImageRatio
 
-      extraHeightInPixels.negative = Math.max(extraHeightInPixels.negative, textHeaderDimensions.height)
-      extraHeightInPixels.positive = Math.max(extraHeightInPixels.positive, textFooterDimensions.height)
-
-      return {
+      const graphicCellConstraint = {
         aspectRatio: parseFloat(cellWidthInImageUnits / cellHeightInImageUnits),
-        width: { min: null, max: null, extra: extraWidthInPixels.positive + extraWidthInPixels.negative },
-        height: { min: null, max: null, extra: extraHeightInPixels.positive + extraHeightInPixels.negative }
+        width: {
+          min: null,
+          max: null,
+          margins: marginConstraints.width
+        },
+        height: {
+          min: null,
+          max: null,
+          margins: marginConstraints.height
+        }
       }
+
+      return graphicCellConstraint
     })
-  }
-
-  _computeEnteringLeafNodeData () {
-    const gridLayout = new GraphicCellGrid()
-      .containerWidth(this.dimensions.graphicWidth)
-      .containerHeight(this.dimensions.graphicHeight)
-      .rowGutter(this.config.rowGutter)
-      .columnGutter(this.config.columnGutter)
-
-    if (this.config.numRows != null) { gridLayout.rows(this.config.numRows) }
-    if (this.config.numCols != null) { gridLayout.cols(this.config.numCols) }
-
-    if (_.isString(this.config.variableImage)) {
-      if (this.config.variableImage.match(/fromleft/)) {
-        gridLayout.direction('right,down')
-      }
-      if (this.config.variableImage.match(/fromright/)) {
-        gridLayout.direction('left,down')
-      }
-      if (this.config.variableImage.match(/fromtop/)) {
-        gridLayout.direction('right,down')
-      }
-      if (this.config.variableImage.match(/frombottom/)) {
-        gridLayout.direction('right,up')
-      }
-    }
-    if (this.config.layout) {
-      gridLayout.direction(this.config.layout)
-    }
-
-    return gridLayout
   }
 
   _throwErrorIfProportionSetAndNoScalingStrategyProvided () {
@@ -319,9 +413,8 @@ class GraphicCell extends BaseCell {
 
   _draw () {
     this._computeDimensions()
-    const gridLayout = this._computeEnteringLeafNodeData()
     const d3Data = this._generateDataArray(this.config.proportion, this.config.numImages)
-    const enteringLeafNodeData = gridLayout.compute(d3Data)
+    const enteringLeafNodeData = this.gridLayout.compute(d3Data)
 
     // NB the order of append operations matters as SVG is a last on top rendering model
 
@@ -365,8 +458,8 @@ class GraphicCell extends BaseCell {
         })
         .attr('transform', d => `translate(${d.x},${d.y})`)
 
-    const imageWidth = gridLayout.nodeWidth()
-    const imageHeight = gridLayout.nodeHeight()
+    const imageWidth = this.gridLayout.nodeWidth()
+    const imageHeight = this.gridLayout.nodeHeight()
 
     const backgroundRect = enteringLeafNodes.append('svg:rect')
       .attr('width', imageWidth)
@@ -427,25 +520,26 @@ class GraphicCell extends BaseCell {
         this._addTextTo(enteringLeafNodes, {
           myClass: 'text-overlay',
           textConfig: this.config['text-overlay'],
-          containerWidth: gridLayout.nodeWidth(),
+          containerWidth: this.gridLayout.nodeWidth(),
           containerHeight: imageHeight
         })
       }
 
       _(this.config.floatingLabels).each((floatingLabelConfig) => {
         const x = (floatingLabelConfig.position.col.gutter)
-          ? gridLayout.getGutterX(floatingLabelConfig.position.col.position)
-          : gridLayout.getX(floatingLabelConfig.position.col.position)
+          ? this.gridLayout.getGutterX(floatingLabelConfig.position.col.position)
+          : this.gridLayout.getX(floatingLabelConfig.position.col.position)
 
         const y = (floatingLabelConfig.position.row.gutter)
-          ? gridLayout.getGutterY(floatingLabelConfig.position.row.position)
-          : gridLayout.getY(floatingLabelConfig.position.row.position)
+          ? this.gridLayout.getGutterY(floatingLabelConfig.position.row.position)
+          : this.gridLayout.getY(floatingLabelConfig.position.row.position)
 
+        // NB TODO ignoring bottom and right padding ?
         this._addFloatingLabel(graphicContainer, {
           myClass: floatingLabelConfig.className,
           textConfig: floatingLabelConfig,
-          xOffSet: x,
-          yOffSet: y
+          xOffSet: floatingLabelConfig['padding-left'] + x,
+          yOffSet: floatingLabelConfig['padding-top'] + y
         })
       })
     })
@@ -457,21 +551,28 @@ class GraphicCell extends BaseCell {
     const padding = this.config.padding
 
     // need these first to calc graphicHeight
-    dim.headerHeight = 0 + ((this.config['text-header'] != null) ? this.getAdjustedTextSize(this.config['text-header']['font-size']) : 0)
-    dim.footerHeight = 0 + ((this.config['text-footer'] != null) ? this.getAdjustedTextSize(this.config['text-footer']['font-size']) : 0)
+    dim.headerHeight = Math.max(((this.config['text-header'] != null) ? this.getAdjustedTextSize(this.config['text-header']['font-size']) : 0), this.dynamicMargins.height.negative)
+    dim.footerHeight = Math.max(((this.config['text-footer'] != null) ? this.getAdjustedTextSize(this.config['text-footer']['font-size']) : 0), this.dynamicMargins.height.positive)
 
-    dim.headerWidth = this.width - padding.left - padding.right
-    dim.headerXOffset = 0 + padding.left
-    dim.headerYOffset = 0 + padding.top
+    const leftPadding = padding.left + this.dynamicMargins.width.negative
+    const rightPadding = padding.right + this.dynamicMargins.width.positive
 
-    dim.graphicWidth = this.width - padding.left - padding.right
+    dim.headerWidth = this.width - leftPadding - rightPadding
+    dim.headerXOffset = leftPadding
+    dim.headerYOffset = padding.top
+
+    dim.graphicWidth = this.width - leftPadding - rightPadding
     dim.graphicHeight = this.height - dim.headerHeight - dim.footerHeight - padding.top - padding.bottom
-    dim.graphicXOffset = 0 + padding.left
-    dim.graphicYOffset = 0 + dim.headerYOffset + dim.headerHeight
+    dim.graphicXOffset = leftPadding
+    dim.graphicYOffset = dim.headerYOffset + dim.headerHeight
 
-    dim.footerWidth = this.width - padding.left - padding.right
-    dim.footerXOffset = 0 + padding.left
-    dim.footerYOffset = 0 + dim.graphicYOffset + dim.graphicHeight
+    dim.footerWidth = this.width - leftPadding - rightPadding
+    dim.footerXOffset = leftPadding
+    dim.footerYOffset = dim.graphicYOffset + dim.graphicHeight
+
+    this.gridLayout
+      .containerWidth(dim.graphicWidth)
+      .containerHeight(dim.graphicHeight)
   }
 
   _addFloatingLabel (parent, { myClass, textConfig, xOffSet = 0, yOffSet = 0 }) {

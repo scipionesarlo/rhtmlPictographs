@@ -349,7 +349,7 @@ describe('graphic cell grid:', function () {
         const defaultName = `input rows:${t.specifyRows} input cols:${t.specifyCols} nodes: ${t.nodeLength} yields ${t.expected}`
         it(t.name || defaultName, function () {
           const l = new GraphicCellGrid()
-          l.nodes = makeArray(t.nodeLength)
+          l.numNodes(t.nodeLength)
           if (_.has(t, 'specifyRows')) { l.rows(t.specifyRows) }
           if (_.has(t, 'specifyCols')) { l.cols(t.specifyCols) }
 

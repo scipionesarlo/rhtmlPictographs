@@ -1,6 +1,12 @@
 const _ = require('lodash')
 const $ = require('jquery')
 
+// NB Our method for caclulating label dimensions is pretty good but is not exact
+const labelSizeCorrection = {
+  width: {relative: 1.02, fixed: 0},
+  height: {relative: 1.02, fixed: 0}
+}
+
 const makeDivForEstimation = (labelConfig) => {
   // TODO copied from cssDefaults in Pictograph
   const defaults = {
@@ -48,6 +54,9 @@ module.exports = {
       padding.left +
       padding.right
 
-    return { width, height }
+    return {
+      width: width * labelSizeCorrection.width.relative + labelSizeCorrection.width.fixed,
+      height: height * labelSizeCorrection.height.relative + labelSizeCorrection.height.fixed
+    }
   }
 }

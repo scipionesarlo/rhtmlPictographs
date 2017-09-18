@@ -266,7 +266,17 @@ class PictographConfig {
           min: parseInt(totalWidthAvailable / this.gridInfo.dimensions.column),
           max: parseInt(totalWidthAvailable / this.gridInfo.dimensions.column),
           size: parseInt(totalWidthAvailable / this.gridInfo.dimensions.column),
-          flexible: false
+          flexible: false,
+          dynamicMargins: {
+            width: {
+              positive: 0,
+              negative: 0
+            },
+            height: {
+              positive: 0,
+              negative: 0
+            }
+          }
         }
       })
     }
@@ -301,7 +311,17 @@ class PictographConfig {
           min: parseInt(totalHeightAvailable / this.gridInfo.dimensions.row),
           max: parseInt(totalHeightAvailable / this.gridInfo.dimensions.row),
           size: parseInt(totalHeightAvailable / this.gridInfo.dimensions.row),
-          flexible: false
+          flexible: false,
+          dynamicMargins: {
+            width: {
+              positive: 0,
+              negative: 0
+            },
+            height: {
+              positive: 0,
+              negative: 0
+            }
+          }
         }
       })
     }
@@ -357,7 +377,19 @@ class PictographConfig {
   }
 
   _processGridSizeSpec (input, range) {
-    const output = {}
+    const output = {
+      dynamicMargins: {
+        width: {
+          positive: 0,
+          negative: 0
+        },
+        height: {
+          positive: 0,
+          negative: 0
+        }
+      }
+    }
+
     let match = false
 
     if (!_.isNaN(parseInt(input))) {

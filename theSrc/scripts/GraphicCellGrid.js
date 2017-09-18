@@ -45,6 +45,7 @@ class GraphicCellGrid {
 
     this.numRows = 0
     this.numCols = 0
+    this._numNodes = 0
     this.rowsSpecified = false
     this.colsSpecified = false
     this.containerWidth(1)
@@ -55,6 +56,7 @@ class GraphicCellGrid {
 
   compute (newNodes) {
     this.nodes = newNodes
+    this.numNodes(this.nodes.length)
     this._calcGridDimensions()
     this._calcNodeSize()
     return this._distribute()
@@ -62,31 +64,31 @@ class GraphicCellGrid {
 
   _calcGridDimensions () {
     if (this.rowsSpecified && this.colsSpecified) {
-      if ((this.numRows * this.numCols) !== this.nodes.length) {
-        const errorMath = `${this.numRows} * ${this.numCols} !== ${this.nodes.length}`
+      if ((this._rows() * this._cols()) !== this.numNodes()) {
+        const errorMath = `${this._rows()} * ${this._cols()} !== ${this.numNodes()}`
         throw new Error(`rows * cols must equal node length if both rows and cols are specified: ${errorMath}`)
       }
       return
     }
 
     if (this.rowsSpecified) {
-      this.numCols = Math.ceil(this.nodes.length / this.numRows)
+      this._cols(Math.ceil(this.numNodes() / this._rows()))
       return
     }
 
     if (this.colsSpecified) {
-      this.numRows = Math.ceil(this.nodes.length / this.numCols)
+      this._rows(Math.ceil(this.numNodes() / this._cols()))
       return
     }
 
-    this.numCols = Math.ceil(Math.sqrt(this.nodes.length))
-    this.numRows = Math.ceil(this.nodes.length / this.numCols)
+    this._cols(Math.ceil(Math.sqrt(this.numNodes())))
+    this._rows(Math.ceil(this.numNodes() / this._cols()))
   }
 
   _calcNodeSize () {
     this.scale = {
-      x: this._computeScale(this.containerWidth(), this.numCols, this.columnGutter()),
-      y: this._computeScale(this.containerHeight(), this.numRows, this.rowGutter())
+      x: this._computeScale(this.containerWidth(), this._cols(), this.columnGutter()),
+      y: this._computeScale(this.containerHeight(), this._rows(), this.rowGutter())
     }
   }
 
@@ -102,7 +104,7 @@ class GraphicCellGrid {
   getTopLeftCoordOfImageSlot (rowNumber, colNumber) {
     // adjust to get top left coord of slot not right (due to mirroring in _getRangeFromDomain)
     const adjustedColumnNumber = (columnNumber) => {
-      if (this._isRightToLeft()) {
+      if (this.isRightToLeft()) {
         return columnNumber + 0.99999999
       }
       return columnNumber
@@ -110,7 +112,7 @@ class GraphicCellGrid {
 
     // adjust to get top coord of slot not bottom (due to mirroring in _getRangeFromDomain)
     const adjustedRowNumber = (rowNumber) => {
-      if (this._isBottomToTop()) {
+      if (this.isBottomToTop()) {
         return rowNumber + 0.99999999
       }
       return rowNumber
@@ -123,7 +125,7 @@ class GraphicCellGrid {
   }
 
   getX (position) {
-    if (this._isRightToLeft()) {
+    if (this.isRightToLeft()) {
       let x = this._getRangeFromDomain(position, this.scale.x.nodeSize, this.scale.x.gutterSize)
       return this.containerWidth() - x
     }
@@ -139,7 +141,7 @@ class GraphicCellGrid {
   }
 
   getY (position) {
-    if (this._isBottomToTop()) {
+    if (this.isBottomToTop()) {
       let y = this._getRangeFromDomain(position, this.scale.y.nodeSize, this.scale.y.gutterSize)
       return this.containerHeight() - y
     }
@@ -238,28 +240,48 @@ class GraphicCellGrid {
   }
 
   rows (value) {
+    if (value) { this.rowsSpecified = true }
+    return this._rows(value)
+  }
+
+  _rows (value) {
     if (_.isUndefined(value)) {
       return this.numRows
     }
-    const newRows = parseInt(value)
-    if (_.isNaN(newRows)) {
+    const parsedValue = parseInt(value)
+    if (_.isNaN(parsedValue)) {
       throw new Error(`Invalid numRows '${value}': not a valid int`)
     }
-    this.rowsSpecified = true
-    this.numRows = value
+    this.numRows = parsedValue
+    return this
+  }
+
+  _cols (value) {
+    if (_.isUndefined(value)) {
+      return this.numCols
+    }
+    const parsedValue = parseInt(value)
+    if (_.isNaN(parsedValue)) {
+      throw new Error(`Invalid numCols '${value}': not a valid int`)
+    }
+    this.numCols = parsedValue
     return this
   }
 
   cols (value) {
+    if (value) { this.colsSpecified = true }
+    return this._cols(value)
+  }
+
+  numNodes (value) {
     if (_.isUndefined(value)) {
-      return this.numCols
+      return this._numNodes
     }
-    const newCols = parseInt(value)
-    if (_.isNaN(newCols)) {
-      throw new Error(`Invalid numCols '${value}': not a valid int`)
+    const parsedValue = parseInt(value)
+    if (_.isNaN(parsedValue)) {
+      throw new Error(`Invalid numNodes '${value}': not a valid int`)
     }
-    this.colsSpecified = true
-    this.numCols = value
+    this._numNodes = parsedValue
     return this
   }
 
@@ -376,11 +398,11 @@ class GraphicCellGrid {
     return this
   }
 
-  _isRightToLeft () {
+  isRightToLeft () {
     return ([this._primaryDirection, this._secondaryDirection].includes('left'))
   }
 
-  _isBottomToTop () {
+  isBottomToTop () {
     return ([this._primaryDirection, this._secondaryDirection].includes('up'))
   }
 }

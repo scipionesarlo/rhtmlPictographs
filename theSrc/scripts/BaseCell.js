@@ -26,6 +26,16 @@ class BaseCell {
     this.myCssSelectorArray = []
     this.cssBucket = {}
     this.pictographSizeInfo = {}
+    this.dynamicMargins = {
+      width: {
+        positive: 0,
+        negative: 0
+      },
+      height: {
+        positive: 0,
+        negative: 0
+      }
+    }
     this.width = 1
     this.height = 1
   }
@@ -58,6 +68,24 @@ class BaseCell {
     this._verifyKeyIsPositiveInt(this, 'height')
   }
 
+  setDynamicMargins (dynamicMargins) {
+    this.dynamicMargins = _.defaultsDeep({}, dynamicMargins, {
+      width: {
+        positive: 0,
+        negative: 0
+      },
+      height: {
+        positive: 0,
+        negative: 0
+      }
+    })
+
+    this._verifyKeyIsInt(this.dynamicMargins.width, 'negative')
+    this._verifyKeyIsInt(this.dynamicMargins.width, 'positive')
+    this._verifyKeyIsInt(this.dynamicMargins.height, 'negative')
+    this._verifyKeyIsInt(this.dynamicMargins.height, 'positive')
+  }
+
   setConfig (config) {
     this.config = config
   }
@@ -65,8 +93,24 @@ class BaseCell {
   getDimensionConstraints () {
     return Promise.resolve({
       aspectRatio: null,
-      width: {min: null, max: null, extra: null},
-      height: {min: null, max: null, extra: null}
+      width: {
+        min: null,
+        max: null,
+        margins: {
+          // NB arrays of { size, overlapInUnitsOfGraphicSize }
+          negative: [],
+          positive: []
+        }
+      },
+      height: {
+        min: null,
+        max: null,
+        margins: {
+          // NB arrays of { size, overlapInUnitsOfGraphicSize }
+          negative: [],
+          positive: []
+        }
+      }
     })
   }
 

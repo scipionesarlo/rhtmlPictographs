@@ -188,7 +188,51 @@ class Pictograph {
         })
 
         const cellSizeData = this.config.gridInfo.sizes[flexibleDimension][flexibleIndex]
+
         return Promise.all(cellSizeConstraintPromises).then((cellSizeConstraints) => {
+          const combinedConstraints = {
+            width: {
+              margins: {
+                positive: [],
+                negative: []
+              }
+            },
+            height: {
+              margins: {
+                positive: [],
+                negative: []
+              }
+            }
+          }
+
+          const computedDynamicMargins = {
+            width: {
+              positive: [],
+              negative: []
+            },
+            height: {
+              positive: [],
+              negative: []
+            }
+          }
+
+          const combineArraysOfTwoObjectsUsingPathExpression = (objToBeManipulated, objToBeSampled, expression) => {
+            const array1 = _.get(objToBeManipulated, expression)
+            const array2 = _.get(objToBeSampled, expression)
+            _.set(objToBeManipulated, expression, array1.concat(array2))
+          }
+
+          cellSizeConstraints.map((cellSizeConstraint) => {
+            const expressions = [
+              'width.margins.positive',
+              'width.margins.negative',
+              'height.margins.positive',
+              'height.margins.negative'
+            ]
+
+            _(expressions).each(expression => combineArraysOfTwoObjectsUsingPathExpression(combinedConstraints, cellSizeConstraint, expression))
+          })
+
           if (cellSizeData.type === 'label') {
             const maxOfMinSizes = Math.max.apply(null, _(cellSizeConstraints).map(`${flexibleSize}.min`).value())
             cellSizeData.size = maxOfMinSizes
@@ -206,20 +250,66 @@ class Pictograph {
             cellSizeConstraints.map((cellSizeConstraint, dimensionIndex) => {
               const aspectRatioMultiplier = (flexibleDimension === 'column') ? cellSizeConstraint.aspectRatio : (1.0 / cellSizeConstraint.aspectRatio)
 
-              cellSizeConstraint[flexibleSize].min = (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min - cellSizeConstraint[fixedSize].extra) * aspectRatioMultiplier
-              cellSizeConstraint[flexibleSize].max = (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max - cellSizeConstraint[fixedSize].extra) * aspectRatioMultiplier
+              const moreComplicatedFindFlexibleSizeGivenFixedSize = (fixedSizeAll) => {
+                // NB TODO I cannot handle overlap in the fixed dimension, so for now ignore any constraint in the fixed dimension that has any overlap
+                const negativeFixedMargin = _(combinedConstraints[fixedSize].margins.negative).map(({ size, overlapInUnitsOfGraphicSize }) => {
+                  return (overlapInUnitsOfGraphicSize === 0) ? size : 0
+                }).max() || 0
+                const positiveFixedMargin = _(combinedConstraints[fixedSize].margins.positive).map(({ size, overlapInUnitsOfGraphicSize }) => {
+                  return (overlapInUnitsOfGraphicSize === 0) ? size : 0
+                }).max() || 0
+
+                computedDynamicMargins[fixedSize].negative = Math.max(computedDynamicMargins[fixedSize].negative, negativeFixedMargin)
+                computedDynamicMargins[fixedSize].positive = Math.max(computedDynamicMargins[fixedSize].positive, positiveFixedMargin)
+
+                const fixedSizeMargin = negativeFixedMargin + positiveFixedMargin
+
+                const fixedSizeGraphic = Math.max(0, fixedSizeAll - fixedSizeMargin)
+                const flexibleSizeGraphic = fixedSizeGraphic * aspectRatioMultiplier
+
+                const negativeFlexibleMargin = _(combinedConstraints[flexibleSize].margins.negative).map(({ size, overlapInUnitsOfGraphicSize }) => {
+                  return Math.max(0, size - overlapInUnitsOfGraphicSize * flexibleSizeGraphic)
+                }).max() || 0
+                const positiveFlexibleMargin = _(combinedConstraints[flexibleSize].margins.positive).map(({ size, overlapInUnitsOfGraphicSize }) => {
+                  return Math.max(0, size - overlapInUnitsOfGraphicSize * flexibleSizeGraphic)
+                }).max() || 0
+
+                computedDynamicMargins[flexibleSize].negative = Math.max(computedDynamicMargins[flexibleSize].negative, negativeFlexibleMargin)
+                computedDynamicMargins[flexibleSize].positive = Math.max(computedDynamicMargins[flexibleSize].positive, positiveFlexibleMargin)
+
+                const flexibleSizeAll = flexibleSizeGraphic + negativeFlexibleMargin + positiveFlexibleMargin
+
+                return flexibleSizeAll
+              }
+
+              cellSizeConstraint[flexibleSize].max = moreComplicatedFindFlexibleSizeGivenFixedSize(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max)
             })
 
             const minOfMaxSizes = Math.min.apply(null, _(cellSizeConstraints).map(`${flexibleSize}.max`).value())
             cellSizeData.size = Math.min(minOfMaxSizes, totalRangeAvailable)
+            cellSizeData.dynamicMargins = _.cloneDeep(computedDynamicMargins)
             totalRangeAvailable -= cellSizeData.size
+
+            // console.log('cellSizeConstraints')
+            // console.log(JSON.stringify(cellSizeConstraints, {}, 2))
+            // console.log('combinedConstraints')
+            // console.log(JSON.stringify(combinedConstraints, {}, 2))
+            // console.log('cellSizeData')
+            // console.log(JSON.stringify(cellSizeData, {}, 2))
+            // console.log('computedDynamicMargins')
+            // console.log(JSON.stringify(computedDynamicMargins, {}, 2))
 
             // NB TODO It is assumed this runs after the "calc min of proportion spec" code above
             cellSizeConstraints.map((cellSizeContraint, dimensionIndex) => {
               if (this.config.gridInfo.sizes[fixedDimension][dimensionIndex].type === 'proportion' && this.config.gridInfo.sizes[fixedDimension][dimensionIndex].preference === 'min') {
                 const aspectRatioMultiplier = (flexibleDimension === 'row') ? cellSizeContraint.aspectRatio : (1.0 / cellSizeContraint.aspectRatio)
-                const optimalSize = cellSizeData.size * aspectRatioMultiplier + cellSizeContraint[fixedSize].extra
-                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size = Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, optimalSize)
+                const optimalFixedDimensionSize = (cellSizeData.size - (computedDynamicMargins[flexibleSize].negative + computedDynamicMargins[flexibleSize].positive)) * aspectRatioMultiplier + computedDynamicMargins[fixedSize].negative + computedDynamicMargins[fixedSize].positive
+                const string = `min: ${this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min.toFixed(2)}, optimalSize: ${optimalFixedDimensionSize.toFixed(2)}, max: ${this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max.toFixed(2)}. Chosen: `
+                this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size = Math.min(
+                  this.config.gridInfo.sizes[fixedDimension][dimensionIndex].max,
+                  Math.max(this.config.gridInfo.sizes[fixedDimension][dimensionIndex].min, optimalFixedDimensionSize)
+                )
+                console.log(`${string}${this.config.gridInfo.sizes[fixedDimension][dimensionIndex].size.toFixed(2)}`)
               }
             })
           }
@@ -235,10 +325,24 @@ class Pictograph {
     const pictographOffsets = this._computePictographOffsets()
 
     this.config.cells.forEach((row, rowIndex) => {
-      row.forEach((cell, colIndex) => {
-        cell.x = pictographOffsets.x + _.sum(_(this.config.gridInfo.sizes.column).slice(0, colIndex).map('size').value()) + (numberOfGuttersAtIndex(colIndex) * this.config.size.gutter.column)
+      const rowDynamicMargins = this.config.gridInfo.sizes['row'][rowIndex].dynamicMargins
+      row.forEach((cell, columnIndex) => {
+        const columnDynamicMargins = this.config.gridInfo.sizes['column'][columnIndex].dynamicMargins
+
+        cell.dynamicMargins = {
+          width: {
+            positive: Math.max(rowDynamicMargins.width.positive, columnDynamicMargins.width.positive),
+            negative: Math.max(rowDynamicMargins.width.negative, columnDynamicMargins.width.negative)
+          },
+          height: {
+            positive: Math.max(rowDynamicMargins.height.positive, columnDynamicMargins.height.positive),
+            negative: Math.max(rowDynamicMargins.height.negative, columnDynamicMargins.height.negative)
+          }
+        }
+
+        cell.x = pictographOffsets.x + _.sum(_(this.config.gridInfo.sizes.column).slice(0, columnIndex).map('size').value()) + (numberOfGuttersAtIndex(columnIndex) * this.config.size.gutter.column)
         cell.y = pictographOffsets.y + _.sum(_(this.config.gridInfo.sizes.row).slice(0, rowIndex).map('size').value()) + (numberOfGuttersAtIndex(rowIndex) * this.config.size.gutter.row)
-        cell.width = this.config.gridInfo.sizes.column[colIndex].size
+        cell.width = this.config.gridInfo.sizes.column[columnIndex].size
         cell.height = this.config.gridInfo.sizes.row[rowIndex].size
       })
     })
@@ -251,7 +355,7 @@ class Pictograph {
       y: null
     }
 
-    const freeXSpace = (this.config.size.specified.width - this.config.totalAllocatedHorizontalSpace)
+    const freeXSpace = Math.max(0, (this.config.size.specified.width - this.config.totalAllocatedHorizontalSpace))
     if (this.config.alignment.horizontal === 'left') {
       offsets.x = 0
     } else if (this.config.alignment.horizontal === 'center') {
@@ -262,7 +366,7 @@ class Pictograph {
       throw new Error(`(should not get here) : Invalid horizontal alignment '${this.config.alignment.horizontal}'`)
     }
 
-    const freeYSpace = (this.config.size.specified.height - this.config.totalAllocatedVerticalSpace)
+    const freeYSpace = Math.max(0, (this.config.size.specified.height - this.config.totalAllocatedVerticalSpace))
     if (this.config.alignment.vertical === 'top') {
       offsets.y = 0
     } else if (this.config.alignment.vertical === 'center') {
@@ -319,7 +423,8 @@ class Pictograph {
       instance.setParentSvg(d3.select(this))
       instance.setWidth(d.width)
       instance.setHeight(d.height)
-      instance.setPictographSizeInfo(size)
+      instance.setDynamicMargins(d.dynamicMargins)
+      instance.setPictographSizeInfo(size) // just used for relative label sizing
       instance.draw()
     })
   }
